@@ -1,12 +1,22 @@
-﻿namespace WebSharperProject
+﻿// $begin{copyright}
+//
+// This file is confidential and proprietary.
+//
+// Copyright (c) IntelliFactory, 2004-2010.
+//
+// All rights reserved.  Reproduction or use in whole or in part is
+// prohibited without the written consent of the copyright holder.
+//-----------------------------------------------------------------
+// $end{copyright}
+
+namespace IntelliFactory.WebSharper.Bing
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Html
 open IntelliFactory.WebSharper.Formlet
 
 [<JavaScriptType>]
-module Base =
-    
+module Maps =
     
     [<Stub>]
     [<Name "VELatLong">]
@@ -77,6 +87,57 @@ module Base =
     [<Name "VELatLongRectangle">]
     type VELatLongRectangle = class end
 
+    [<Stub>]
+    [<Name "VEBirdseyeScene">]
+    type VEBirdseyeScene = class end
+
+    [<JavaScriptType>]
+    type Location = class end
+
+    [<Stub>]
+    [<Name "VERouteOptions">]
+    type VERouteOptions = class end
+    
+    [<Stub>]
+    [<Name "VEImageryMetadata">]
+    type VEImageryMetadata = class end
+    
+    [<Stub>]
+    [<Name "VEImageryMetadataOptions">]
+    type VEImageryMetadataOptions = class end
+ 
+    [<Stub>]
+    [<Name "VEModelStatusCode">]
+    type VEModelStatusCode = class end
+
+    [<Stub>]
+    [<Name "VEModelSourceSpecification">]
+    type VEModelSourceSpecification = class end
+
+    [<Stub>]
+    [<Name "VEOrientation">]
+    type VEOrientation = class end
+
+    [<Stub>]
+    [<Name "VEModelOrientation">]
+    type VEModelOrientation = class end
+
+    [<Stub>]
+    [<Name "VEModelScale">]
+    type VEModelScale = class end
+
+    [<Stub>]
+    [<Name "VEShapeSourceSpecification">]
+    type VEShapeSourceSpecification = class end
+
+    [<Stub>]
+    [<Name "VEPixel">]
+    type VEPixel = class end
+    
+    [<Stub>]
+    [<Name "VEMapViewSpecification">]
+    type VEMapViewSpecification = class end
+    
     [<Stub>]
     [<Name "VEMap">]
     type VEMap = 
@@ -582,9 +643,53 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb429624(v=MSDN.10).aspx
         member this.GetAltitude() : float = Undefined
 
+        /// Performs a search for locations that match a VELatLong input.
+        /// VEMap.FindLocations(veLatLong, callback);
+        /// * veLatLong: A VELatLong Class object that specifies what map location to match.
+        /// * callback: The name of the function that the server calls when it returns search
+        ///   results.
+        /// This method does not return a value. The function defined by the callback parameter
+        /// receives one argument from the server:
+        /// * An array of VEPlace Class objects. If the search is unsuccessful, this argument is
+        ///   null. Otherwise, these objects re present the possible location matches.
+        member this.FindLocations(veLatLong: VELatLong, callback: (VEPlace [] -> unit)) : unit = Undefined
+
+        /// If the map view is already set to bird's eye, returns the current VEBirdseyeScene
+        /// Class object.
+        /// VEMap.GetBirdseyeScene();
+        /// Returns null if the map mode is set to 3D. Otherwise returns a VEBirdseyeScene Class
+        /// object that represents the current bird's eye image.
+        member this.GetBirdseyeScene() : VEBirdseyeScene = Undefined
+
+        /// Returns a VELatLong Class object that represents the location of the center of the
+        /// current map view.
+        /// VEMap.GetCenter();
+        /// Returns a VELatLong Class object.
+        member this.GetCenter() : VELatLong = Undefined
+
+        /// Draws a multi-point route on the map and sends details about the route to a callback function.
+        /// VEMap.GetDirections(locations, options);
+        /// * locations: An array of objects specifying the points through which the route must
+        ///   pass. The points can be either VELatLong Class objects or String objects. A maximum
+        ///   of 25 locations can be specified.
+        /// * options: A VERouteOptions Class object specifying the routing options.
+        member this.GetDirections(locations: Location [], options: VERouteOptions) = Undefined
+
         /// In 3D mode, returns a double that represents the compass heading of the current map view.
         /// http://msdn.microsoft.com/en-us/library/bb412459(v=MSDN.10).aspx
         member this.GetHeading() : float = Undefined
+        
+        /// Returns information about the requested imagery, including imagery date stamps. This
+        /// method requires that a valid token has been set using the VEMap.SetClientToken
+        /// Method.
+        /// VEMap.GetImageryMetadata(callback, options);
+        /// * callback: The name of the function to call when results are returned. The function
+        ///   must accept a VEImageryMetadata Class object. Required.
+        /// * options: A VEImageryMetadataOptions Class object specifying the imagery for which
+        /// information is returned. Optional.
+        member this.GetImageryMetadata(callback: (VEImageryMetadata -> unit),
+                                       options: VEImageryMetadataOptions) : unit = Undefined
+        member this.GetImageryMetadata(callback: (VEImageryMetadata -> unit)) : unit = Undefined
 
         /// Returns the pixel value of the left edge of the map control.
         /// http://msdn.microsoft.com/en-us/library/bb412534(v=MSDN.10).aspx
@@ -598,17 +703,38 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb412451(v=MSDN.10).aspx
         member this.GetMapStyle() : unit = Undefined
 
+        /// Returns the current map view object as a VELatLongRectangle Class object.
+        /// VEMap.GetMapView();
+        member this.GetMapView() : VELatLongRectangle = Undefined
+
         /// In 3D mode, returns a double that represents the pitch of the current map view.
         /// http://msdn.microsoft.com/en-us/library/bb429577(v=MSDN.10).aspx
         member this.GetPitch() : float = Undefined
 
+        /// Gets the reference to a VEShape Class object based on its internal identifier.
+        /// VEMap.GetShapeByID(ID);
+        /// * ID: The identifier of the shape to retrieve. Required.
+        member this.GetShapeByID(ID: string) : VEShape = Undefined
+
+        /// GetRoute == Deprecated
+
+        /// Gets the reference to a VEShapeLayer Class object based on its index.
+        /// VEMap.GetShapeLayerByIndex(index);
+        /// * index: The index of the layer that you wish to retrieve. Required.
+        member this.GetShapeLayerByIndex(index: int) : VEShapeLayer = Undefined
+
         /// Gets the total number of shape layers on the map.
         /// http://msdn.microsoft.com/en-us/library/bb429636(v=MSDN.10).aspx
         member this.GetShapeLayerCount() : int = Undefined
-
+        
         /// Gets the number of tile layers.
         /// http://msdn.microsoft.com/en-us/library/bb877861(v=MSDN.10).aspx
         member this.GetTileLayerCount() : int = Undefined
+        
+        /// Gets a tile layer based upon its identifier.
+        /// VEMap.GetTileLayerByID(id);
+        /// * id: The unique identifier of the tile layer
+        member this.GetTileLayerByID(id: string) : VETileSourceSpecification = Undefined
 
         /// Gets a tile layer based upon an index value.
         /// VEMap.GetTileLayerByIndex(index);
@@ -621,6 +747,10 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb412550(v=MSDN.10).aspx
         member this.GetTop() : int = Undefined
 
+        /// Returns the current version of the map control.
+        /// VEMap.GetVersion();
+        static member GetVersion() : string = Undefined
+
         /// Returns the current zoom level of the map.
         /// http://msdn.microsoft.com/en-us/library/bb412455(v=MSDN.10).aspx
         member this.GetZoomLevel() : int = Undefined
@@ -629,6 +759,13 @@ module Base =
         /// default, this control is shown.
         /// http://msdn.microsoft.com/en-us/library/bb412557(v=MSDN.10).aspx
         member this.Hide3DNavigationControl() : unit = Undefined
+
+        /// Hides all of the VEShapeLayer Class objects on the map.
+        /// VEMap.HideAllShapeLayers();
+        member this.HideAllShapeLayers() : unit = Undefined
+
+        /// Hides the base tile layer of the map.
+        member this.HideBaseTileLayer() : unit = Undefined
 
         /// Hides the specified control from view.
         /// http://msdn.microsoft.com/en-us/library/bb544967(v=MSDN.10).aspx
@@ -653,13 +790,74 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/cc980906(v=MSDN.10).aspx
         member this.HideScalebar() : unit = Undefined
 
+        /// Hides a tile layer from view.
+        /// VEMap.HideTileLayer(layerID);
+        /// * layerID: The ID of the layer to be hidden.
+        member this.HideTileLayer(layerID: string) : unit = Undefined
+
         /// Hides the traffic legend.
         /// http://msdn.microsoft.com/en-us/library/bb964372(v=MSDN.10).aspx
         member this.HideTrafficLegend() : unit = Undefined
 
+        /// Imports a model data file and displays a 3D model on the map.
+        /// VEMap.Import3DModel(modelShapeSource, callback, latLong, orientation, scale);
+        /// * modelShapeSource: A VEModelSourceSpecification Class object specifying the model
+        ///   data to import.
+        /// * callback: The name of the function that is called after the data has been
+        ///   imported. See below for the arguments received by the callback.
+        /// * latLong: A VELatLong Class object that specifies the point at which to place the
+        ///   origin of the model.
+        /// * orientation: A VEModelOrientation Class object that specifies the orientation of
+        ///   the model on the map.
+        /// * scale: A VEModelScale Class object that specifies the scale of the model.
+        member this.Import3DModel(modelShapeSource: VEModelSourceSpecification,
+                                  callback: (VEShape * VEModelStatusCode -> unit),
+                                  latLong: VELatLong,
+                                  orientation: VEModelOrientation,
+                                  scale: VEModelScale) : unit = Undefined
+
+
+        /// Imports data from a GeoRSS feed, Bing Maps (http://maps.live.com) collection, or KML URL.
+        /// VEMap.ImportShapeLayerData(shapeSource, callback, setBestView);
+        /// * shapeSource: A VEShapeSourceSpecification Class object specifying the imported
+        ///   shape data.
+        /// * callback: The function that is called after the data has been imported.
+        /// * setBestView: A Boolean value that specifies whether the map view is changed to the
+        ///   best view for the layer.
+        member this.ImportShapeLayerData(shapeSource: VEShapeSourceSpecification,
+                                         callback: VEShapeLayer -> unit,
+                                         setBestView: bool) : unit   = Undefined
+
+        /// Changes the map view so that it includes both the specified VELatLong Class point
+        /// and the center point of the current map.
+        /// VEMap.IncludePointInView(latlong);
+        /// * latlong: A VELatLong Class object that specifies the latitude and longitude of the
+        ///   point to include
+        member this.IncludePointInView(latlong) : unit = Undefined
+
         /// Determines whether the bird's eye map style is available in the current map view.
         /// http://msdn.microsoft.com/en-us/library/bb429589(v=MSDN.10).aspx
         member this.IsBirdseyeAvailable() : bool = Undefined
+
+        /// Converts VELatLong Class objects (latitude/longitude pair) to VEPixel Class objects.
+        /// VEMap.LatLongToPixel(latLongArray, zoomLevel, callback);
+        ///
+        /// * latLongArray: A VELatLong object or an array of VELatLong objects. Required. If an
+        ///   array is passed, the callback parameter must be specified.
+        ///
+        /// * zoomLevel: The zoom level at which the VELatLong objects are converted to VEPixel
+        ///   objects. Optional. If this parameter is not supplied, the current zoom level is
+        ///   used.
+        ///
+        /// * callback: The name of the function called with the array of corresponding VEPixel
+        ///   objects. Optional.
+        member this.LatLongToPixel(latLongArray: VELatLong [],
+                                   zoomLevel: int, callback: VEPixel [] -> unit) : unit = Undefined
+        member this.LatLongToPixel(latLongArray: VELatLong) : VEPixel = Undefined
+        member this.LatLongToPixel(latLongArray: VELatLong,
+                                   zoomLevel: int) : VEPixel = Undefined
+        member this.LatLongToPixel(latLongArray: VELatLong,
+                                   zoomLevel: int, callback: VEPixel []) : unit = Undefined
 
         /// Loads the traffic map.
         /// VEMap.LoadTraffic(showFlow);
@@ -681,6 +879,12 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb412466(v=MSDN.10).aspx
         member this.PanToLatLong(latlong: VELatLong) : unit = Undefined
 
+        /// Converts a pixel (a point on the map) to a VELatLong Class object
+        /// (latitude/longitude pair).
+        /// VEMap.PixelToLatLong(pixel);
+        /// * pixel: A VEPixel Class object representing a pixel location on the map.
+        member this.PixelToLatLong(pixel: VEPixel): VELatLong = Undefined
+        
         /// Removes a custom layer from the map.
         /// VEMap.RemoveCustomLayer(object);
         /// * object: The object to remove from the map DIV container.
@@ -698,14 +902,36 @@ module Base =
         member this.Resize(width: int) : unit = Undefined
         member this.Resize() : unit = Undefined
 
+        /// In 3D mode, sets the altitude, in meters, above the WGS 84 ellipsoid in the map view.
+        /// VEMap.SetAltitude(altitude);
+        /// * altitude: The altitude, in meters
+        member this.SetAltitude(altitude: float) : unit = Undefined
+
+        /// Changes the orientation of the existing bird's eye
+        /// image (VEBirdseyeScene Class object) to the specified
+        /// orientation.
+        /// VEMap.SetBirdseyeOrientation(orientation);
+        /// * orientation: You can set this value by using either the
+        ///   VEOrientation Enumeration or a string value. Valid string
+        ///   values are North, South, East, and West.
+        member this.SetBirdseyeOrientation(orientation: VEOrientation) : unit = Undefined
+
         /// VEMap.SetBirdseyeScene
         /// Displays the specified bird's eye image.
         /// VEMap.SetBirdseyeScene(id)
-        /// Method: Displays the bird's eye image specified by the
-        /// VEBirdseyeScene Class:  ID
-        /// VEMap.SetBirdseyeScene(veLatLong, orientation, zoomLevel, callback) Method: Displays the bird's eye image specified by the center of the map, the orientation, and the zoom level
+        /// VEMap.SetBirdseyeScene(veLatLong, orientation, zoomLevel, callback)
         /// http://msdn.microsoft.com/en-us/library/bb412464(v=MSDN.10).aspx
-        member this.SetBirdseyeScene(id) : unit = Undefined
+        member this.SetBirdseyeScene(id: string) : unit = Undefined
+        member this.SetBirdseyeScene(veLatLong: VELatLong,
+                                     orientation: VEOrientation,
+                                     zoomLevel: int,
+                                     callback:VEBirdseyeScene -> unit) : unit = Undefined
+        member this.SetBirdseyeScene(veLatLong: VELatLong,
+                                     orientation: VEOrientation,
+                                     zoomLevel: int) : unit = Undefined
+        member this.SetBirdseyeScene(veLatLong: VELatLong,
+                                     orientation: VEOrientation) : unit = Undefined
+        member this.SetBirdseyeScene(veLatLong: VELatLong) : unit = Undefined
 
         /// Centers the map to a specific latitude and longitude.
         /// VEMap.SetCenter(VELatLong);
@@ -721,6 +947,15 @@ module Base =
         /// * zoomLevel: The zoom level for the map.
         /// http://msdn.microsoft.com/en-us/library/bb412439(v=MSDN.10).aspx
         member this.SetCenterAndZoom(latlong: VELatLong, zoomLevel: int) : unit = Undefined
+
+        /// Sets a Bing Maps token for the VEMap object.
+        /// VEMap.SetClientToken(clientToken);
+        /// * clientToken: A string representing the Bing Maps token.
+        member this.SetClientToken(clientToken: string) : unit = Undefined
+
+        /// Sets the credentials to use to authenticate map service requests.
+        /// * credentials: A string that is the Bing Maps Key to set.
+        member this.SetCredentials(credentials: string) : unit = Undefined
 
         /// Sets the map dashboard size and type.
         /// VEMap.SetDashboardSize(dashboard);
@@ -740,6 +975,14 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb877846(v=MSDN.10).aspx
         member this.SetFailedShapeRequest(policy: VEFailedShapeRequest) : unit = Undefined
 
+        /// In 3D mode, sets the compass heading of the current map view.
+        /// VEMap.SetHeading(heading);
+        /// * heading: The compass direction, expressed as a double. A value
+        ///   of 0 is true north, and a value of 180 is true south. Values
+        ///   less than 0 and greater than 360 are valid and are calculated
+        ///   as compass directions.
+        member this.SetHeading(heading: float) : unit = Undefined
+
         /// Sets the mode of the map.
         /// VEMap.SetMapMode(mode);
         /// * mode: A VEMapMode Enumeration value that specifies whether to load the map in 2D or 3D mode
@@ -751,6 +994,18 @@ module Base =
         /// * mapStyle: A VEMapStyle Enumeration value specifying the map style.
         /// http://msdn.microsoft.com/en-us/library/bb412454(v=MSDN.10).aspx
         member this.SetMapStyle(mapStyle: VEMapStyle) : unit = Undefined
+
+        /// Sets the map view to include all of the points, lines, or
+        /// polygons specified in the provided array, or to the view defined
+        /// by a VEMapViewSpecification Class object.
+        /// VEMap.SetMapView(object);
+        /// * object: In 2D mode, an array of VELatLong Class points or a
+        ///   VELatLongRectangle Class object. In 3D mode, can also be a
+        ///   VEMapViewSpecification Class object. This object defines the
+        ///   location, altitude, pitch, and heading to use for the map view.
+        member this.SetMapView(o: VELatLong []) : unit = Undefined
+        member this.SetMapView(o: VELatLongRectangle) : unit = Undefined
+        member this.SetMapView(o: VEMapViewSpecification) : unit = Undefined
 
         /// Specifies whether to zoom to the center of the screen or to the cursor position on
         /// the screen.
@@ -822,16 +1077,65 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb429640(v=MSDN.10).aspx
         member this.SetZoomLevel(zoomLevel: int) : unit = Undefined
 
+        /// Controls whether or not to show the Birdseye and BirdseyeHybrid
+        /// map styles when the map mode is set to VEMapMode.Mode3D.
+        /// VEMap.Show3DBirdseye(showBirdseye);
+        /// * showBirdseye: A Boolean value that specifies whether or not to
+        ///   show the Birdseye or BirdseyeHybrid map styles when the map
+        ///   mode is set to VEMapMode.Mode3D. The default is false.
+        member this.Show3DBirdseye(showBirdseye: bool): unit = Undefined
+
         /// VEMap.Show3DNavigationControl
         /// In 3D mode, shows the default user interface for controlling the map in 3D mode. By
         /// default, this control is shown.
         /// http://msdn.microsoft.com/en-us/library/bb412494(v=MSDN.10).aspx
         member this.Show3DNavigationControl() : unit = Undefined
 
+        /// Shows all of the VEShapeLayer Class objects on the map.
+        /// VEMap.ShowAllShapeLayers();
+        member this.ShowAllShapeLayers() : unit = Undefined
+
+        /// VEMap.ShowBaseTileLayer
+        /// Shows the base tile layer of the map.
+        member this.ShowBaseTileLayer() : unit = Undefined
+
+        /// Makes the specified control visible. This method only affects
+        /// control elements that have been hidden from view using the
+        /// VEMap.ShowControl(element);
+        /// * element: An HTML element that contains the control to be shown.
+        member this.ShowControl(element: Element) : unit = Undefined
+
         /// Shows the default user interface for controlling the map (the compass-and-zoom
         /// control). By default, this control is shown.
         /// http://msdn.microsoft.com/en-us/library/bb412477(v=MSDN.10).aspx
         member this.ShowDashboard() : unit = Undefined
+
+        /// Specifies whether the default disambiguation dialog is displayed
+        /// when multiple results are returned from a location query using
+        /// the VEMap.GetDirections Method.
+        /// VEMap.ShowDisambiguationDialog(showDialog);
+        /// * showDialog: A Boolean value. True enables the disambiguation dialog.
+        member this.ShowDisambiguationDialog(showDialog: bool) : unit = Undefined
+
+        /// Shows an information box for the shape.
+        /// VEMap.ShowInfoBox(shape, anchor, offset);
+        /// * shape: The reference to the shape for which an info box is to
+        ///   be shown. Required.
+        /// * anchor: The anchor point where the info box is docked when
+        ///   displayed. This can either be a VELatLong Class object or a
+        ///   VEPixel Class object. This value must be a valid point on the
+        ///   current map. Optional.
+        /// * offset: If the anchor point is a VELatLong object, this
+        ///   parameter, a VEPixel object, specifies the anchor point's
+        ///   offset from that latlong position. Optional.
+        member this.ShowInfoBox(shape: VEShape,
+                                anchor: VELatLong,
+                                offset: VEPixel) : unit = Undefined
+        member this.ShowInfoBox(shape: VEShape,
+                                anchor: VELatLong) : unit = Undefined
+        member this.ShowInfoBox(shape: VEShape) : unit = Undefined
+        member this.ShowInfoBox(shape: VEShape,
+                                anchor: VEPixel) : unit = Undefined
 
         /// Displays the specified message in a dialog box on the map.
         /// VEMap.ShowMessage(message);
@@ -872,6 +1176,17 @@ module Base =
         member this.ShowTrafficLegend(x: int) = Undefined
         member this.ShowTrafficLegend() = Undefined
 
+        /// Moves the map in the specified direction until the
+        /// VEMap.EndContinuousPan Method is called.
+        /// VEMap.StartContinuousPan(x, y);
+        /// * x: The speed, as a percentage of the fastest speed, to move the
+        ///   map in the x direction. Positive numbers move the map to the
+        ///   right, while negative numbers move the map to the left
+        /// * y: The speed, as a percentage of the fastest speed, to move the
+        ///   map in the y direction. Positive numbers move the map down,
+        ///   while negative numbers move the map up
+        member this.StartContinuousPan(x: float, y: float) : unit = Undefined
+
         /// Increases the map zoom level by 1.
         /// http://msdn.microsoft.com/en-us/library/bb412525(v=MSDN.10).aspx
         member this.ZoomIn() : unit = Undefined
@@ -880,21 +1195,4 @@ module Base =
         /// http://msdn.microsoft.com/en-us/library/bb429543(v=MSDN.10).aspx
         member this.ZoomOut() : unit = Undefined
 
-
-module Tests =
-    [<JavaScript>]
-    let BasicMap () =     
-        Div [Attr.Id "map1"; Attr.Style "padding-bottom:20px; width:500px; height:300px;"]
-        |>! OnAfterRender (fun mapElement -> 
-            Window.Alert("Test1")
-            let map = new Base.VEMap("map1")
-            map.LoadMap(new Base.VELatLong(12.,12.))
-            Window.Alert("Test2"))
-            
-[<JavaScriptType>]
-type Test() = 
-    inherit Web.Control()
-
-    [<JavaScript>]
-    override this.Body = Tests.BasicMap()
 

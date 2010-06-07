@@ -43,9 +43,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebSharperProject\WebSharperProject.fsproj">
-      <Project>{E6DDE90A-44E0-4B2A-9ACC-21E4658F625A}</Project>
-      <Name>WebSharperProject</Name>
+    <ProjectReference Include="..\WebSharperProject\if-bing-maps.fsproj">
+      <Project>{A561CB6E-D81A-4269-866F-3990CF25C397}</Project>
+      <Name>if-bing-maps</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
