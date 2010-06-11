@@ -18,46 +18,742 @@ open IntelliFactory.WebSharper.Formlet
 [<JavaScriptType>]
 module Maps =
     
+    [<JavaScriptType>]
+    type VEAltitudeMode =
+
+        | [<Inline "VEAltitudeMode.Default">]
+          /// The altitude is meters above ground level
+          Default
+
+        | [<Inline "VEAltitudeMode.Absolute">]
+          /// The altitude is meters above the WGS 84 ellipsoid
+          Absolute
+
+        | [<Inline "VEAltitudeMode.RelativeToGround">]
+          /// The altitude is meters above ground level
+          RelativeToGround
+
     [<Stub>]
     [<Name "VELatLong">]
     type VELatLong =
+        
+        /// Specifies the altitude of a single point on the globe.
+        [<DefaultValue>]
+        val mutable Altitude : float
+
+        /// Specifies the mode in which an altitude is represented.
+        [<DefaultValue>]
+        val mutable AltitudeMode : VEAltitudeMode
+
+        /// Specifies the latitude of a single point on the globe.
+        [<DefaultValue>]
+        val mutable Latitude : float
+
+        /// Specifies the longitude of a single point on the globe.
+        [<DefaultValue>]
+        val mutable Longitude : float
+
         new (lat: float, long: float) = {}
+        /// Specifies the altitude for a point on the globe.
+        /// VELatLong.SetAltitude(altitude, mode)
+        /// * altitude: The altitude, in meters
+        /// * mode: The VEAltitudeMode Enumeration value that defines whether altitude is
+        ///         relative to ground-level or absolute
+        /// http://msdn.microsoft.com/en-us/library/bb877811(v=MSDN.10).aspx
+        member this.SetAltitude(altitude: float, mode: VEAltitudeMode) : unit = Undefined
+        
+    [<JavaScriptType>]
+    type VEMapStyle =
+        | [<Inline "VEMapStyle.Road">] 
+          /// The road map style
+          Road
 
-    [<Stub>]
-    [<Name "VEMapStyle">]
-    type VEMapStyle = class end
+        | [<Inline "VEMapStyle.Shaded">]
+          /// The shaded map style, which is a road map with shaded contours.
+          Shaded
 
-    [<Stub>]
-    [<Name "VEMapMode">]
-    type VEMapMode = class end
+        | [<Inline "VEMapStyle.Aerial">]
+          /// The aerial map style
+          Aerial
+
+        | [<Inline "VEMapStyle.Hybrid">]
+          /// The hybrid map style, which is an aerial map with a label overlay
+          Hybrid
+
+        | [<Inline "VEMapStyle.Oblique">]
+          /// The oblique map style, which is the same as Birdseye
+          Oblique
+
+        | [<Inline "VEMapStyle.Birdseye">]
+          /// The bird's eye (oblique-angle) imagery map style
+          Birdseye
+
+        | [<Inline "VEMapStyle.BirdseyeHybrid">]
+          /// The bird's eye hybrid map style, which is a bird's eye map with a label overlay
+          BirdseyeHybrid
+
+    [<JavaScriptType>]
+    type VEMapMode =
+        | [<Inline "VEMapMode.Mode2D" >]
+            /// Displays the map in the traditional two dimensions
+            Mode2D
+
+        | [<Inline "VEMapMode.Mode3D" >]
+            /// Loads the Bing Maps 3D control, displays the map in three dimensions, and displays the 3D navigation control
+            Mode3D
     
+    [<Stub>]
+    [<Name "VEOrientation">]
+    type VEOrientation = 
+        | [<Inline "VEOrientation.North">]
+          /// The image was taken looking toward the north.
+          North
+
+        | [<Inline "VEOrientation.South">]
+          /// The image was taken looking toward the south.
+          South
+
+        | [<Inline "VEOrientation.East">]
+          /// The image was taken looking toward the east.
+          East
+
+        | [<Inline "VEOrientation.West">]
+          /// The image was taken looking toward the west.
+          West
+
     [<Stub>]
     [<Name "VEMapOptions">]
-    type VEMapOptions= class end
-    
+    type VEMapOptions =
+        new () = {} 
+        /// A VEOrientation Enumeration value indicating the orientation of the bird's eye
+        /// map. The default value is VEOrientation.North.
+        [<DefaultValue>]
+        val mutable BirdseyeOrientation : VEOrientation
+
+        /// A Boolean value specifying whether or not to enable the Birdseye map style in the map
+        /// control. The default value is true.
+        [<DefaultValue>]
+        val mutable EnableBirdseye : bool
+
+        /// A Boolean value that specifies whether or not labels appear on the map when a user
+        /// clicks the Aerial or Birdseye map style buttons on the map control dashboard. The
+        /// default value is true.
+        [<DefaultValue>]
+        val mutable EnableDashboardLabels : bool
+
+        /// A Boolean value indicating whether or not to load the base map tiles. The default
+        /// value is true.
+        [<DefaultValue>]
+        val mutable LoadBaseTiles : bool
+
+    [<Stub>]
+    [<Name "VELatLongRectangle">]
+    type VELatLongRectangle = 
+
+        new (topLeftLatLong : VELatLong,
+             bottomRightLatLong : VELatLong,
+             topRightLatLong : VELatLong,
+             bottomLeftLatLong : VELatLong) = {}
+
+        /// A VELatLong Class object that specifies the latitude and longitude of the upper-left
+        /// corner of the map view.
+        [<DefaultValue>]
+        val mutable TopLeftLatLong : VELatLong
+
+        /// A VELatLong Class object that specifies the latitude and longitude of the lower-right
+        /// corner of the map view.
+        [<DefaultValue>]
+        val mutable BottomRightLatLong : VELatLong
+
+        /// If the map is in 3D mode, a VELatLong Class object that specifies the latitude and
+        /// longitude of the upper-right corner of the map view.
+        [<DefaultValue>]
+        val mutable TopRightLatLong : VELatLong
+
+        /// If the map is in 3D mode, a VELatLong Class object that specifies the latitude and
+        /// longitude of the lower-left corner of the map
+        [<DefaultValue>]
+        val mutable BottomLeftLatLong : VELatLong
+
+    [<Stub>]
+    [<Name "VETileContext">]
+    type VETileContext = 
+        [<DefaultValue>]
+        [<Name "x">]
+        val mutable X : VELatLong
+        
+        [<DefaultValue>]
+        [<Name "y">]
+        val mutable Y : VELatLong
+
     [<Stub>]
     [<Name "VETileSourceSpecification">]
-    type VETileSourceSpecification= class end
+    type VETileSourceSpecification = 
+        
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int,
+             bounds: VELatLongRectangle [],
+             minZoom: int,
+             maxZoom: int,
+             getTilePath: VETileContext -> string,
+             opacity: float,
+             zindex: int) = {}
 
-    [<Stub>]
-    [<Name "VEDashboardSize">]
-    type VEDashboardSize = class end
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int,
+             bounds: VELatLongRectangle [],
+             minZoom: int,
+             maxZoom: int,
+             getTilePath: VETileContext -> string ,
+             opacity: float) = {}
 
-    [<Stub>]
-    [<Name "VEFailedShapeRequest">]
-    type VEFailedShapeRequest = class end
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int,
+             bounds: VELatLongRectangle [],
+             minZoom: int,
+             maxZoom: int,
+             getTilePath: VETileContext -> string) = {}
+
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int,
+             bounds: VELatLongRectangle [],
+             minZoom: int,
+             maxZoom: int) = {}
+
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int,
+             bounds: VELatLongRectangle [],
+             minZoom: int) = {}
+
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int,
+             bounds: VELatLongRectangle []) = {}
+
+        new (tileSourceId: string,
+             tileSource: string,
+             numServers: int) = {}
+
+        new (tileSourceId: string,
+             tileSource: string) = {}
+
+        /// An array of VELatLongRectangle Class objects that specifies the approximate coverage
+        /// area of the layer.
+        [<DefaultValue>]
+        val mutable Bounds : VELatLongRectangle []
+
+        /// The unique identifier for the layer. Each tile layer on a map must have a unique ID.
+        [<DefaultValue>]
+        val mutable ID : string
+
+        /// The maximum zoom level at which to display the custom tile source.
+        [<DefaultValue>]
+        val mutable MaxZoomLevel : int
+
+        /// The minimum zoom level at which to display the custom tile source.
+        [<DefaultValue>]
+        val mutable MinZoomLevel : int
+
+        /// The number of servers on which the tiles are hosted.
+        [<DefaultValue>]
+        val mutable NumServers : int
+
+        /// Specifies the opacity level of the tiles when displayed on the map.
+        [<DefaultValue>]
+        val mutable Opacity : float
+
+        /// The location of the tiles.
+        [<DefaultValue>]
+        val mutable TileSource : string
+
+        /// Specifies the z-index for the tiles.
+        [<DefaultValue>]
+        val mutable ZIndex : int
+
+    [<JavaScriptType>]
+    type VEDashboardSize = 
+        | [<Inline "VEDashboardSize.Normal">]
+          /// This is the dashboard that is used by default.
+          Normal
+        | [<Inline "VEDashboardSize.Small">]
+          /// This is a dashboard smaller than the default: it only
+          /// contains zoom-out (+) and zoom-in (-) buttons and road, aerial,
+          /// and hybrid buttons for changing the map style.
+          Small
+        | [<Inline "VEDashboardSize.Tiny">]
+          /// This is the smallest dashboard option available. This dashboard
+          /// only contains zoom-out (+) and zoom-in (-) buttons.
+          Tiny
+
+    [<JavaScriptTypeAttribute>]
+    type VEFailedShapeRequest = 
+        | [<Inline "VEFailedShapeRequest.DoNotDraw">]
+        /// Do not draw the shape
+        DoNotDraw
+
+        | [<Inline "VEFailedShapeRequest.DrawInaccurately">]
+        /// Draw the shape inaccurately
+        DrawInaccurately
+
+        | [<Inline "VEFailedShapeRequest.QueueRequest">]
+        /// Resubmit the drawing request
+        QueueRequest
 
     [<Stub>]
     [<Name "VEPrintOptions">]
-    type VEPrintOptions = class end
+    type VEPrintOptions = 
+        new () = {}
+        /// A Boolean value specifying whether or not to make the map printable.
+        [<DefaultValue>]
+        val mutable EnablePrinting : bool
 
     [<Stub>]
     [<Name "VEFindType">]
-    type VEFindType= class end
+    type VEFindType = 
+        | /// Performs a business search.
+          [<Inline "VEFindType.Businesses" >]
+          Businesses
+    
+    [<Stub>]
+    [<Name "VEShapeType">]
+    type VEShapeType = 
+        | [<Inline "VEShapeType.Pushpin">]
+          /// This represents a Shape object that is a pushpin.
+          Pushpin
+        | [<Inline "VEShapeType.Polyline">]
+          /// This represents a Shape object that is a polyline.
+          Polyline
+        | [<Inline "VEShapeType.Polygon">]
+          /// This represents a Shape object that is a polygon.
+          Polygon
 
     [<Stub>]
+    [<Name "VEColor">]
+    type VEColor = 
+        new (r: int, g: int, b: int, a: int) = {}    
+
+        /// Specifies the red component value. Valid values range from 0 through 255.
+        [<DefaultValue>]
+        val mutable R : int
+
+        /// Specifies the green component value. Valid values range from 0 through 255.
+        [<DefaultValue>]
+        val mutable G : int
+
+        /// Specifies the blue component value. Valid values range from 0 through 255.
+        [<DefaultValue>]
+        val mutable B : int
+
+        /// Specifies the alpha (transparency) component value. Valid values range from 0.0 through 1.0.
+        [<DefaultValue>]
+        val mutable A : int
+    
+    [<Stub>]
+    [<Name "VEPixel">]
+    type VEPixel = 
+        new (x: int, y: int) = {}
+        [<DefaultValue>]
+        val mutable x : int
+        [<DefaultValue>]
+        val mutable y : int
+
+    [<Stub>]
+    [<Name "VECustomIconSpecification">]
+    type VECustomIconSpecification = 
+        new () = {}
+        /// A VEColor object representing the icon's background and transparency.
+        [<DefaultValue>]
+        val mutable BackColor : VEColor
+
+        /// Custom HTML representing the pin's appearance. When specified, this HTML represents
+        /// the pin's icon for 2D views only. String
+        [<DefaultValue>]
+        val mutable CustomHTML : string
+
+        /// A VEColor object representing the icon's text color and transparency.
+        [<DefaultValue>]
+        val mutable ForeColor : VEColor
+
+        /// A String representing the URL of an image file.
+        [<DefaultValue>]
+        val mutable Image : string
+
+        /// A VEPixel object representing the image's offset from the icon's anchor.
+        [<DefaultValue>]
+        val mutable ImageOffset : VEPixel
+
+        /// Specifies whether the text for the icon should be bold. Boolean.
+        [<DefaultValue>]
+        val mutable TextBold : bool
+
+        /// The actual text to display for the icon. String.
+        [<DefaultValue>]
+        val mutable TextContent : string
+
+        /// A String containing the name of the font to use for the icon text.
+        [<DefaultValue>]
+        val mutable TextFont : string
+
+        /// Specifies whether the text for the icon should be italic. Boolean.
+        [<DefaultValue>]
+        val mutable TextItalics : bool
+
+        /// A VEPixel object representing the amount to offset text from the top left corner.
+        [<DefaultValue>]
+        val mutable TextOffset : VEPixel
+
+        /// Specifies the size at which to display text, in points. Integer.
+        [<DefaultValue>]
+        val mutable TextSize : int
+
+        /// Specifies whether the text for the icon should be underlined. Boolean.
+        [<DefaultValue>]
+        val mutable TextUnderline : bool
+
+    [<Stub>]
+    [<Name "VEClusteringType">]
+    type VEClusteringType = class end
+        
+    [<Stub>]
+    [<Name "VEClusterSpecification">]
+    type VEClusterSpecification = class end
+    
+    [<Stub>]
+    [<Name "VEClusteringOptions">]
+    type VEClusteringOptions = class end
+    
+    [<Stub>]
+    [<Name "VEShapeLayer">]
+    type VEShapeLayer = 
+        new () = {}
+        /// http://msdn.microsoft.com/en-us/library/bb412548(v=MSDN.10).aspx
+        /// Adds an object or array of Shape The VEShape object or array of VEShape objects to be
+        /// added. Required.
+        member this.AddShape(shape: VEShape) : unit = Undefined
+        member this.AddShape(shape: VEShape []) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412473(v=MSDN.10).aspx
+        /// Deletes all  objects (pushpins, polylines, and polygons) from the layer.
+        member this.DeleteAllShapes() : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429601(v=MSDN.10).aspx
+        /// Deletes a  object from the current layer.shape: A reference to the
+        /// VEShape:  object to delete. Required.
+        member this.DeleteShape(shape: VEShape) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429642(v=MSDN.10).aspx
+        /// Returns a best-fit  object based on the shapes currently present in the layer.
+        member this.GetBoundingRectangle() : VELatLongRectangle = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/cc980821(v=MSDN.10).aspx
+        /// Returns an array of  objects representing the calculated pushpin clusters.
+        /// type: A VEClusteringType Enumeration: specifying the algorithm used to determine
+        /// which pushpins to cluster.
+        member this.GetClusteredShapes(ctype: VEClusteringType) : VEClusterSpecification [] = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412533(v=MSDN.10).aspx
+        /// Gets the description of the  object.
+        member this.GetDescription() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412485(v=MSDN.10).aspx
+        /// Retrieves a reference to a  object contained in this layer based on the specified ID.
+        /// ID: The identifier of the VEShape object. Required.
+        member this.GetShapeByID(id: string) : VEShape = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412540(v=MSDN.10).aspx
+        /// Retrieves a reference to a  object contained in this layer based on the specified index.
+        /// index: The index of the shape to retrieve. Required.
+        member this.GetShapeByIndex(idx: int) : VEShape = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429622(v=MSDN.10).aspx
+        /// VEShapeLayer.GetShapeCount
+        /// Returns the total number of shapes in the current layer.
+        member this.GetShapeCount() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429635(v=MSDN.10).aspx
+        /// Gets the title of the  object.
+        member this.GetTitle() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877848(v=MSDN.10).aspx
+        /// Returns whether the layer is visible.
+        member this.IsVisible() : bool = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412443(v=MSDN.10).aspx
+        /// Hides the layer from view on the map.
+        member this.Hide() : unit = Undefined
+
+        /// Sets the method for determining which pushpins are clustered as well as how the
+        /// cluster is displayed.
+        member this.SetClusteringConfiguration(type': VEClusteringType,
+                                               options: VEClusteringOptions) : unit = Undefined
+        member this.SetClusteringConfiguration(type': VEClusteringType) : unit = Undefined
+        member this.SetClusteringConfiguration(algorithm: VEShapeLayer -> VEClusterSpecification [],
+                                               options: VEClusteringOptions) : unit = Undefined
+        member this.SetClusteringConfiguration(algorithm: VEShapeLayer -> VEClusterSpecification []) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429569(v=MSDN.10).aspx
+        /// Sets the description of the  object.
+        /// * details: A String: object containing either plain text or HTML that represents the
+        ///            VEShapeLayer object's description field.
+        member this.SetDescription(desc: string) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429542(v=MSDN.10).aspx
+        /// Sets the title of the  object.
+        /// title: A String object containing either plain text or HTML that represents the
+        ///        VEShapeLayer object's title.
+        member this.SetTitle(title: string) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412538(v=MSDN.10).aspx
+        /// Shows the layer on the map.
+        member this.Show() : unit = Undefined
+    and 
+        [<Stub>]
+        [<Name "VEShape">]
+        VEShape =
+        /// * type: A VEShapeType Enumeration value of type that represents
+        ///   the type of shape. Required.
+        /// 
+        /// * points: If the shape is a pushpin, this parameter can either be
+        ///   a single VELatLong Class object or an array of VELatLong
+        ///   objects. If it is an array of VELatLong objects, only the first
+        ///   VELatLong object is used to define the pushpin's location. Any
+        ///   additional data members are ignored. If the shape is a polyline
+        ///   or polygon, it must be an array of VELatLong objects,
+        ///   containing at least two points for a polyline and at least
+        ///   three points for a polygon. Required.
+        new (type': VEShapeType,
+             points: VELatLong []) = {}
+        /// http://msdn.microsoft.com/en-us/library/bb877821(v=MSDN.10).aspx
+        /// Returns the altitude for the shape.
+        member this.GetAltitude() : float = Undefined
+
+        /// Gets the mode in which the shape's altitude is represented.
+        member this.GetAltitudeMode() : VEAltitudeMode = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412517(v=MSDN.10).aspx
+        /// Gets the objects custom icon.
+        member this.GetCustomIcon() : VECustomIconSpecification = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412524(v=MSDN.10).aspx
+        /// Gets the description of the object. This description will be displayed in the shape's
+        /// info box.
+        member this.GetDescription() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412463(v=MSDN.10).aspx
+        /// Gets the fill color and transparency for a polygon.
+        member this.GetFillColor() : VEColor = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412408(v=MSDN.10).aspx
+        /// Gets a  object representing the shape's custom icon anchor point.
+        member this.GetIconAnchor() : VELatLong = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429553(v=MSDN.10).aspx
+        /// Gets the internal identifier of the  object.
+        member this.GetID () : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412422(v=MSDN.10).aspx
+        /// Gets the line color or transparency for a polyline or polygon.
+        member this.GetLineColor() : VEColor = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877845(v=MSDN.10).aspx
+        /// Gets whether a line is drawn from the shape to the ground.
+        member this.GetLineToGround() : bool = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429641(v=MSDN.10).aspx
+        /// Gets the line width of a polyline or polygon.
+        member this.GetLineWidth() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877830(v=MSDN.10).aspx
+        /// Gets the maximum zoom level at which the shape is visible.
+        member this.GetMaxZoomLevel() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877822(v=MSDN.10).aspx
+        /// Gets the minimum zoom level at which the shape is visible.
+        member this.GetMinZoomLevel() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429633(v=MSDN.10).aspx
+        /// Gets the shape's "more info" URL.
+        member this.GetMoreInfoURL() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412536(v=MSDN.10).aspx
+        /// Gets the shape's "photo" URL.
+        member this.GetPhotoURL() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412458(v=MSDN.10).aspx 
+        /// Returns an array of objects representing the points that make up the pushpin,
+        /// polyline, or polygon.  In the case of a pushpin, this will be a one-cell : VELatLong
+        member this.GetPoints() : VELatLong [] = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429600(v=MSDN.10).aspx
+        /// Gets the reference to the layer containing the specified  object.
+        member this.GetShapeLayer() : VEShapeLayer = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412512(v=MSDN.10).aspx
+        /// Gets the title of the  object.
+        member this.GetTitle() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412447(v=MSDN.10).aspx
+        /// Gets the type of the object.
+        member this.GetType : VEShapeType = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877807(v=MSDN.10).aspx
+        /// Gets the z-index of a pushpin shape or pushpin attached to a polyline or polygon.
+        member this.GetZIndex() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877842(v=MSDN.10).aspx
+        /// Gets the z-index for a polyline or polygon.
+        member this.GetZIndexPolyShape() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb544960(v=MSDN.10).aspx
+        /// Hides the specified  object from view.
+        member this.Hide() : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412468(v=MSDN.10).aspx
+        /// Hides the icon associated with a polyline or polygon.
+        member this.HideIcon() : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877823(v=MSDN.10).aspx
+        /// Returns whether the shape is a 3D model.
+        member this.IsModel() : bool = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877810(v=MSDN.10).aspx
+        /// Specifies the altitude for the shape.
+        /// * altitude: A floating-point value or array of floating-point values specifying
+        ///   the altitude, in meters, of the shape.
+        /// * altitudeMode: A VEAltitudeMode Enumeration value specifying the mode in which
+        ///   the shape's altitude is represented.
+        member this.SetAltitude(altitude: float [], altitudeMode: VEAltitudeMode) : unit = Undefined
+        member this.SetAltitude(altitude: float, altitudeMode: VEAltitudeMode) : unit = Undefined
+
+        /// Specifies the mode in which a shape's altitude is represented.
+        /// * mode: A VEAltitudeMode Enumeration value specifying the altitude representation.
+        member this.SetAltitudeMode(mode: VEAltitudeMode) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412425(v=MSDN.10).aspx
+        /// Sets the  object's custom icon.
+        /// customIcon: A String object containing either a URL to an image, custom HTML that
+        ///             defines the custom icon, or a VECustomIconSpecification Class object.
+        member this.SetCustomIcon(customIcon: string) : unit = Undefined
+        member this.SetCustomIcon(customIcon: VECustomIconSpecification) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412553(v=MSDN.10).aspx
+        /// Sets the description of the  object.
+        /// details: A String object containing either plain text or HTML that represents the
+        ///          VEShape object's description field.
+        member this.SetDescription(details: string) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412486(v=MSDN.10).aspx
+        /// Sets the fill color and transparency of a polygon.
+        /// color: A VEColor:  object representing the fill color and transparency.
+        member this.SetFillColor(color: VEColor) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429563(v=MSDN.10).aspx
+        /// Sets the info box anchor of the  object.
+        /// * point: A VELatLong Class object representing the shape's info box anchor point.
+        member this.SetIconAnchor(latlong: VELatLong) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412522(v=MSDN.10).aspx
+        /// Sets the line color or transparency for a polyline or polygon.
+        /// color: A VEColor Class object representing the line color and transparency.
+        member this.SetLineColor(color: VEColor) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877859(v=MSDN.10).aspx
+        /// Specifies whether a line is drawn from the shape to the ground.
+        /// extrude: A Boolean value specifying whether a line is drawn from the shape to the ground.
+        member this.SetLineToGround(extrude: bool) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412415(v=MSDN.10).aspx
+        /// Sets the line width for a polyline or polygon.
+        /// * width: An integer representing the line's width.
+        member this.SetLineWidth(width) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877839(v=MSDN.10).aspx
+        /// Sets the maximum zoom level at which the shape is visible.
+        /// level: An integer specifying the maximum zoom level.
+        member this.SetMaxZoomLevel(level: int) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877843(v=MSDN.10).aspx
+        /// Sets the minimum zoom level at which the shape is visible.
+        /// * level: An integer specifying the minimum zoom level.
+        member this.SetMinZoomLevel(level) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429605(v=MSDN.10).aspx
+        /// Sets the shape's "more info" URL.
+        /// moreInfoURL: A String object containing the URL of the "more info" link that is displayed in the shape's info box.
+        member this.SetMoreInfoURL(moreInfoURL: string) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412498(v=MSDN.10).aspx
+        /// Sets the shape's photo URL.
+        /// * photoURL: The string containing the URL of the image that is displayed in the shape's info box.
+        member this.SetPhotoURL(photoURL: string) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429550(v=MSDN.10).aspx
+        /// Sets the points of the  object.
+        /// * points: An array of VELatLong Class objects.
+        member this.SetPoints(points: VELatLong[]) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429575(v=MSDN.10).aspx
+        /// Sets the title of the  object. This title will be displayed in the shape's info box.
+        /// * title: A String object containing either plain text or HTML that represents the
+        ///          VEShape object's title.
+        member this.SetTitle(title: string) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877869(v=MSDN.10).aspx
+        /// Sets the z-index value for a shape.
+        /// * icon: Optional. An integer specifying the z-index for the shape's icon (or for the
+        ///   pushpin if the shape is a pushpin). If this value is null or undefined the z-index
+        ///   is not changed.
+        /// * polyshape: Optional. An integer specifying the z-index for the shape. This
+        ///   parameter is ignored if the shape is a pushpin. If this value is null or undefined
+        ///   the z-index is not changed.
+        member this.SetZIndex(icon: int, polyshape: int) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb544965(v=MSDN.10).aspx
+        /// Makes the specified object visible. This method only has an effect if the object was
+        /// previously hidden.
+        member this.Show () : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429571(v=MSDN.10).aspx
+        /// Shows the icon associated with a polyline or polygon. This method is ignored for
+        /// pushpins.
+        member this.ShowIcon() : unit = Undefined
+    
+        
+    [<Stub>]
     [<Name "VEFindResult">]
-    type VEFindResult = class end
+    type VEFindResult = 
+        /// A reference to the VEShape Class object corresponding to this
+        /// FindResult object. The VEShape object represents the result's
+        /// pushpin displayed on the map.
+        val mutable Shape : VEShape
+
+        /// The name of the found result.
+        val mutable Name : string
+
+        /// The description of the found result.
+        val mutable Description : string
+
+        /// The VEFindType Enumeration enumeration that represents the type
+        /// of Find that was performed. This matches the findType parameter
+        /// specified in the Find method call from which this result was
+        /// generated.
+        val mutable FindType : VEFindType
+
+        /// A Boolean value that indicates whether the found result is a paid
+        /// advertisement.
+        val mutable IsSponsored : bool
+
+        /// A VELatLong Class object that represents the location of the
+        /// found result.
+        val mutable LatLong : VELatLong
+
+        /// The telephone number of the found result.
+        val mutable Phone : string
 
     [<Stub>]
     [<Name "VEDistanceUnit">]
@@ -71,21 +767,11 @@ module Maps =
     [<Name "VEMiniMapSize">]
     type VEMiniMapSize = class end
     
-    [<Stub>]
-    [<Name "VEShape">]
-    type VEShape = class end
-
-    [<Stub>]
-    [<Name "VEShapeLayer">]
-    type VEShapeLayer = class end
-
+    
+    
     [<Stub>]
     [<Name "VEPlace">]
     type VEPlace = class end
-
-    [<Stub>]
-    [<Name "VELatLongRectangle">]
-    type VELatLongRectangle = class end
 
     [<Stub>]
     [<Name "VEBirdseyeScene">]
@@ -115,10 +801,6 @@ module Maps =
     type VEModelSourceSpecification = class end
 
     [<Stub>]
-    [<Name "VEOrientation">]
-    type VEOrientation = class end
-
-    [<Stub>]
     [<Name "VEModelOrientation">]
     type VEModelOrientation = class end
 
@@ -130,10 +812,6 @@ module Maps =
     [<Name "VEShapeSourceSpecification">]
     type VEShapeSourceSpecification = class end
 
-    [<Stub>]
-    [<Name "VEPixel">]
-    type VEPixel = class end
-    
     [<Stub>]
     [<Name "VEMapViewSpecification">]
     type VEMapViewSpecification = class end
