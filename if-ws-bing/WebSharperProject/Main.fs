@@ -415,21 +415,44 @@ module Maps =
         [<DefaultValue>]
         val mutable TextUnderline : bool
 
-    [<Stub>]
-    [<Name "VEClusteringType">]
-    type VEClusteringType = class end
-        
-    [<Stub>]
-    [<Name "VEClusterSpecification">]
-    type VEClusterSpecification = class end
+    [<JavaScriptTypeAttribute>]
+    type VEClusteringType = 
+        | [<Inline "VEClusteringType.None">]
+          /// No pushpin clustering
+          None
+
+        | [<Inline "VEClusteringType.Grid">]
+          /// A simple clustering algorithm
+          Grid
     
     [<Stub>]
     [<Name "VEClusteringOptions">]
-    type VEClusteringOptions = class end
-    
-    [<Stub>]
-    [<Name "VEShapeLayer">]
-    type VEShapeLayer = 
+    type VEClusteringOptions = 
+        new () = {}
+        /// A VECustomIconSpecification Class which describes the icon representing the pushpin cluster.
+        [<DefaultValue>]        
+        val mutable Icon : VECustomIconSpecification
+
+        /// The name of the function called when clustering changes.
+        [<DefaultValue>]        
+        val mutable Callback : VEClusterSpecification [] -> unit
+
+    and 
+        [<Stub>]
+        [<Name "VEClusterSpecification">]
+        VEClusterSpecification = 
+        /// Returns a VEShape Class that represents the pushpin cluster.
+        member this.GetClusterShape() : VEShape = Undefined
+        
+        /// An array of VEShape Class items representing the pushpins in a pushpin cluster.
+        val mutable Shapes : VEShape []
+
+        /// A VELatLong Class object indicating the center of the pushpin cluster.
+        val mutable LatLong : VELatLong
+    and
+        [<Stub>]
+        [<Name "VEShapeLayer">]
+        VEShapeLayer = 
         new () = {}
         /// http://msdn.microsoft.com/en-us/library/bb412548(v=MSDN.10).aspx
         /// Adds an object or array of Shape The VEShape object or array of VEShape objects to be
@@ -755,34 +778,383 @@ module Maps =
         /// The telephone number of the found result.
         val mutable Phone : string
 
-    [<Stub>]
-    [<Name "VEDistanceUnit">]
-    type VEDistanceUnit = class end
+    [<JavaScriptTypeAttribute>]
+    type VEDistanceUnit = 
+        | [<Inline "VEDistanceUnit.Miles">]
+          /// Generates route information in miles.
+          Miles
 
-    [<Stub>]
-    [<Name "VEShapeAccuracy">]
-    type VEShapeAccuracy = class end
+        | [<Inline "VEDistanceUnit.Kilometers">]
+          /// Generates route information in kilometers.
+          Kilometers
 
+    [<JavaScriptTypeAttribute>]
+    type VEShapeAccuracy = 
+        | [<Inline "VEShapeAccuracy.None">]
+        /// No shapes are accurately converted
+        None
+
+        | [<Inline "VEShapeAccuracy.Pushpin">]
+        /// Only pushpins are accurately converted
+        Pushpin
+
+    [<JavaScriptTypeAttribute>]
+    type VEMiniMapSize =     
+        | [<Inline "VEMiniMapSize.Small">]
+        /// This represents a small mini map.
+        Small
+
+        | [<Inline "VEMiniMapSize.Large">]
+        /// This represents a large mini map.
+        Large
+        
+    [<JavaScriptTypeAttribute>]
+    type VELocationPrecision = 
+        | [<Inline "VELocationPrecision.Interpolated">]
+          /// The precision is estimated from multiple geocoded sources.
+          Interpolated
+
+        | [<Inline "VELocationPrecision.Rooftop">]
+          /// The precision is from a single match.
+          Rooftop
+       
     [<Stub>]
-    [<Name "VEMiniMapSize">]
-    type VEMiniMapSize = class end
+    [<Name "VEGeocodeLocation">]
+    type VEGeocodeLocation =     
+        /// A VELatLong Class object specifying the latitude and longitude of the location.
+        val mutable LatLong : VELatLong
+
+        /// A VELocationPrecision Enumeration value specifying the precision of the location.
+        val mutable Precision : VELocationPrecision
+     
+    [<JavaScriptTypeAttribute>]
+    type VEMatchConfidence = 
+        | [<Inline "VEMatchConfidence.High">]
+          /// The confidence of a match is high
+          High
+
+        | [<Inline "VEMatchConfidence.Medium">]
+          /// The confidence of a match is medium
+          Medium
+
+        | [<Inline "VEMatchConfidence.Low">]
+          /// The confidence of a match is low
+          Low
     
-    
-    
+    [<JavaScriptTypeAttribute>]
+    type VEMatchCode = 
+        | [<Inline "VEMatchCode.None">]
+          /// No match was found
+          None
+
+        | [<Inline "VEMatchCode.Good">]
+          /// The match was good
+          Good
+
+        | [<Inline "VEMatchCode.Ambiguous">]
+          /// The match was ambiguous
+          Ambiguous
+
+        | [<Inline "VEMatchCode.UpHierarchy">]
+          /// The match was found by a broader search
+          UpHierarchy
+
+        | [<Inline "VEMatchCode.Modified">]
+          /// The match was found, but to a modified place
+          Modified
+        
     [<Stub>]
     [<Name "VEPlace">]
-    type VEPlace = class end
+    type VEPlace = 
+    
+        /// Gets a VELatLong Class object that represents the best location of the found result.
+        val mutable LatLong : VELatLong
+
+        /// An array of VEGeocodeLocation Class objects specifying all of the possible match
+        /// results returned by the geocoder for this place
+        val mutable Locations : VEGeocodeLocation []
+
+        /// Gets the String object that represents the unambiguous name for the Bing Maps location.
+        val mutable Name : string
+
+        /// A VEMatchCode Enumeration value specifying the match code from the geocoder. This
+        /// property value is only valid for where-only searches.
+        val mutable MatchCode : VEMatchCode
+
+        /// A VEMatchConfidence Enumeration value specifying the match confidence from the
+        /// geocoder. This property value is only valid for where-only searches.
+        val mutable MatchConfidence : VEMatchConfidence
+
+        /// A VELocationPrecision Enumeration value specifying the match precision from the
+        /// geocoder for the best result, which is found in the VEPlace.LatLong property.
+        val mutable Precision : VELocationPrecision
 
     [<Stub>]
     [<Name "VEBirdseyeScene">]
-    type VEBirdseyeScene = class end
+    type VEBirdseyeScene = 
+        /// http://msdn.microsoft.com/en-us/library/bb429591(v=MSDN.10).aspx
+        /// Determines whether the location specified by a VELatLong Class object is within
+        /// the current
+        /// * Latlong: A VELatLong Class object.
+        member this.ContainsLatLong(latlong: VELatLong) : bool = Undefined
 
-    [<JavaScriptType>]
-    type Location = class end
+        /// http://msdn.microsoft.com/en-us/library/bb429632(v=MSDN.10).aspx
+        /// Determines whether a specified pixel is within the current  object.
+        /// * x: The X component of the pixel
+        /// * y: The Y component of the pixel
+        /// * zoomLevel: The current zoom level of the map
+        member this.ContainsPixel(x: int, y: int, zoomLevel: int) : bool = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb877872(v=MSDN.10).aspx
+        /// Returns an unencrypted and rounded off bounding rectangle for the  object.
+        member this.GetBoundingRectangle() : VELatLongRectangle = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412523(v=MSDN.10).aspx
+        /// Returns the height of the image in the current object, in pixels, at maximum
+        /// resolution.
+        member this.GetHeight() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412423(v=MSDN.10).aspx
+        /// Returns the ID of the current  object.
+        member this.GetID() : string = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429595(v=MSDN.10).aspx
+        /// Returns the orientation () of the current
+        member this.GetOrientation() : VEOrientation = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412526(v=MSDN.10).aspx
+        /// Returns the width of the image in the current object, in pixels, at maximum
+        /// resolution.
+        member this.GetWidth() : int = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb412470(v=MSDN.10).aspx
+        /// Converts a  object (latitude/longitude pair) to the corresponding pixel on the map.
+        /// * LatLong: A VELatLong Class object, which contains the latitude and longitude of a
+        ///   point. This method also accepts an encrypted VELatLong: object, as supplied by the
+        /// * zoomLevel: The zoom level of the current map view.
+        member this.LatLongToPixel(latlong: VELatLong, zoomLevel: int) : unit = Undefined
+
+        /// http://msdn.microsoft.com/en-us/library/bb429604(v=MSDN.10).aspx
+        /// Converts a point in the bird's eye scene to an encrypted latitude/longitude value.
+        /// * pixel: A VEPixel Class  object representing a pixel location on the map
+        /// * zoomLevel: The zoom level of the current map view
+        member this.PixelToLatLong(pixel: VEPixel, zoomLevel: int) : unit = Undefined
+    
+    [<JavaScriptTypeAttribute>]
+    type VERouteDistanceUnit = 
+        | [<Inline "VERouteDistanceUnit.Miles">]
+          /// Generates route information in miles.
+          Miles
+
+        | [<Inline "VERouteDistanceUnit.Kilometers">]
+          /// Generates route information in kilometers.
+          Kilometers  
+    
+    [<Stub>]
+    [<Name "VERouteHintType">]
+    type VERouteHintType = 
+        | [<Inline "VERouteHintType.PreviousIntersection">]
+            /// The hint describes the intersection that comes before the itinerary item.
+            PreviousIntersection
+
+        | [<Inline "VERouteHintType.NextIntersection">]
+            /// The hint describes the intersection that comes after the itinerary item.
+            NextIntersection
+
+        | [<Inline "VERouteHintType.Landmark">]
+            /// The hint describes a landmark along the road or near the itinerary item.
+            Landmark
+
+    [<JavaScriptTypeAttribute>]
+    type VERouteWarningSeverity = 
+        | [<Inline "VERouteWarningSeverity.None">]
+          /// A warning which has no impact on traffic
+          None
+
+        | [<Inline "VERouteWarningSeverity.LowImpact">]
+          /// A warning which has low impact on traffic
+          LowImpact
+
+        | [<Inline "VERouteWarningSeverity.Minor">]
+          /// A minor traffic incident
+          Minor
+
+        | [<Inline "VERouteWarningSeverity.Moderate">]
+          /// A moderate traffic incident
+          Moderate
+
+        | [<Inline "VERouteWarningSeverity.Serious">]
+          /// A serious traffic incident
+          Serious
+
+    [<Stub>]
+    [<Name "VERouteWarning">]
+    type VERouteWarning = 
+        /// A VERouteWarningSeverity Enumeration value specifying the severity level of the warning.
+        val mutable Severity : VERouteWarningSeverity
+
+        /// A String that describes the route warning.
+        val mutable Text : string
+    
+    [<Stub>]
+    [<Name "VERouteHint">]
+    type VERouteHint = 
+        /// A VERouteHintType Enumeration value specifying the type of the hint.
+        val mutable Type : VERouteHintType
+
+        /// A string that describes the route itinerary item hint.
+        val mutable Text : string
+      
+    [<Stub>]
+    [<Name "VERouteItineraryItem">]
+    type VERouteItineraryItem = 
+    
+        /// A floating-point number specifying the distance of the step
+        val mutable Distance : float
+
+        /// A VELatLong Class object specifying the position of the step
+        val mutable LatLong : VELatLong
+
+        /// A VEShape Class object specifying the shape of the step
+        val mutable Shape : VEShape
+
+        /// A String specifying the description of the step
+        val mutable Text : string
+
+        /// An integer specifying the total elapsed time, in seconds, to traverse the route itinerary step.
+        val mutable Time : int
+
+        /// An array of VERouteWarning Class items that correspond to the itinerary item.
+        val mutable Warnings : VERouteWarning []
+
+        /// An array of VERouteHint Class items that correspond to the itinerary item.
+        val mutable Hints : VERouteHint []
+    
+    [<Stub>]
+    [<Name "VERouteItinerary">]
+    type VERouteItinerary = 
+        /// An array of VERouteItineraryItem Class objects specifying the step-by-step
+        /// directions for the route.
+        val mutable Items : VERouteItineraryItem []
+    
+    [<Stub>]
+    [<Name "VERouteLeg">]
+    type VERouteLeg = 
+        /// A floating-point number specifying the length of the route leg.
+        val mutable Distance : float
+
+        /// A VERouteItinerary Class object specifying the itinerary of the route leg.
+        val mutable Itinerary : VERouteItinerary
+
+        /// An integer specifying the total elapsed time, in seconds, to traverse the route leg.
+        val mutable Time : int
+
+    [<Stub>]
+    [<Name "VERoute">]
+    type VERoute = 
+
+        /// A floating-point value that specifies the total length of the route.
+        val mutable Distance : float
+
+        /// An array of VERouteLeg Class objects that specify the intermediate legs of the
+        /// route.
+        val mutable RouteLegs : VERouteLeg []
+
+        /// An array of VELatLong Class objects that identify the shape of the route.
+        val mutable ShapePoints : VELatLong []
+
+        /// An integer specifying the total elapsed time, in seconds, to traverse the route.
+        val mutable Time : int
+    
+    [<JavaScriptTypeAttribute>]
+    type VERouteMode = 
+        | [<Inline "VERouteMode.Driving">]
+          /// The returned route contains driving directions
+          Driving
+
+        | [<Inline "VERouteMode.Walking">]
+          /// The returned route contains walking directions
+          Walking
+
+    [<JavaScriptTypeAttribute>]
+    type VERouteOptimize = 
+        | [<Inline "VERouteOptimize.MinimizeTime">]
+          /// The route is calculated to minimize time.
+          MinimizeTime
+
+        | [<Inline "VERouteOptimize.MinimizeDistance">]
+          /// The route is calculated to minimize distance.
+          MinimizeDistance
 
     [<Stub>]
     [<Name "VERouteOptions">]
-    type VERouteOptions = class end
+    type VERouteOptions = 
+        new () = {}
+        /// A VERouteDistanceUnit Enumeration value specifying the units used for the route. The
+        /// default value is VERouteDistanceUnit.Mile.
+        [<DefaultValue>]
+        val mutable DistanceUnit : VERouteDistanceUnit
+
+        /// A Boolean value specifying whether the route is drawn on the map. The default value
+        /// is true, which means the route is drawn on the map.
+        [<DefaultValue>]
+        val mutable DrawRoute : bool
+
+        /// The name of the function called when the method has generated the
+        /// route. Optional. The default value is . The called function receives a VERoute Class
+        /// object.
+        [<DefaultValue>]
+        val mutable RouteCallback : VERoute -> unit
+
+        /// The VEColor Class object specifying the color of the route line. The default value is
+        /// default is VEColor(0,169,235,0.7).
+        [<DefaultValue>]
+        val mutable RouteColor : VEColor
+
+        /// A VERouteMode Enumeration value specifying the mode of route to return. The default
+        /// value is VERouteMode.Driving.
+        [<DefaultValue>]
+        val mutable RouteMode : VERouteMode
+
+        /// A VERouteOptimize Enumeration value specifying how the route is optimized. The
+        /// default value is VERouteOptimize.MinimizeTime.
+        [<DefaultValue>]
+        val mutable RouteOptimize : VERouteOptimize
+
+        /// The thickness, in pixels, of the route line. The default value is 6 pixels.
+        [<DefaultValue>]
+        val mutable RouteWeight : int
+
+        /// The z-index of the route line. The default value is 4.
+        [<DefaultValue>]
+        val mutable RouteZIndex : int
+
+        /// A Boolean value specifying whether the map view is set to the best view of the route
+        /// after it is drawn. The default is true, which means that the map view is set.
+        [<DefaultValue>]
+        val mutable SetBestMapView : bool
+
+        /// A Boolean value specifying whether a disambiguation dialog box is
+        /// shown. Optional. The default value is true, which means the disambiguation dialog box
+        /// is shown. If false, no disambiguation dialogs are displayed and the route uses the
+        /// first geocoded response for each location.
+        [<DefaultValue>]
+        val mutable ShowDisambiguation : bool
+
+        /// Whether to show any error messages. The default value is true.
+        [<DefaultValue>]
+        val mutable ShowErrorMessages : bool
+
+        /// A Boolean value specifying whether to use the MapPoint Web Service to generate the
+        /// route. The default value is false.
+        [<DefaultValue>]
+        val mutable UseMWS : bool
+
+        /// A Boolean value specifying whether to calculate the route using traffic
+        /// information. The default value is false.
+        [<DefaultValue>]
+        val mutable UseTraffic : bool
+
     
     [<Stub>]
     [<Name "VEImageryMetadata">]
@@ -816,6 +1188,9 @@ module Maps =
     [<Name "VEMapViewSpecification">]
     type VEMapViewSpecification = class end
     
+    [<JavaScriptType>]
+    type Location = class end
+
     [<Stub>]
     [<Name "VEMap">]
     type VEMap = 
