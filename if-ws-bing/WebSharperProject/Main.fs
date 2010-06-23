@@ -535,6 +535,14 @@ module Maps =
         /// Shows the layer on the map.
         member this.Show() : unit = Undefined
     and 
+        [<JavaScriptType>]
+        ShapeDragEventArgs =
+        /// The VEShape object that fired the event.
+        val Shape : VEShape
+
+        /// The current VELatLong of the shape.
+        val LatLong : VELatLong
+    and 
         [<Stub>]
         [<Name "VEShape">]
         VEShape =
@@ -551,6 +559,23 @@ module Maps =
         ///   three points for a polygon. Required.
         new (type': VEShapeType,
              points: VELatLong []) = {}
+        
+        [<DefaultValue>]
+        val mutable Draggable : bool
+        
+        /// Occurs when a shape is being dragged across the map.
+        [<DefaultValue>]
+        val mutable ondrag : ShapeDragEventArgs -> unit
+
+        /// Occurs when a shape drag has stopped.
+        [<DefaultValue>]
+        val mutable onenddrag : ShapeDragEventArgs -> unit
+
+        /// Occurs when the user starts dragging the shape.
+        [<DefaultValue>]
+        val mutable onstartdrag : ShapeDragEventArgs -> unit
+
+        
         /// http://msdn.microsoft.com/en-us/library/bb877821(v=MSDN.10).aspx
         /// Returns the altitude for the shape.
         member this.GetAltitude() : float = Undefined
@@ -1158,38 +1183,161 @@ module Maps =
     
     [<Stub>]
     [<Name "VEImageryMetadata">]
-    type VEImageryMetadata = class end
+    type VEImageryMetadata = 
+        /// A string specifying the start date of the date range when the
+        /// imagery was created.
+        val mutable DateRangeStart : string
+
+        /// A string specifying the end date of the date range when the
+        /// imagery was created.
+        val mutable DateRangeEnd : string
+
     
     [<Stub>]
     [<Name "VEImageryMetadataOptions">]
-    type VEImageryMetadataOptions = class end
+    type VEImageryMetadataOptions = 
+        new () = {}
+        /// A VELatLong Class object specifying the center of the map
+        /// view. Optional. Defaults to the center of the current map view.
+        [<DefaultValue>]
+        val mutable LatLong : VELatLong
+
+        /// A VEMapStyle Enumeration value specifying the map
+        /// style. Optional. Defaults to the current map style.
+        [<DefaultValue>]
+        val mutable MapStyle : VEMapStyle
+
+        /// An integer specifying the zoom level. Optional. Defaults to the
+        /// current zoom level.
+        [<DefaultValue>]
+        val mutable ZoomLevel : int
  
-    [<Stub>]
-    [<Name "VEModelStatusCode">]
-    type VEModelStatusCode = class end
+    [<JavaScriptType>]
+    type VEModelStatusCode = 
+        | /// The 3D model was successfully loaded.
+          [<Inline "VEModelStatusCode.Success">]
+          Success
+        | /// The 3D model failed to load. The URL may be invalid or the file
+          /// format may be incorrect.
+          [<Inline "VEModelStatusCode.Failed">]
+          Failed
+
+    [<JavaScriptTypeAttribute>]
+    type VEModelFormat = 
+        | [<Inline "VEModelFormat.OBJ">]
+          /// The 3D model data is in Wavefront OBJ format.
+          OBJ
 
     [<Stub>]
     [<Name "VEModelSourceSpecification">]
-    type VEModelSourceSpecification = class end
+    type VEModelSourceSpecification = 
+        new (modelFormat: VEModelFormat, modelSource: string, layer: VEShapeLayer) = {}
+        /// A VEModelFormat Enumeration value specifying the data format of the 3D model being imported.
+        [<DefaultValue>]
+        val mutable Format : VEModelFormat
+
+        /// A VEShapeLayer Class specifying the shape layer into which the 3D model will be imported.
+        [<DefaultValue>]
+        val mutable Layer : VEShapeLayer
+
+        /// A string specifying the URL of the 3D model data file.
+        [<DefaultValue>]
+        val mutable ModelSource : string
 
     [<Stub>]
     [<Name "VEModelOrientation">]
-    type VEModelOrientation = class end
+    type VEModelOrientation =
+        new (heading: float, tilt: float, roll: float) = {}
+        new (heading: float, tilt: float) = {}
+        new (heading: float) = {}
+        new () = {}
+        
+        /// A floating-point value specifying in decimal degrees the
+        /// counter-clockwise rotation of the 3D model about the z-axis,
+        /// looking along the positive z-axis away from the origin.
+        [<DefaultValue>]
+        val mutable Heading : float
+
+        /// A floating-point value specifying in decimal degrees the
+        /// counter-clockwise rotation of the 3D model about the y-axis,
+        /// looking along the positive y-axis away from the origin.
+        [<DefaultValue>]
+        val mutable Roll : float
+
+        /// A floating-point value specifying in decimal degrees the
+        /// counter-clockwise rotation of the 3D model about the x-axis,
+        /// looking along the positive x-axis away from the origin.
+        [<DefaultValue>]
+        val mutable Tilt : float
 
     [<Stub>]
     [<Name "VEModelScale">]
-    type VEModelScale = class end
+    type VEModelScale = 
+        new (x: float, y: float, z: float) = {}
+        new (x: float, y: float) = {}
+        new (x: float) = {}
+        new () = {}
+        
+        /// A floating-point value specifying the x-axis scale factor of a 3D model.
+        [<DefaultValue>]
+        val mutable X : float
+
+        /// A floating-point value specifying the y-axis scale factor of a 3D model.
+        [<DefaultValue>]
+        val mutable Y : float
+
+        /// A floating-point value specifying the z-axis scale factor of a 3D model.
+        [<DefaultValue>]
+        val mutable Z : float
+
+    [<JavaScriptTypeAttribute>]
+    type VEDataType = 
+        | [<Inline "VEDataType.GeoRSS">]
+          /// This represents a GeoRSS data import.
+          GeoRSS
+
+        | [<Inline "VEDataType.VECollection">]
+          /// This represents a Bing Maps Collection (http://maps.live.com) import.
+          VECollection
+
+        | [<Inline "VEDataType.ImportXML">]
+          /// This represents an XML data import.
+          ImportXML
 
     [<Stub>]
     [<Name "VEShapeSourceSpecification">]
-    type VEShapeSourceSpecification = class end
+    type VEShapeSourceSpecification = 
+        new (dataType: VEDataType, dataSource: string, layer: VEShapeLayer) = {}
+        /// A VEShapeLayer Class object in which the VEShape objects are contained after importing.
+        [<DefaultValue>]
+        val mutable Layer : VEShapeLayer
+
+        /// A String specifying the layer source.
+        [<DefaultValue>]
+        val mutable LayerSource : string
+
+        /// Specifies the maximum number of items that can be imported from an XML file. The default value is 200.
+        [<DefaultValue>]
+        val mutable MaxImportedShapes : int
+
+        /// A VEDataType Enumeration value defining the type of data to be imported into a shape layer.
+        [<DefaultValue>]
+        val mutable Type : VEDataType
+
 
     [<Stub>]
     [<Name "VEMapViewSpecification">]
-    type VEMapViewSpecification = class end
-    
+    type VEMapViewSpecification = 
+        new (center: VELatLong, zoom: int, altitude: float, pitch: float, heading: float) = {}
+        
     [<JavaScriptType>]
-    type Location = class end
+    type Location = 
+        [<Inline "$latlong">]
+        static member FromLatLong (latlong: VELatLong) : Location = Undefined
+
+        [<Inline "$s">]
+        static member FromString (s: string) : Location = Undefined
+
 
     [<Stub>]
     [<Name "VEMap">]

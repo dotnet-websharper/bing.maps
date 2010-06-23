@@ -93,6 +93,31 @@ module Tests =
         Div [div 
              btn1 
              btn2]
+
+    [<JavaScript>]
+    let ``Draggable Push Pins``(n: int) =     
+        let output = Div [Attr.Id "output"; Text "No event"]
+        let onDrag (_: ShapeDragEventArgs) = output.Text <- "ondrag event"
+        let onStartDrag (_: ShapeDragEventArgs) = output.Text <- "onstartdrag event"
+        let onEndDrag (_: ShapeDragEventArgs) = output.Text <- "onenddrag event"
+        
+        let m = Test n (fun map ->
+            
+            map.LoadMap()
+            let location = new Maps.VELatLong(0.,0.)
+            location.Latitude <- 41.8756
+            location.Longitude <- -87.9956
+            map.SetMapStyle(VEMapStyle.Shaded)
+            map.SetMouseWheelZoomToCenter(false)
+            map.SetCenterAndZoom(location, 9)
+            let pushpin = new VEShape(VEShapeType.Pushpin, [|location|])
+            pushpin.Draggable <- true
+            pushpin.ondrag <- onDrag
+            pushpin.onstartdrag <- onStartDrag
+            pushpin.onenddrag <- onEndDrag
+            pushpin.SetTitle("Just click on the pin and drag away!!!")
+            map.AddShape(pushpin))
+        Div [m; output]
             
 [<JavaScriptType>]
 type Test() = 
@@ -110,7 +135,8 @@ type Test() =
                  Tests.Map3D
                  Tests.Traffic
                  Tests.ZoomInZoomOut
-                 Tests.LatLongProperties]
+                 Tests.LatLongProperties
+                 Tests.``Draggable Push Pins``]
         Div (Seq.append [title] maps)
         
 
