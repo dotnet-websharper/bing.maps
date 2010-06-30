@@ -335,7 +335,7 @@ module Maps =
     [<Stub>]
     [<Name "VEColor">]
     type VEColor = 
-        new (r: int, g: int, b: int, a: int) = {}    
+        new (r: int, g: int, b: int, a: float) = {}    
 
         /// Specifies the red component value. Valid values range from 0 through 255.
         [<DefaultValue>]
@@ -535,7 +535,7 @@ module Maps =
         /// Shows the layer on the map.
         member this.Show() : unit = Undefined
     and 
-        [<JavaScriptType>]
+        [<Stub>]
         ShapeDragEventArgs =
         /// The VEShape object that fired the event.
         val Shape : VEShape
@@ -1340,6 +1340,474 @@ module Maps =
 
 
     [<Stub>]
+    type MapEventArgs = class end
+
+    [<Stub>]
+    type KeyboardEventArgs = 
+        inherit MapEventArgs
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The key code of the key that has been pressed.
+        val keyCode : int
+
+        /// The current map style
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The current zoom level of the map.
+        val zoomLevel : int
+
+    // ------------------------------------------------------------------
+    // The following classes, although very similar, they use sometimes different spelling and differ in the number of members.
+    // ------------------------------------------------------------------
+
+    [<Stub>]
+    type OnClickEventArgs = 
+        inherit MapEventArgs
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey: bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey: bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID: string
+
+        /// A String object representing the type of event that occurred.
+        val eventName: string
+
+        /// The latLong coordinates of the clicked location. This only works in 3D mode and is not supported in the Core Map Control. For 2D, you can convert mapX and mapY to a latLong using the VEMap.PixelToLatLong Method method.
+        val latLong: VELatLong
+
+        /// A Boolean object representing whether the left mouse button has been clicked.
+        val leftMouseButton: bool
+
+        /// A Boolean object representing whether the right mouse button has been clicked.
+        val rightMouseButton: bool
+
+        /// The current map style as a String. Valid String results are a,r,h, and o.
+        val mapStyle: VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID: string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation: VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey: bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX: int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY: int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX: int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY: int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX: int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY: int
+
+        /// The current zoom level of the map.
+        val zoomLevel: int
+
+    [<Stub>]
+    type OnDoubleClickEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The latlong coordinates of the clicked location. This only works
+        /// in 3D mode and is not supported in the Core Map Control. For 2D,
+        /// you can convert mapX and mapY to a latlong using the
+        /// VEMap.PixelToLatLong Method.
+        val latLong : VELatLong
+  
+        /// The current map style as a String. Valid String results are a,r,h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX : int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY : int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX : int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY : int
+
+        /// The current zoom level of the map.
+        val zoomLevel : int
+
+    [<Stub>]
+    type OnMouseMoveEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// A Boolean object representing whether the left mouse button has been clicked.
+        val leftMouseButton : bool
+
+        /// A Boolean object representing whether the right mouse button has been clicked.
+        val rightMouseButton : bool
+
+        /// The current map style as a String. Valid String results are a,r, h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX :  int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY :  int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX :  int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY :  int
+
+        /// The current zoom level of the map.
+        val zoomLevel :  int
+
+    [<Stub>]
+    type OnMouseDownEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// The ID of the object associated with the event, usually a VEShape Classobject or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The latlong coordinates of the clicked location. This only works
+        /// in 3D mode and is not supported in the Core Map Control. For 2D,
+        /// you can convert mapX and mapX to a latlong using the
+        /// VEMap.PixelToLatLong Method.
+        val latLong : VELatLong
+
+        /// A Boolean object representing whether the left mouse button has been clicked.
+        val leftMouseButton : bool
+
+        /// A Boolean object representing whether the right mouse button has been clicked.
+        val rightMouseButton : bool
+
+        /// The current map style as a String. Valid String results are a,r,h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX : int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY : int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX : int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY : int
+
+        /// The current zoom level of the map.
+        val zoomLevel : int
+
+    [<Stub>]
+    type OnMouseUpEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The latlong coordinates of the clicked location. This only works
+        /// in 3D mode and is not supported in the Core Map Control. For 2D,
+        /// you can convert mapX and mapY to a latlong using the
+        /// VEMap.PixelToLatLong Method method.
+        val latLong : VELatLong
+
+        /// A Boolean object representing whether the left mouse button has been clicked.
+        val leftMouseButton : bool
+
+        /// A Boolean object representing whether the right mouse button has been clicked.
+        val rightMouseButton : bool
+
+        /// The current map style as a String. Valid String results are ga, r, h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX : int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY : int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX : int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY : int
+
+        /// The current zoom level of the map.
+        val zoomLevel : int 
+
+    [<Stub>]
+    type OnMouseOverEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The current map style as a String. Valid String results are a,r,h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX : int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY : int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX : int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY : int
+
+        /// The current zoom level of the map.
+        val zoomLevel : int
+
+    [<Stub>]
+    type OnMouseOutEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey :  bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The current map style as a String object. Valid String results are a,r,h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val clientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val clientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val screenX : int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val screenY : int
+
+        /// The x coordinate of the map relative to the screen.
+        val mapX : int
+
+        /// The y coordinate of the map relative to the screen.
+        val mapY : int
+
+        /// The current zoom level of the map.
+        val zoomLevel : int
+
+
+    [<Stub>]
+    type OnMouseWheelEventArgs = 
+        inherit MapEventArgs        
+        /// A Boolean object representing whether the ALT key was held when the key was pressed.
+        val altKey : bool
+
+        /// A Boolean object representing whether the CTRL key was held when the key was pressed.
+        val ctrlKey : bool
+
+        /// The ID of the object associated with the event, usually a VEShape Class object or the base map.
+        val elementID : string
+
+        /// A String object representing the type of event that occurred.
+        val eventName : string
+
+        /// The current map style as a String. Valid String results are a,r,h, and o.
+        val mapStyle : VEMapStyle
+
+        /// If the map style is set to bird's eye (oblique), the unique identifier of the current bird's eye scene.
+        val sceneID : string
+
+        /// If the map style is set to bird's eye (oblique), the orientation of the current bird's eye scene.
+        val sceneOrientation : VEOrientation
+
+        /// A Boolean object representing whether the shift key was held when the key was pressed.
+        val shiftKey : bool
+
+        /// The x coordinate of the mouse cursor relative to the browser window.
+        val ClientX : int
+
+        /// The y coordinate of the mouse cursor relative to the browser window.
+        val ClientY : int
+
+        /// The x coordinate of the mouse cursor relative to the screen.
+        val ScreenX : int
+
+        /// The y coordinate of the mouse cursor relative to the screen.
+        val ScreenY : int
+
+        /// The x coordinate of the map relative to the screen.
+        val MapX : int
+
+        /// The y coordinate of the map relative to the screen.
+        val MapY : int
+
+        /// The current zoom level of the map.
+        val ZoomLevel : int
+
+
+    [<Stub>]
     [<Name "VEMap">]
     type VEMap = 
         new(id: string) = {}
@@ -1467,7 +1935,7 @@ module Maps =
         /// * function: The function to run when the event fires. It can be
         ///   either the name of a function or the function itself.
         /// http://msdn.microsoft.com/en-us/library/bb412496(v=MSDN.10).aspx
-        member this.AttachEvent(event: string, f: obj -> bool): unit = Undefined
+        member this.AttachEvent(event: string, f: #MapEventArgs -> bool): unit = Undefined
 
         /// Removes all shapes, shape layers, and search results on the map. Also removes the
         /// route from the map, if one is displayed.

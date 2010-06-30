@@ -4,7 +4,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head runat="server">
     <title>WebSharper Application</title>
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"></script>
       
     <WebSharper:ScriptManager runat="server" />
   </head>

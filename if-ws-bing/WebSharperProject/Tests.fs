@@ -11,13 +11,14 @@
 
 namespace IntelliFactory.Tests
 
-open IntelliFactory.WebSharper.Bing
+
 open Microsoft.FSharp.Quotations
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Html
 
+module Maps = IntelliFactory.WebSharper.Bing.Maps
+
 module Tests =
-    open IntelliFactory.WebSharper.Bing.Maps
     [<JavaScript>]
     let Test n f =
         let id = "map" + string n
@@ -25,6 +26,15 @@ module Tests =
         |>! OnAfterRender (fun mapElement -> 
             let map = new Maps.VEMap(id)
             f map)
+
+    [<JavaScript>]
+    let TestElem n f =
+        let id = "map" + string n
+        Div [Attr.Id id ; Attr.Style "position:relative; margin-top:25px; width:400px; height:400px;"]
+        |>! OnAfterRender (fun mapElement -> 
+            let map = new Maps.VEMap(id)
+            f map mapElement)
+
 
     [<JavaScript>]
     let BasicMap (n: int) =     
@@ -45,7 +55,7 @@ module Tests =
     [<JavaScript>]
     let Map3D(n: int) =     
         Test n (fun map ->
-             map.LoadMap(new VELatLong(47.22, -122.44), 12, VEMapStyle.Road, false, VEMapMode.Mode3D, true))
+             map.LoadMap(new Maps.VELatLong(47.22, -122.44), 12, Maps.VEMapStyle.Road, false, Maps.VEMapMode.Mode3D, true))
 
     [<JavaScript>]
     let LatLongProperties(n: int) =     
@@ -62,7 +72,7 @@ module Tests =
              Button [Text "Add Traffic"],
              Button [Text "Remove Traffic"]  
         let div = Test n (fun map -> 
-                      let location = new VELatLong(47.64, -122.23)
+                      let location = new Maps.VELatLong(47.64, -122.23)
                       let ShowTraffic (_:Element) (_:JQueryEvent) =
                           map.LoadTraffic(true)
                           map.ShowTrafficLegend(50,50)
@@ -82,7 +92,7 @@ module Tests =
              Button [Text "+"],
              Button [Text "-"]  
         let div = Test n (fun map -> 
-                      let location = new VELatLong(47.64, -122.23)
+                      let location = new Maps.VELatLong(47.64, -122.23)
                       let ZoomIn(_: Element) (_: JQueryEvent) =
                           map.ZoomIn()
                       let ZoomOut(_: Element) (_: JQueryEvent) =
@@ -95,11 +105,11 @@ module Tests =
              btn2]
 
     [<JavaScript>]
-    let ``Draggable Push Pins``(n: int) =     
+    let DraggablePushPins(n: int) =     
         let output = Div [Attr.Id "output"; Text "No event"]
-        let onDrag (_: ShapeDragEventArgs) = output.Text <- "ondrag event"
-        let onStartDrag (_: ShapeDragEventArgs) = output.Text <- "onstartdrag event"
-        let onEndDrag (_: ShapeDragEventArgs) = output.Text <- "onenddrag event"
+        let onDrag (_: Maps.ShapeDragEventArgs) = output.Text <- "ondrag event"
+        let onStartDrag (_: Maps.ShapeDragEventArgs) = output.Text <- "onstartdrag event"
+        let onEndDrag (_: Maps.ShapeDragEventArgs) = output.Text <- "onenddrag event"
         
         let m = Test n (fun map ->
             
@@ -107,10 +117,10 @@ module Tests =
             let location = new Maps.VELatLong(0.,0.)
             location.Latitude <- 41.8756
             location.Longitude <- -87.9956
-            map.SetMapStyle(VEMapStyle.Shaded)
+            map.SetMapStyle(Maps.VEMapStyle.Shaded)
             map.SetMouseWheelZoomToCenter(false)
             map.SetCenterAndZoom(location, 9)
-            let pushpin = new VEShape(VEShapeType.Pushpin, [|location|])
+            let pushpin = new Maps.VEShape(Maps.VEShapeType.Pushpin, [|location|])
             pushpin.Draggable <- true
             pushpin.ondrag <- onDrag
             pushpin.onstartdrag <- onStartDrag
@@ -118,6 +128,89 @@ module Tests =
             pushpin.SetTitle("Just click on the pin and drag away!!!")
             map.AddShape(pushpin))
         Div [m; output]
+
+    // This is not documented and unsupported, so just for testing we do it with an inline.
+    // polylineMask.Primitives[0].symbol.stroke_dashstyle = "Dash";
+    [<Inline "$x.Primitives[0].symbol.stroke_dashstyle = \"Dash\"" >]
+    let SetPolylineToDashed (x: Maps.VEShape) : unit = Undefined
+    
+    // Translation of the example found in: http://www.garzilla.net/vemaps/DrawPolyLine.aspx
+    [<JavaScript>]
+    let DynamicPolyLine(n: int) =     
+        let output = Div [Attr.Id "output"; Text "Disabled"]
+        let btn = Button [Text "Click to begin drawing"]
+        let drawing = ref false 
+        let points  = ref [||]
+        let polyline = ref None
+        let m = TestElem n (fun map elem ->
+            map.LoadMap()
+            let location = new Maps.VELatLong(41.8756,-87.9956)
+            map.SetMapStyle(Maps.VEMapStyle.Shaded)
+            map.SetMouseWheelZoomToCenter(false)
+            map.SetCenterAndZoom(location, 9)
+            let maskPoints = [| new Maps.VELatLong(0., 0.); new Maps.VELatLong(0., 0.) |]
+            let polylineMask = new Maps.VEShape(Maps.VEShapeType.Polyline, maskPoints)
+            polylineMask.HideIcon()
+            polylineMask.Hide()
+            polylineMask.SetLineColor(new Maps.VEColor(0, 0, 255, 0.5));
+            SetPolylineToDashed polylineMask
+            map.AddShape(polylineMask)
+            let mouseDownHandler (e: Maps.OnMouseDownEventArgs) = 
+                if !drawing then
+                    let currentLatLon = map.PixelToLatLong(new Maps.VEPixel(e.mapX, e.mapY))
+                    points := Array.append !points [|currentLatLon|]         
+                    maskPoints.[0] <- currentLatLon
+                    if (!points).Length > 1 then
+                        match !polyline with
+                        | None -> 
+                            let shape = new Maps.VEShape(Maps.VEShapeType.Polyline, !points)
+                            shape.HideIcon();
+                            map.AddShape(shape)
+                            polyline := Some <| shape
+                            maskPoints.[1] <- currentLatLon
+                        | Some p -> p.SetPoints(!points) 
+                false
+            
+            let mouseMoveHandler (e: Maps.OnMouseMoveEventArgs) = 
+                if !drawing then
+                    let loc = map.PixelToLatLong(new Maps.VEPixel(e.mapX, e.mapY))
+                    if (!points).Length > 0 then polylineMask.Show()
+                    maskPoints.[1] <- loc
+                    polylineMask.SetPoints(maskPoints)
+                false
+
+            let keyPressHandler (e: Maps.KeyboardEventArgs) = 
+                if !drawing && e.keyCode = 27 then
+                    drawing := false
+                    output.Text <- "Enabled"
+                    elem.JQuery.Css ("cursor", "") |> ignore
+                    btn.Text <- "Click to begin drawing"
+                    btn.JQuery.RemoveAttr "disabled" |> ignore
+                    polylineMask.Hide()
+                false
+            
+            let startDrawing(_: Element) (_: JQueryEvent) =
+                match !polyline, not !drawing with
+                | Some p, true -> 
+                    map.DeleteShape p
+                    polyline := None
+                    points := [||]
+                | _ -> ()
+                drawing := true
+                output.Text <- "Enabled"    
+                elem.JQuery.Css ("cursor", "crosshair") |> ignore
+                btn.Text <- "Press ESC to exit drawing mode"
+                btn.JQuery.Attr("disabled", "true") |> ignore
+            
+            btn |>! OnClick startDrawing |> ignore
+            
+            // Attach the event handlers to the mouse 
+            map.AttachEvent("onmousedown", mouseDownHandler)
+            map.AttachEvent("onmousemove", mouseMoveHandler)
+            map.AttachEvent("onkeypress", keyPressHandler))
+            
+        Div [m; output; btn]
+
             
 [<JavaScriptType>]
 type Test() = 
@@ -136,7 +229,8 @@ type Test() =
                  Tests.Traffic
                  Tests.ZoomInZoomOut
                  Tests.LatLongProperties
-                 Tests.``Draggable Push Pins``]
+                 Tests.DraggablePushPins
+                 Tests.DynamicPolyLine]
         Div (Seq.append [title] maps)
         
 
