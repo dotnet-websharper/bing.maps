@@ -65,6 +65,38 @@ module Tests =
             location.Longitude <- -122.33 
             map.LoadMap(location, 10, Maps.VEMapStyle.Hybrid, false))
     
+    [<JavaScript>]
+    let Shapes(n: int) =     
+        Test n (fun map ->
+            let location = new Maps.VELatLong(0.,0.)
+            location.Latitude <- 47.6
+            location.Longitude <- -122.33 
+            map.LoadMap(location, 9, Maps.VEMapStyle.Hybrid, false)            
+            
+            // Pushpin
+            let pushpin = new Maps.VEShape(Maps.VEShapeType.Pushpin, [|location|])
+            map.AddShape pushpin
+            
+            let fromPoints (x,y) = new Maps.VELatLong(x + location.Latitude, y + location.Longitude)
+
+            // Line
+            let linePoints = 
+                [|(0.2,0.2); (0.2,-0.2); (-0.2,-0.2); (-0.2,0.2); (0.2,0.2)|]
+                |> Array.map fromPoints
+
+            let line = new Maps.VEShape(Maps.VEShapeType.Polyline, linePoints)
+            line.HideIcon()
+            map.AddShape line
+            
+            // Polygon
+            let polyPoints = 
+                [|(0.1,0.1); (0.1,-0.1); (-0.1,-0.1); (-0.1,0.1)|]
+                |> Array.map fromPoints
+            let polygon = new Maps.VEShape(Maps.VEShapeType.Polygon, polyPoints)
+            polygon.HideIcon()
+            map.AddShape polygon
+            )
+    
 
     [<JavaScript>]
     let Traffic n =
@@ -230,7 +262,8 @@ type Test() =
                  Tests.ZoomInZoomOut
                  Tests.LatLongProperties
                  Tests.DraggablePushPins
-                 Tests.DynamicPolyLine]
+                 Tests.DynamicPolyLine
+                 Tests.Shapes]
         Div (Seq.append [title] maps)
         
 
