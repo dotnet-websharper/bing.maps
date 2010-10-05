@@ -1,0 +1,16 @@
+% Bing Maps
+% IntelliFactory
+
+**Add interactive maps to your web applications! ...Without a single line of
+JavaScript.**
+
+The Bing Maps Ajax Control enables you not only to create rich, interactive maps, in
+2D and 3D; but also do localized searches. Go and check out their [demos][bingmaps]
+to learn more.
+
+With the Bing Maps WebSharper™ Extension you can develop WebSharper™ applications
+that use the Bing Maps Ajax Control using nothing but F# code.
+
+[bingmaps]: http://www.microsoft.com/maps/isdk/ajax/
+
+
