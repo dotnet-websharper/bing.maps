@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://www.docbook.org/xml/5.0/xsd/docbook.xsd">
+  <title>IntelliFactory Docbook Sample Project</title>
+  <chapter>
+    <title>Introduction</title>
+    <para>
+      This is a sample IntelliFactory Docbook project. It generates documentation
+      in HTML and HTML Help (CHM) formats from Docbook and Markdown (Pandoc) sources.
+    </para>
+    <para>
+      Please use XInclude to assemble a Docbook file from several sources.
+      To include Markdown files, refer to them with the ".docbook" extension.
+      See this file for an example.
+    </para>
+  </chapter>
+  <xi:include href="Overview.docbook" />
+  <xi:include href="SimpleMap.docbook" />
+  <xi:include href="Shapes.docbook" />
+  <xi:include href="Events.docbook" />
+</book>

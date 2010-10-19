@@ -1,0 +1,11 @@
+<ivy-module version="2.0">
+  <info organisation="IntelliFactory" module="if-ms-bing" revision="2.0.0" />
+  <publications>
+    <artifact name="IntelliFactory.WebSharper.Bing" type="dll" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="xml" />
+  </publications>
+  <dependencies>
+    <dependency name="if-ws" rev="2.0.9" />
+    <dependency name="if-ws-dom" rev="2.0.6" />
+  </dependencies>
+</ivy-module>
