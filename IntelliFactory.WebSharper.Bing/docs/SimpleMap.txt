@@ -1,4 +1,4 @@
-## A Simple Map
+% A Simple Map
 
 Creating a map typically involves 3 steps:
 

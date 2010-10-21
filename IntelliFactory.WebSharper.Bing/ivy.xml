@@ -1,11 +1,24 @@
-<ivy-module version="2.0">
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://doiop.com/ivy-2.1.0.xsd">
   <info organisation="IntelliFactory" module="if-ms-bing" revision="2.0.0" />
+  <configurations>
+    <conf name="build" />
+    <conf name="default" />
+    <conf name="debug" extends="default" />
+    <conf name="doc" />
+  </configurations>
   <publications>
-    <artifact name="IntelliFactory.WebSharper.Bing" type="dll" />
-    <artifact name="IntelliFactory.WebSharper.Bing" type="xml" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="dll" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="xml" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="dll.js" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="dll.dep" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="pdb" conf="debug" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="api.zip" conf="doc" />
+    <artifact name="IntelliFactory.WebSharper.Bing" type="Documentation.zip" conf="doc" />
   </publications>
   <dependencies>
-    <dependency name="if-ws" rev="2.0.9" />
-    <dependency name="if-ws-dom" rev="2.0.6" />
+    <dependency name="if-ws" rev="2.0.9" conf="build->compiler" />
+    <dependency name="if-ws" rev="2.0.9" conf="default->default" />
+    <dependency name="if-ws-dom" rev="2.0.9" conf="default" />
   </dependencies>
 </ivy-module>

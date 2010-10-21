@@ -1,4 +1,4 @@
-﻿## Shapes
+% Shapes
 
 The AJAX Map Control supports some drawing primitives like pushpins, lines and
 polygons. The following example demonstrates how to add shapes to the map.

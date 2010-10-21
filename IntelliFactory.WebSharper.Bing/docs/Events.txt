@@ -1,4 +1,4 @@
-﻿## Using events
+% Using events
 
 The AJAX Map control provides multiple events to enable various
 interactive behavior in the map. The WebSharper extension offers a
