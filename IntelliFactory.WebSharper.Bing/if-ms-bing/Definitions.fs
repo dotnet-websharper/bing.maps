@@ -12,6 +12,7 @@
 namespace IntelliFactory.WebSharper.Bing
 
 open IntelliFactory.WebSharper
+open IntelliFactory.WebSharper.JavaScript
 
 [<JavaScriptType>]
 module Maps =
