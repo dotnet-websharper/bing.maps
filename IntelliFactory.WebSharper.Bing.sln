@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C59727C0-1252-49E7-8B30-793C934C8CCC}"
+	ProjectSection(SolutionItems) = preProject
+		ivy.xml = ivy.xml
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing.Documentation", "docs\IntelliFactory.WebSharper.Bing.Documentation.fsproj", "{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing", "IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj", "{B3A24945-6C64-4D6A-9B3E-17674E9B006E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
