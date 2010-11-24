@@ -12,8 +12,9 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.B
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing.Samples", "samples\IntelliFactory.WebSharper.Bing.Samples.fsproj", "{C212114A-F849-4344-BFBD-2CBDD86DA1E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Website", "web\Website.csproj", "{C96C4489-BE06-496A-8FC1-4251947EFBA3}"
+EndProject
 Global
-
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -31,6 +32,10 @@ Global
 		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C96C4489-BE06-496A-8FC1-4251947EFBA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C96C4489-BE06-496A-8FC1-4251947EFBA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C96C4489-BE06-496A-8FC1-4251947EFBA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C96C4489-BE06-496A-8FC1-4251947EFBA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
