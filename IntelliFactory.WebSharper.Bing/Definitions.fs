@@ -14,10 +14,13 @@ namespace IntelliFactory.WebSharper.Bing
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.JavaScript
 
-[<JavaScriptType>]
 module Maps =
-    
-    [<JavaScriptType>]
+
+    type internal NameAttribute(name: string) =
+        inherit Naming.AbstractNameAttribute()
+        override this.Validate _ _ = ()
+        override this.GetName _ = Core.Choice1Of2 (Naming.NewName [] name)
+
     type VEAltitudeMode =
 
         | [<Inline "VEAltitudeMode.Default">]
@@ -35,7 +38,7 @@ module Maps =
     [<Stub>]
     [<Name "VELatLong">]
     type VELatLong =
-        
+
         /// Specifies the altitude of a single point on the globe.
         [<DefaultValue>]
         val mutable Altitude : float
@@ -60,10 +63,9 @@ module Maps =
         ///         relative to ground-level or absolute
         /// http://msdn.microsoft.com/en-us/library/bb877811(v=MSDN.10).aspx
         member this.SetAltitude(altitude: float, mode: VEAltitudeMode) : unit = Undefined
-        
-    [<JavaScriptType>]
+
     type VEMapStyle =
-        | [<Inline "VEMapStyle.Road">] 
+        | [<Inline "VEMapStyle.Road">]
           /// The road map style
           Road
 
@@ -91,7 +93,6 @@ module Maps =
           /// The bird's eye hybrid map style, which is a bird's eye map with a label overlay
           BirdseyeHybrid
 
-    [<JavaScriptType>]
     type VEMapMode =
         | [<Inline "VEMapMode.Mode2D" >]
             /// Displays the map in the traditional two dimensions
@@ -100,10 +101,10 @@ module Maps =
         | [<Inline "VEMapMode.Mode3D" >]
             /// Loads the Bing Maps 3D control, displays the map in three dimensions, and displays the 3D navigation control
             Mode3D
-    
+
     [<Stub>]
     [<Name "VEOrientation">]
-    type VEOrientation = 
+    type VEOrientation =
         | [<Inline "VEOrientation.North">]
           /// The image was taken looking toward the north.
           North
@@ -123,7 +124,7 @@ module Maps =
     [<Stub>]
     [<Name "VEMapOptions">]
     type VEMapOptions =
-        new () = {} 
+        new () = {}
         /// A VEOrientation Enumeration value indicating the orientation of the bird's eye
         /// map. The default value is VEOrientation.North.
         [<DefaultValue>]
@@ -147,7 +148,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VELatLongRectangle">]
-    type VELatLongRectangle = 
+    type VELatLongRectangle =
 
         new (topLeftLatLong : VELatLong,
              bottomRightLatLong : VELatLong,
@@ -176,19 +177,19 @@ module Maps =
 
     [<Stub>]
     [<Name "VETileContext">]
-    type VETileContext = 
+    type VETileContext =
         [<DefaultValue>]
         [<Name "x">]
         val mutable X : VELatLong
-        
+
         [<DefaultValue>]
         [<Name "y">]
         val mutable Y : VELatLong
 
     [<Stub>]
     [<Name "VETileSourceSpecification">]
-    type VETileSourceSpecification = 
-        
+    type VETileSourceSpecification =
+
         new (tileSourceId: string,
              tileSource: string,
              numServers: int,
@@ -274,8 +275,7 @@ module Maps =
         [<DefaultValue>]
         val mutable ZIndex : int
 
-    [<JavaScriptType>]
-    type VEDashboardSize = 
+    type VEDashboardSize =
         | [<Inline "VEDashboardSize.Normal">]
           /// This is the dashboard that is used by default.
           Normal
@@ -289,8 +289,8 @@ module Maps =
           /// only contains zoom-out (+) and zoom-in (-) buttons.
           Tiny
 
-    [<JavaScriptTypeAttribute>]
-    type VEFailedShapeRequest = 
+
+    type VEFailedShapeRequest =
         | [<Inline "VEFailedShapeRequest.DoNotDraw">]
         /// Do not draw the shape
         DoNotDraw
@@ -305,7 +305,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VEPrintOptions">]
-    type VEPrintOptions = 
+    type VEPrintOptions =
         new () = {}
         /// A Boolean value specifying whether or not to make the map printable.
         [<DefaultValue>]
@@ -313,14 +313,14 @@ module Maps =
 
     [<Stub>]
     [<Name "VEFindType">]
-    type VEFindType = 
+    type VEFindType =
         | /// Performs a business search.
           [<Inline "VEFindType.Businesses" >]
           Businesses
-    
+
     [<Stub>]
     [<Name "VEShapeType">]
-    type VEShapeType = 
+    type VEShapeType =
         | [<Inline "VEShapeType.Pushpin">]
           /// This represents a Shape object that is a pushpin.
           Pushpin
@@ -333,8 +333,8 @@ module Maps =
 
     [<Stub>]
     [<Name "VEColor">]
-    type VEColor = 
-        new (r: int, g: int, b: int, a: float) = {}    
+    type VEColor =
+        new (r: int, g: int, b: int, a: float) = {}
 
         /// Specifies the red component value. Valid values range from 0 through 255.
         [<DefaultValue>]
@@ -351,10 +351,10 @@ module Maps =
         /// Specifies the alpha (transparency) component value. Valid values range from 0.0 through 1.0.
         [<DefaultValue>]
         val mutable A : int
-    
+
     [<Stub>]
     [<Name "VEPixel">]
-    type VEPixel = 
+    type VEPixel =
         new (x: int, y: int) = {}
         [<DefaultValue>]
         val mutable x : int
@@ -363,7 +363,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VECustomIconSpecification">]
-    type VECustomIconSpecification = 
+    type VECustomIconSpecification =
         new () = {}
         /// A VEColor object representing the icon's background and transparency.
         [<DefaultValue>]
@@ -414,8 +414,7 @@ module Maps =
         [<DefaultValue>]
         val mutable TextUnderline : bool
 
-    [<JavaScriptTypeAttribute>]
-    type VEClusteringType = 
+    type VEClusteringType =
         | [<Inline "VEClusteringType.None">]
           /// No pushpin clustering
           None
@@ -423,26 +422,26 @@ module Maps =
         | [<Inline "VEClusteringType.Grid">]
           /// A simple clustering algorithm
           Grid
-    
+
     [<Stub>]
     [<Name "VEClusteringOptions">]
-    type VEClusteringOptions = 
+    type VEClusteringOptions =
         new () = {}
         /// A VECustomIconSpecification Class which describes the icon representing the pushpin cluster.
-        [<DefaultValue>]        
+        [<DefaultValue>]
         val mutable Icon : VECustomIconSpecification
 
         /// The name of the function called when clustering changes.
-        [<DefaultValue>]        
+        [<DefaultValue>]
         val mutable Callback : VEClusterSpecification [] -> unit
 
-    and 
+    and
         [<Stub>]
         [<Name "VEClusterSpecification">]
-        VEClusterSpecification = 
+        VEClusterSpecification =
         /// Returns a VEShape Class that represents the pushpin cluster.
         member this.GetClusterShape() : VEShape = Undefined
-        
+
         /// An array of VEShape Class items representing the pushpins in a pushpin cluster.
         val mutable Shapes : VEShape []
 
@@ -451,7 +450,7 @@ module Maps =
     and
         [<Stub>]
         [<Name "VEShapeLayer">]
-        VEShapeLayer = 
+        VEShapeLayer =
         new () = {}
         /// http://msdn.microsoft.com/en-us/library/bb412548(v=MSDN.10).aspx
         /// Adds an object or array of Shape The VEShape object or array of VEShape objects to be
@@ -533,7 +532,7 @@ module Maps =
         /// http://msdn.microsoft.com/en-us/library/bb412538(v=MSDN.10).aspx
         /// Shows the layer on the map.
         member this.Show() : unit = Undefined
-    and 
+    and
         [<Stub>]
         ShapeDragEventArgs =
         /// The VEShape object that fired the event.
@@ -541,13 +540,13 @@ module Maps =
 
         /// The current VELatLong of the shape.
         val LatLong : VELatLong
-    and 
+    and
         [<Stub>]
         [<Name "VEShape">]
         VEShape =
         /// * type: A VEShapeType Enumeration value of type that represents
         ///   the type of shape. Required.
-        /// 
+        ///
         /// * points: If the shape is a pushpin, this parameter can either be
         ///   a single VELatLong Class object or an array of VELatLong
         ///   objects. If it is an array of VELatLong objects, only the first
@@ -558,10 +557,10 @@ module Maps =
         ///   three points for a polygon. Required.
         new (type': VEShapeType,
              points: VELatLong []) = {}
-        
+
         [<DefaultValue>]
         val mutable Draggable : bool
-        
+
         /// Occurs when a shape is being dragged across the map.
         [<DefaultValue>]
         val mutable ondrag : ShapeDragEventArgs -> unit
@@ -574,7 +573,7 @@ module Maps =
         [<DefaultValue>]
         val mutable onstartdrag : ShapeDragEventArgs -> unit
 
-        
+
         /// http://msdn.microsoft.com/en-us/library/bb877821(v=MSDN.10).aspx
         /// Returns the altitude for the shape.
         member this.GetAltitude() : float = Undefined
@@ -631,7 +630,7 @@ module Maps =
         /// Gets the shape's "photo" URL.
         member this.GetPhotoURL() : string = Undefined
 
-        /// http://msdn.microsoft.com/en-us/library/bb412458(v=MSDN.10).aspx 
+        /// http://msdn.microsoft.com/en-us/library/bb412458(v=MSDN.10).aspx
         /// Returns an array of objects representing the points that make up the pushpin,
         /// polyline, or polygon.  In the case of a pushpin, this will be a one-cell : VELatLong
         member this.GetPoints() : VELatLong [] = Undefined
@@ -769,11 +768,11 @@ module Maps =
         /// Shows the icon associated with a polyline or polygon. This method is ignored for
         /// pushpins.
         member this.ShowIcon() : unit = Undefined
-    
-        
+
+
     [<Stub>]
     [<Name "VEFindResult">]
-    type VEFindResult = 
+    type VEFindResult =
         /// A reference to the VEShape Class object corresponding to this
         /// FindResult object. The VEShape object represents the result's
         /// pushpin displayed on the map.
@@ -802,8 +801,8 @@ module Maps =
         /// The telephone number of the found result.
         val mutable Phone : string
 
-    [<JavaScriptTypeAttribute>]
-    type VEDistanceUnit = 
+
+    type VEDistanceUnit =
         | [<Inline "VEDistanceUnit.Miles">]
           /// Generates route information in miles.
           Miles
@@ -812,8 +811,8 @@ module Maps =
           /// Generates route information in kilometers.
           Kilometers
 
-    [<JavaScriptTypeAttribute>]
-    type VEShapeAccuracy = 
+
+    type VEShapeAccuracy =
         | [<Inline "VEShapeAccuracy.None">]
         /// No shapes are accurately converted
         None
@@ -822,8 +821,8 @@ module Maps =
         /// Only pushpins are accurately converted
         Pushpin
 
-    [<JavaScriptTypeAttribute>]
-    type VEMiniMapSize =     
+
+    type VEMiniMapSize =
         | [<Inline "VEMiniMapSize.Small">]
         /// This represents a small mini map.
         Small
@@ -831,9 +830,9 @@ module Maps =
         | [<Inline "VEMiniMapSize.Large">]
         /// This represents a large mini map.
         Large
-        
-    [<JavaScriptTypeAttribute>]
-    type VELocationPrecision = 
+
+
+    type VELocationPrecision =
         | [<Inline "VELocationPrecision.Interpolated">]
           /// The precision is estimated from multiple geocoded sources.
           Interpolated
@@ -841,18 +840,18 @@ module Maps =
         | [<Inline "VELocationPrecision.Rooftop">]
           /// The precision is from a single match.
           Rooftop
-       
+
     [<Stub>]
     [<Name "VEGeocodeLocation">]
-    type VEGeocodeLocation =     
+    type VEGeocodeLocation =
         /// A VELatLong Class object specifying the latitude and longitude of the location.
         val mutable LatLong : VELatLong
 
         /// A VELocationPrecision Enumeration value specifying the precision of the location.
         val mutable Precision : VELocationPrecision
-     
-    [<JavaScriptTypeAttribute>]
-    type VEMatchConfidence = 
+
+
+    type VEMatchConfidence =
         | [<Inline "VEMatchConfidence.High">]
           /// The confidence of a match is high
           High
@@ -864,9 +863,9 @@ module Maps =
         | [<Inline "VEMatchConfidence.Low">]
           /// The confidence of a match is low
           Low
-    
-    [<JavaScriptTypeAttribute>]
-    type VEMatchCode = 
+
+
+    type VEMatchCode =
         | [<Inline "VEMatchCode.None">]
           /// No match was found
           None
@@ -886,11 +885,11 @@ module Maps =
         | [<Inline "VEMatchCode.Modified">]
           /// The match was found, but to a modified place
           Modified
-        
+
     [<Stub>]
     [<Name "VEPlace">]
-    type VEPlace = 
-    
+    type VEPlace =
+
         /// Gets a VELatLong Class object that represents the best location of the found result.
         val mutable LatLong : VELatLong
 
@@ -915,7 +914,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VEBirdseyeScene">]
-    type VEBirdseyeScene = 
+    type VEBirdseyeScene =
         /// http://msdn.microsoft.com/en-us/library/bb429591(v=MSDN.10).aspx
         /// Determines whether the location specified by a VELatLong Class object is within
         /// the current
@@ -963,20 +962,20 @@ module Maps =
         /// * pixel: A VEPixel Class  object representing a pixel location on the map
         /// * zoomLevel: The zoom level of the current map view
         member this.PixelToLatLong(pixel: VEPixel, zoomLevel: int) : unit = Undefined
-    
-    [<JavaScriptTypeAttribute>]
-    type VERouteDistanceUnit = 
+
+
+    type VERouteDistanceUnit =
         | [<Inline "VERouteDistanceUnit.Miles">]
           /// Generates route information in miles.
           Miles
 
         | [<Inline "VERouteDistanceUnit.Kilometers">]
           /// Generates route information in kilometers.
-          Kilometers  
-    
+          Kilometers
+
     [<Stub>]
     [<Name "VERouteHintType">]
-    type VERouteHintType = 
+    type VERouteHintType =
         | [<Inline "VERouteHintType.PreviousIntersection">]
             /// The hint describes the intersection that comes before the itinerary item.
             PreviousIntersection
@@ -989,8 +988,8 @@ module Maps =
             /// The hint describes a landmark along the road or near the itinerary item.
             Landmark
 
-    [<JavaScriptTypeAttribute>]
-    type VERouteWarningSeverity = 
+
+    type VERouteWarningSeverity =
         | [<Inline "VERouteWarningSeverity.None">]
           /// A warning which has no impact on traffic
           None
@@ -1013,26 +1012,26 @@ module Maps =
 
     [<Stub>]
     [<Name "VERouteWarning">]
-    type VERouteWarning = 
+    type VERouteWarning =
         /// A VERouteWarningSeverity Enumeration value specifying the severity level of the warning.
         val mutable Severity : VERouteWarningSeverity
 
         /// A String that describes the route warning.
         val mutable Text : string
-    
+
     [<Stub>]
     [<Name "VERouteHint">]
-    type VERouteHint = 
+    type VERouteHint =
         /// A VERouteHintType Enumeration value specifying the type of the hint.
         val mutable Type : VERouteHintType
 
         /// A string that describes the route itinerary item hint.
         val mutable Text : string
-      
+
     [<Stub>]
     [<Name "VERouteItineraryItem">]
-    type VERouteItineraryItem = 
-    
+    type VERouteItineraryItem =
+
         /// A floating-point number specifying the distance of the step
         val mutable Distance : float
 
@@ -1053,17 +1052,17 @@ module Maps =
 
         /// An array of VERouteHint Class items that correspond to the itinerary item.
         val mutable Hints : VERouteHint []
-    
+
     [<Stub>]
     [<Name "VERouteItinerary">]
-    type VERouteItinerary = 
+    type VERouteItinerary =
         /// An array of VERouteItineraryItem Class objects specifying the step-by-step
         /// directions for the route.
         val mutable Items : VERouteItineraryItem []
-    
+
     [<Stub>]
     [<Name "VERouteLeg">]
-    type VERouteLeg = 
+    type VERouteLeg =
         /// A floating-point number specifying the length of the route leg.
         val mutable Distance : float
 
@@ -1075,7 +1074,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VERoute">]
-    type VERoute = 
+    type VERoute =
 
         /// A floating-point value that specifies the total length of the route.
         val mutable Distance : float
@@ -1089,9 +1088,9 @@ module Maps =
 
         /// An integer specifying the total elapsed time, in seconds, to traverse the route.
         val mutable Time : int
-    
-    [<JavaScriptTypeAttribute>]
-    type VERouteMode = 
+
+
+    type VERouteMode =
         | [<Inline "VERouteMode.Driving">]
           /// The returned route contains driving directions
           Driving
@@ -1100,8 +1099,8 @@ module Maps =
           /// The returned route contains walking directions
           Walking
 
-    [<JavaScriptTypeAttribute>]
-    type VERouteOptimize = 
+
+    type VERouteOptimize =
         | [<Inline "VERouteOptimize.MinimizeTime">]
           /// The route is calculated to minimize time.
           MinimizeTime
@@ -1112,7 +1111,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VERouteOptions">]
-    type VERouteOptions = 
+    type VERouteOptions =
         new () = {}
         /// A VERouteDistanceUnit Enumeration value specifying the units used for the route. The
         /// default value is VERouteDistanceUnit.Mile.
@@ -1179,10 +1178,10 @@ module Maps =
         [<DefaultValue>]
         val mutable UseTraffic : bool
 
-    
+
     [<Stub>]
     [<Name "VEImageryMetadata">]
-    type VEImageryMetadata = 
+    type VEImageryMetadata =
         /// A string specifying the start date of the date range when the
         /// imagery was created.
         val mutable DateRangeStart : string
@@ -1191,10 +1190,10 @@ module Maps =
         /// imagery was created.
         val mutable DateRangeEnd : string
 
-    
+
     [<Stub>]
     [<Name "VEImageryMetadataOptions">]
-    type VEImageryMetadataOptions = 
+    type VEImageryMetadataOptions =
         new () = {}
         /// A VELatLong Class object specifying the center of the map
         /// view. Optional. Defaults to the center of the current map view.
@@ -1210,9 +1209,9 @@ module Maps =
         /// current zoom level.
         [<DefaultValue>]
         val mutable ZoomLevel : int
- 
-    [<JavaScriptType>]
-    type VEModelStatusCode = 
+
+
+    type VEModelStatusCode =
         | /// The 3D model was successfully loaded.
           [<Inline "VEModelStatusCode.Success">]
           Success
@@ -1221,15 +1220,15 @@ module Maps =
           [<Inline "VEModelStatusCode.Failed">]
           Failed
 
-    [<JavaScriptTypeAttribute>]
-    type VEModelFormat = 
+
+    type VEModelFormat =
         | [<Inline "VEModelFormat.OBJ">]
           /// The 3D model data is in Wavefront OBJ format.
           OBJ
 
     [<Stub>]
     [<Name "VEModelSourceSpecification">]
-    type VEModelSourceSpecification = 
+    type VEModelSourceSpecification =
         new (modelFormat: VEModelFormat, modelSource: string, layer: VEShapeLayer) = {}
         /// A VEModelFormat Enumeration value specifying the data format of the 3D model being imported.
         [<DefaultValue>]
@@ -1250,7 +1249,7 @@ module Maps =
         new (heading: float, tilt: float) = {}
         new (heading: float) = {}
         new () = {}
-        
+
         /// A floating-point value specifying in decimal degrees the
         /// counter-clockwise rotation of the 3D model about the z-axis,
         /// looking along the positive z-axis away from the origin.
@@ -1271,12 +1270,12 @@ module Maps =
 
     [<Stub>]
     [<Name "VEModelScale">]
-    type VEModelScale = 
+    type VEModelScale =
         new (x: float, y: float, z: float) = {}
         new (x: float, y: float) = {}
         new (x: float) = {}
         new () = {}
-        
+
         /// A floating-point value specifying the x-axis scale factor of a 3D model.
         [<DefaultValue>]
         val mutable X : float
@@ -1289,8 +1288,8 @@ module Maps =
         [<DefaultValue>]
         val mutable Z : float
 
-    [<JavaScriptTypeAttribute>]
-    type VEDataType = 
+
+    type VEDataType =
         | [<Inline "VEDataType.GeoRSS">]
           /// This represents a GeoRSS data import.
           GeoRSS
@@ -1305,7 +1304,7 @@ module Maps =
 
     [<Stub>]
     [<Name "VEShapeSourceSpecification">]
-    type VEShapeSourceSpecification = 
+    type VEShapeSourceSpecification =
         new (dataType: VEDataType, dataSource: string, layer: VEShapeLayer) = {}
         /// A VEShapeLayer Class object in which the VEShape objects are contained after importing.
         [<DefaultValue>]
@@ -1326,11 +1325,11 @@ module Maps =
 
     [<Stub>]
     [<Name "VEMapViewSpecification">]
-    type VEMapViewSpecification = 
+    type VEMapViewSpecification =
         new (center: VELatLong, zoom: int, altitude: float, pitch: float, heading: float) = {}
-        
-    [<JavaScriptType>]
-    type Location = 
+
+
+    type Location =
         [<Inline "$latlong">]
         static member FromLatLong (latlong: VELatLong) : Location = Undefined
 
@@ -1342,7 +1341,7 @@ module Maps =
     type MapEventArgs = class end
 
     [<Stub>]
-    type KeyboardEventArgs = 
+    type KeyboardEventArgs =
         inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
@@ -1376,7 +1375,7 @@ module Maps =
     // ------------------------------------------------------------------
 
     [<Stub>]
-    type OnClickEventArgs = 
+    type OnClickEventArgs =
         inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey: bool
@@ -1433,8 +1432,8 @@ module Maps =
         val zoomLevel: int
 
     [<Stub>]
-    type OnDoubleClickEventArgs = 
-        inherit MapEventArgs        
+    type OnDoubleClickEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1452,7 +1451,7 @@ module Maps =
         /// you can convert mapX and mapY to a latlong using the
         /// VEMap.PixelToLatLong Method.
         val latLong : VELatLong
-  
+
         /// The current map style as a String. Valid String results are a,r,h, and o.
         val mapStyle : VEMapStyle
 
@@ -1487,8 +1486,8 @@ module Maps =
         val zoomLevel : int
 
     [<Stub>]
-    type OnMouseMoveEventArgs = 
-        inherit MapEventArgs        
+    type OnMouseMoveEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1541,8 +1540,8 @@ module Maps =
         val zoomLevel :  int
 
     [<Stub>]
-    type OnMouseDownEventArgs = 
-        inherit MapEventArgs        
+    type OnMouseDownEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1601,8 +1600,8 @@ module Maps =
         val zoomLevel : int
 
     [<Stub>]
-    type OnMouseUpEventArgs = 
-        inherit MapEventArgs        
+    type OnMouseUpEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1658,11 +1657,11 @@ module Maps =
         val mapY : int
 
         /// The current zoom level of the map.
-        val zoomLevel : int 
+        val zoomLevel : int
 
     [<Stub>]
-    type OnMouseOverEventArgs = 
-        inherit MapEventArgs        
+    type OnMouseOverEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1709,8 +1708,8 @@ module Maps =
         val zoomLevel : int
 
     [<Stub>]
-    type OnMouseOutEventArgs = 
-        inherit MapEventArgs        
+    type OnMouseOutEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1758,8 +1757,8 @@ module Maps =
 
 
     [<Stub>]
-    type OnMouseWheelEventArgs = 
-        inherit MapEventArgs        
+    type OnMouseWheelEventArgs =
+        inherit MapEventArgs
         /// A Boolean object representing whether the ALT key was held when the key was pressed.
         val altKey : bool
 
@@ -1808,35 +1807,35 @@ module Maps =
 
     [<Stub>]
     [<Name "VEMap">]
-    type VEMap = 
+    type VEMap =
         new(id: string) = {}
         /// Loads the specified map. All parameters are optional.
         ///
         /// * latLong: VELatLong Class object that represents the center of
         ///   the map. Optional.
-        /// 
+        ///
         /// * zoom: The zoom level to display. Valid values range from 1
         ///   through 19. Optional. Default is 4.
-        /// 
+        ///
         /// * style: A VEMapStyle Enumeration value specifying the map
         ///   style. Optional. Default is VEMapStyle.Road.
-        /// 
+        ///
         /// * fixed: A Boolean value that specifies whether the map view is
         ///   displayed as a fixed map that the user cannot
         ///   change. Optional. Default is false.
-        /// 
+        ///
         /// * mode: A VEMapMode Enumeration value that specifies whether to
         ///   load the map in 2D or 3D mode. Optional. Default is
         ///   VEMapMode.Mode2D.
-        /// 
+        ///
         /// * showSwitch: A Boolean value that specifies whether to show the
         ///   map mode switch on the dashboard control. Optional. Default is
         ///   true (the switch is displayed).
-        /// 
+        ///
         /// * tileBuffer: How much tile buffer to use when loading
         ///   map. Default is 0 (do not load an extra boundary of
         ///   tiles). This parameter is ignored in 3D mode.
-        /// 
+        ///
         /// * mapOptions: A VEMapOptions Class that specifies other map
         ///   options to set.
         member this.LoadMap(latLong: VELatLong,
@@ -1915,7 +1914,7 @@ module Maps =
         /// If the layer reference already exists on the map, an exception is
         /// thrown, and no new layer is created.
         member this.AddShapeLayer(layer: VEShapeLayer): unit = Undefined
-        
+
         /// Adds a tile layer to the map, and if the visibleOnLoad parameter
         /// is true, it also shows it on the map.
         /// VEMap.AddTileLayer(layerSource, visibleOnLoad);
@@ -2010,7 +2009,7 @@ module Maps =
 
         /// Performs a what (business) search or a where (location)
         /// search. At least one of these two parameters is required.
-        /// 
+        ///
         /// VEMap.Find(what,
         ///            where,
         ///            findType,
@@ -2022,62 +2021,62 @@ module Maps =
         ///            useDefaultDisambiguation,
         ///            setBestMapView,
         ///            callback);
-        /// 
+        ///
         /// * what: The business name, category, or other item for which the
         ///   search is conducted. This parameter must be supplied for a
         ///   pushpin to be included in the results.
-        /// 
+        ///
         /// * where: The address or place name of the area for which the search is
         ///   conducted. This parameter is overloaded; see the Remarks section for more
         ///   information.
-        /// 
+        ///
         /// * findType: A VEFindType Enumeration value that specifies the type of search
         ///   performed. The only currently supported value is VEFindType.Businesses.
-        /// 
+        ///
         /// * shapeLayer: A reference to the VEShapeLayer Class object that contain the pins that
         ///   result from this search if a what parameter is specified. Optional. If the shape
         ///   layer is not specified, the pins are added to the base map layer. If the reference
         ///   is not a valid VEShapeLayer reference, an exception is thrown.
-        /// 
+        ///
         /// * startIndex: The beginning index of the results returned. Optional. Default is 0.
-        /// 
+        ///
         /// * numberOfResults: The number of results to be returned, starting at startIndex. The
         ///   default is 10, the minimum is 1, and the maximum is 20.
-        /// 
+        ///
         /// * showResults: A Boolean value that specifies whether the resulting pushpins are
         ///   visible. Optional. Default is true.
-        /// 
+        ///
         /// * createResults: A Boolean value that specifies whether pushpins are created when a
         ///   what parameter is supplied. Optional. If true, pushpins are created. If false, the
         ///   arguments sent to the function specified by the callback parameter are set as
         ///   follows: The array of VEFindResult Class objects is still present, but no pushpin
         ///   layer is created. Each VEFindResult object's corresponding Shape property is null.
-        /// 
+        ///
         /// * useDefaultDisambiguation: A Boolean value that specifies whether the map control
         ///   displays a disambiguation box when multiple location matches are possible. If true,
         ///   the map control displays a disambiguation box. Optional. The default is true. To
         ///   ensure no messages appear when useDefaultDisambiguation is false, set the
         ///   VEMap.ShowMessageBox Property to false.
-        /// 
+        ///
         /// * setBestMapView: A Boolean value that specifies whether the map control moves the
         ///   view to the first location match. If true, the map control moves the
         ///   view. Optional. Default is true.
-        /// 
+        ///
         /// * callback: The name of the function that the server calls with the search
         ///   results. If this parameter is not null and useDefaultDisambiguation is true, this
         ///   function is not called until the user has made a disambiguation choice. Optional.
-        ///   
+        ///
         /// The function defined by the callback parameter receives the following arguments, in
         /// the order shown, from the server:
-        /// 
+        ///
         /// * A VEShapeLayer Class object. If shapeLayer was supplied, it should be the same object.
-        /// 
+        ///
         /// * An array of VEFindResult Class objects.
-        /// 
+        ///
         /// * An array of VEPlace Class objects.
-        /// 
+        ///
         /// * A Boolean value indicating whether there are more results after the current set.
-        /// 
+        ///
         /// * A String containing a possible error message.
 
         member this.Find(what: string,
@@ -2346,7 +2345,7 @@ module Maps =
         /// In 3D mode, returns a double that represents the compass heading of the current map view.
         /// http://msdn.microsoft.com/en-us/library/bb412459(v=MSDN.10).aspx
         member this.GetHeading() : float = Undefined
-        
+
         /// Returns information about the requested imagery, including imagery date stamps. This
         /// method requires that a valid token has been set using the VEMap.SetClientToken
         /// Method.
@@ -2394,11 +2393,11 @@ module Maps =
         /// Gets the total number of shape layers on the map.
         /// http://msdn.microsoft.com/en-us/library/bb429636(v=MSDN.10).aspx
         member this.GetShapeLayerCount() : int = Undefined
-        
+
         /// Gets the number of tile layers.
         /// http://msdn.microsoft.com/en-us/library/bb877861(v=MSDN.10).aspx
         member this.GetTileLayerCount() : int = Undefined
-        
+
         /// Gets a tile layer based upon its identifier.
         /// VEMap.GetTileLayerByID(id);
         /// * id: The unique identifier of the tile layer
@@ -2552,7 +2551,7 @@ module Maps =
         /// VEMap.PixelToLatLong(pixel);
         /// * pixel: A VEPixel Class object representing a pixel location on the map.
         member this.PixelToLatLong(pixel: VEPixel): VELatLong = Undefined
-        
+
         /// Removes a custom layer from the map.
         /// VEMap.RemoveCustomLayer(object);
         /// * object: The object to remove from the map DIV container.
@@ -2564,7 +2563,7 @@ module Maps =
         /// * width: The width, in pixels, of the map. Optional.
         /// * height: The height, in pixels, of the map. Optional.
         /// http://msdn.microsoft.com/en-us/library/bb429585(v=MSDN.10).aspx
-        /// If this method is called with no parameters, the map is resized to fit 
+        /// If this method is called with no parameters, the map is resized to fit
         /// the entire DIV element.
         member this.Resize(width: int, height: int) : unit = Undefined
         member this.Resize(width: int) : unit = Undefined
@@ -2678,12 +2677,12 @@ module Maps =
         /// Specifies whether to zoom to the center of the screen or to the cursor position on
         /// the screen.
         /// VEMap.SetMouseWheelZoomToCenter(zoomToCenter);
-        /// 
+        ///
         /// * zoomToCenter: A Boolean value specifying whether to zoom to the center of the screen
         ///               or to the cursor position. If true:, the map control zooms to the
         ///               center of the screen; if false: , the map control zooms to the cursor
         ///               position on the screen.
-        /// 
+        ///
         /// http://msdn.microsoft.com/en-us/library/bb877824(v=MSDN.10).aspx
         member this.SetMouseWheelZoomToCenter(zoomToCenter: bool) : unit = Undefined
 
