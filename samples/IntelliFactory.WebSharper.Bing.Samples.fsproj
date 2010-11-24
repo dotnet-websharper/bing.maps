@@ -48,6 +48,7 @@
     <Reference Include="IntelliFactory.WebSharper.Web" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
     <Reference Include="IntelliFactory.WebSharper.JQuery" />
+    <Reference Include="IntelliFactory.WebSharper.Core" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
