@@ -44,6 +44,7 @@
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="IntelliFactory.WebSharper" />
+    <Reference Include="IntelliFactory.Html" />
     <Reference Include="IntelliFactory.WebSharper.Html" />
     <Reference Include="IntelliFactory.WebSharper.Web" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
