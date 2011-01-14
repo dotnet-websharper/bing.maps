@@ -43,6 +43,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
+    <Reference Include="IntelliFactory.Json" />
     <Reference Include="IntelliFactory.WebSharper" />
     <Reference Include="IntelliFactory.Html" />
     <Reference Include="IntelliFactory.WebSharper.Html" />

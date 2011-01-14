@@ -45,8 +45,11 @@
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="IntelliFactory.Json" />
+    <Reference Include="IntelliFactory.JavaScript" />
+    <Reference Include="IntelliFactory.PowerPack" />
     <Reference Include="IntelliFactory.WebSharper" />
     <Reference Include="IntelliFactory.WebSharper.Core" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
+    <Reference Include="System.Web" />
   </ItemGroup>
 </Project>

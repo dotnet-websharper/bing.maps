@@ -12,15 +12,23 @@
 namespace IntelliFactory.WebSharper.Bing.Dependencies
 
 open IntelliFactory.WebSharper
+module R = IntelliFactory.WebSharper.Resources
 
 /// Requires the Bing Maps API.
 type MapsAPI() =
-    interface Resources.IResource with
-        member this.Id              = "MS.Bing.Maps"
-        member this.Dependencies    = Seq.empty
-        member this.Render resolver =
-            "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"
-            |> Resources.RenderJavaScript
+    interface R.IResourceDefinition with
+        member this.Resource =
+            {
+                Id = "MS.Bing.Maps"
+                Dependencies = []
+                Body =
+                    R.ScriptBody <| R.ExternalLocation [
+                        R.ConfigurablePart (
+                            "MS.Bing.Maps",
+                            "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"
+                        )
+                    ]
+            }
 
 [<assembly: Require(typeof<MapsAPI>)>]
 do ()

@@ -18,8 +18,7 @@ module Maps =
 
     type internal NameAttribute(name: string) =
         inherit Naming.AbstractNameAttribute()
-        override this.Validate _ _ = ()
-        override this.GetName _ = Core.Choice1Of2 (Naming.NewName [] name)
+        override this.GetName _ = Naming.Name.Simple name
 
     type VEAltitudeMode =
 
