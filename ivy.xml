@@ -7,19 +7,18 @@
   </configurations>
   <publications>
     <artifact name="IntelliFactory.WebSharper.Bing" ext="dll" type="bin" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Bing" ext="xml" type="doc" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing" ext="dll.dep" type="bin" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Bing" ext="xml" type="doc" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing" ext="pdb" type="debug" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Bing" ext="api.zip" type="doc" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing" ext="Documentation.zip" type="doc" conf="default" />
   </publications>
   <dependencies>
     <dependency name="if-ws" rev="latest.integration" conf="build->compiler" />
     <dependency name="if-ws" rev="latest.integration" conf="default->default" />
-    <dependency name="if-ws-proxy-core" rev="latest.integration" conf="default" />
-    <dependency name="if-ws-html" rev="latest.integration" conf="default" />
-    <dependency name="if-ws-web" rev="latest.integration" conf="default" />
     <dependency name="if-ws-dom" rev="latest.integration" conf="default" />
+    <dependency name="if-ws-html" rev="latest.integration" conf="default" />
     <dependency name="if-ws-jquery" rev="latest.integration" conf="default" />
+    <dependency name="if-ws-proxy-core" rev="latest.integration" conf="default" />
+    <dependency name="if-ws-web" rev="latest.integration" conf="default" />
   </dependencies>
 </ivy-module>
