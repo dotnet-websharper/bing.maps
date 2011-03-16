@@ -65,12 +65,12 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
   <PropertyGroup>
-    <WEBSHARPER_HOME>$(IfIvyLibDir)</WEBSHARPER_HOME>
+    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
   </PropertyGroup>
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets" Condition="Exists('$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets')" />
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets" />
   <ItemGroup>
     <ProjectReference Include="..\samples\IntelliFactory.WebSharper.Bing.Samples.fsproj">
       <Project>{7B284A3A-D402-43B3-B47E-891A8D7063B5}</Project>
@@ -101,11 +101,4 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
