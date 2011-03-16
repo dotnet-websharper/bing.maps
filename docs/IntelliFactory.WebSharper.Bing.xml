@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://www.docbook.org/xml/5.0/xsd/docbook.xsd">
+  <title>WebSharper Extensions to BING maps</title>
+  <xi:include href="Overview.docbook" />
+  <xi:include href="SimpleMap.docbook" />
+  <xi:include href="Shapes.docbook" />
+  <xi:include href="Events.docbook" />
+</book>
