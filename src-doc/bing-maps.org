@@ -1,0 +1,7 @@
+* bing-maps
+** overview
+** examples
+*** simple-map
+*** shapes
+*** events
+
