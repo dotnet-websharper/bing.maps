@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{b3a24945-6c64-4d6a-9b3e-17674e9b006e}</ProjectGuid>
+    <ProjectGuid>{730ae40a-001c-4137-972d-898dc7c2bf0a}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Bing</Name>
+    <Name>IntelliFactory.WebSharper.JQuery</Name>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>$(Name)</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
@@ -34,21 +34,24 @@
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
   <PropertyGroup>
     <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
+    <WEBSHARPER_IG_HOME>$(WEBSHARPER_HOME)</WEBSHARPER_IG_HOME>
   </PropertyGroup>
+  <Import Project="$(WEBSHARPER_IG_HOME)/IntelliFactory.WebSharper.InterfaceGenerator.targets" />
   <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
   <ItemGroup>
-    <Compile Include="Dependencies.fs" />
-    <Compile Include="Definitions.fs" />
+    <Compile Include="Definition.fs" />
+    <Compile Include="Main.fs" />
+    <None Include="Resources.cs" />
+    <None Include="Marker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.PowerPack" />
     <Reference Include="System" />
+    <Reference Include="mscorlib" />
     <Reference Include="IntelliFactory.Json" />
-    <Reference Include="IntelliFactory.JavaScript" />
-    <Reference Include="IntelliFactory.PowerPack" />
     <Reference Include="IntelliFactory.WebSharper" />
-    <Reference Include="IntelliFactory.WebSharper.Core" />
+    <Reference Include="IntelliFactory.WebSharper.InterfaceGenerator" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
     <Reference Include="System.Web" />
   </ItemGroup>

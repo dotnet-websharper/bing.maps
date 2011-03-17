@@ -1,41 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C59727C0-1252-49E7-8B30-793C934C8CCC}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing", "IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj", "{730AE40A-001C-4137-972D-898DC7C2BF0A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E8ADFE2C-5B99-40B4-80E2-FEEF02E22992}"
 	ProjectSection(SolutionItems) = preProject
 		ivy.xml = ivy.xml
 	EndProjectSection
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing.Documentation", "docs\IntelliFactory.WebSharper.Bing.Documentation.fsproj", "{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing", "IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj", "{B3A24945-6C64-4D6A-9B3E-17674E9B006E}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Bing.Samples", "samples\IntelliFactory.WebSharper.Bing.Samples.fsproj", "{C212114A-F849-4344-BFBD-2CBDD86DA1E0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelliFactory.WebSharper.Bing.Tests", "tests\IntelliFactory.WebSharper.Bing.Tests.csproj", "{F453CB86-F138-4F1B-A87B-93E1B587E16F}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{20E7DEDE-170D-4301-9CD5-57F4B5C2EF84}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3A24945-6C64-4D6A-9B3E-17674E9B006E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C212114A-F849-4344-BFBD-2CBDD86DA1E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F453CB86-F138-4F1B-A87B-93E1B587E16F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F453CB86-F138-4F1B-A87B-93E1B587E16F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F453CB86-F138-4F1B-A87B-93E1B587E16F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F453CB86-F138-4F1B-A87B-93E1B587E16F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D58CE2-0F6B-4840-9347-924DB69174FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D58CE2-0F6B-4840-9347-924DB69174FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D58CE2-0F6B-4840-9347-924DB69174FA}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D58CE2-0F6B-4840-9347-924DB69174FA}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
