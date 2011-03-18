@@ -35,7 +35,7 @@
   <PropertyGroup>
     <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
   </PropertyGroup>
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" Condition="Exists('$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets')" />
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
   <ItemGroup>
     <Compile Include="Samples.fs" />
   </ItemGroup>

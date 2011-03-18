@@ -712,6 +712,84 @@ module Bing =
                 |> WithComment "Converts the Color object to a string."
             ]
 
+    let TileLayer = Type.New()
+    let TileLayerOptions = Type.New()
+    let TileSource = Type.New()
+    let TileSourceOptions = Type.New ()
+
+    let TileLayerOptionsClass =
+        Pattern.Config "Microsoft.Maps.TileLayerOptions" {
+            Required = []
+            Optional =
+                [
+                    "mercator", TileSource
+                    "opacity", T<float>
+                    "visible", T<bool>
+                    "zIndex", T<float>
+                ]
+        }
+        |=> TileLayerOptions
+
+    let TileSourceOptionsClass =
+        Pattern.Config "Microsoft.Maps.TileSourceOptions" {
+            Required = []
+            Optional =
+                [
+                    "height", T<float>
+                    "uriConstructor", T<string>
+                    "width", T<float>
+                ]
+        }
+        |=> TileLayerOptions
+
+    let TileSourceClass =
+        Class "Microsoft.Maps.TileSource"
+        |=> TileSource
+        |+> [
+                Constructor TileSourceOptions
+                |> WithComment "Initializes a new instance of the TileSource  class."
+                
+                "getHeight" => T<unit -> float>
+                |> WithComment "Returns the pixel height of each tile in the tile source."
+
+                "getUriConstructor" => T<unit -> string>
+                |> WithComment "Returns a string that constructs tile URLs used to retrieve tiles for the tile layer."
+
+                "getWidth" => T<unit -> float>
+                |> WithComment "Returns the pixel width of each tile in the tile source."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Color object to a string."
+        ]
+
+    let TileLayerClass =
+        Class "Microsoft.Maps.TileLayer"
+        |=> TileLayer
+        |+> [
+                Constructor TileLayerOptions
+                |> WithComment "Initializes a new instance of the TileLayer class."
+
+                "getOpacity" => T<unit -> float>
+                |> WithComment "Returns the opacity of the tile layer, defined as a double between 0 (not visible) and 1."
+
+                "getTileSource" => T<string> ^-> TileSource
+                |> WithComment "Returns the tile source of the tile layer. The projection parameter accepts the following values: mercator, enhancedBirdseyeNorthUp, enhancedBirdseyeSouthUp, enhancedBirdseyeEastUp, enhancedBirdseyeWestUp"
+
+                "getZIndex" => T<unit -> float>
+                |> WithComment "Returns the z-index of the tile layer with respect to other items on the map."
+
+                "setOptions" => TileLayerOptions ^-> T<unit>
+                |> WithComment "Sets options for the tile layer."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the TileLayer object to a string."
+            ]
+        |+> Protocol
+            [
+                "a" =? T<int>
+                |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
+            ]
+
     let Assembly =
         Assembly [
             Namespace "IntelliFactory.WebSharper.Bing" [
@@ -737,6 +815,10 @@ module Bing =
                 InfoboxActionClass
                 InfoboxOptionsClass
                 InfoboxClass
+                TileLayerClass
+                TileLayerOptionsClass
+                TileSourceClass
+                TileSourceOptionsClass
             ]
         ]
 
