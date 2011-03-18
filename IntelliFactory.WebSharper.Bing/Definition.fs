@@ -183,7 +183,7 @@ module Bing =
                 "eventName" =? T<string>
                 |> WithComment "The event that occurred."
 
-                "handled" =? T<bool>
+                "handled" =% T<bool>
                 |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
 
                 "keyCode" =? T<string>
@@ -194,6 +194,53 @@ module Bing =
 
                 "shiftKey" =? T<bool>
                 |> WithComment "A boolean indicating if the SHIFT key was pressed."
+            ]
+
+    let MouseEventArgs = Type.New()
+
+    let MouseEventArgsClass =
+        Class "Microsoft.Maps.MouseEventArgs"
+        |=> MouseEventArgs
+        |+> Protocol
+            [
+                "eventName" =? T<string>
+                |> WithComment "The event that occurred."
+
+                "handled" =% T<bool>
+                |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
+
+                "isPrimary" =? T<bool>
+                |> WithComment "A boolean indicating if the primary button (such as the left mouse button or a tap on a touch screen) was used."
+
+                "isSecondary" =? T<bool>
+                |> WithComment "A boolean indicating if the secondary mouse button (such as the right mouse button) was used."
+
+                "isTouchEvent" =? T<bool>
+                |> WithComment "A boolean indicating whether the event that occurred was a touch event."
+
+                "originalEvent" =? T<obj>
+                |> WithComment "The original browser event."
+
+                "pageX" =? T<int>
+                |> WithComment "The x-value of the pixel coordinate on the page of the mouse cursor."
+
+                "pageY" =? T<int>
+                |> WithComment "The y-value of the pixel coordinate on the page of the mouse cursor."
+
+                "target" =? T<obj>
+                |> WithComment "The object that fired the event."
+
+                "targetType" =? T<string>
+                |> WithComment "The type of the object that fired the event. Valid values include the following: ‘map’, ‘polygon’, ‘polyline’, or ‘pushpin’"
+
+                "wheelData" =? T<int>
+                |> WithComment "The number of units that the mouse wheel has changed."
+
+                "getX" =? T<unit -> float>
+                |> WithComment "Returns the x-value of the pixel coordinate, relative to the map, of the mouse."
+
+                "getY" =? T<unit -> float>
+                |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
             ]
 
     let LabelOverlay = Type.New()
@@ -215,54 +262,71 @@ module Bing =
     let MapOptions = Type.New()
 
     let MapOptionsClass =
-        Class "Microsoft.Maps.MapOptions"
+        Pattern.Config "Microsoft.Maps.MapOptions" {
+            Required = []
+            Optional =
+                [
+                    "credentials", T<string>
+                    "disableKeyboardInput", T<bool>
+                    "disableMouseInput", T<bool>
+                    "disableTouchInput", T<bool>
+                    "disableUserInput", T<bool>
+                    "enableClickableLogo", T<bool>
+                    "enableSearchLogo", T<bool>
+                    "height", T<int>
+                    "showCopyright", T<bool>
+                    "showDashboard", T<bool>
+                    "showMapTypeSelector", T<bool>
+                    "showScalebar", T<bool>
+                    "width", T<int>
+                ]
+        }
         |=> MapOptions
-        |+> [
-                Constructor T<unit>
-            ]
-        |+> Protocol
-            [
-                "credentials" =% T<string>
-                |> WithComment "The Bing Maps Key used to authenticate the application. This property is required and can only be set when using the Map constructor."
-
-                "disableKeyboardInput" =? T<bool>
-                |> WithComment "A boolean value indicating whether to disable the map’s response to keyboard input. The default value is false. This property can only be set when using the Map constructor."
-
-                "disableMouseInput" =? T<bool>
-                |> WithComment "A boolean value indicating whether to disable the map’s response to mouse input. The default value is false. This property can only be set when using the Map constructor."
-
-                "disableTouchInput" =? T<bool>
-                |> WithComment "A boolean value indicating whether to disable the map’s response to touch input. The default value is false. This property can only be set when using the Map constructor."
-
-                "disableUserInput" =? T<bool>
-                |> WithComment "A boolean value indicating whether to disable the map’s response to any user input. The default value is false. This property can only be set when using the Map constructor."
-
-                "enableClickableLogo" =? T<bool>
-                |> WithComment "A boolean value indicating whether the Bing(TM) logo on the map is clickable. The default value is true. This property can only be set when using the Map constructor."
-
-                "enableSearchLogo" =? T<bool>
-                |> WithComment "A boolean value indicating whether to enable the Bing(TM) hovering search logo on the map. The default value is true. This property can only be set when using the Map constructor."
-
-                "height" =? T<bool>
-                |> WithComment "The height of the map. The default value is null. If no height is specified, the height of the div is used. If height is specified, then width must be specified as well."
-            ]
 
     let Size = Type.New()
 
     let SizeClass =
-        Class "Microsoft.Maps.Size"
+        Pattern.Config "Microsoft.Maps.Size" {
+            Required =
+                [
+                    "height", T<float>
+                    "width", T<float>
+                ]
+            Optional = []
+        }
         |=> Size
-        |+> Protocol
+
+    let MapTypeId = Type.New()
+
+    let MapTypeIdClass =
+        Pattern.EnumInlines "Microsoft.Maps.MapTypeId"
             [
-                "height" =? T<float>
-                "width" =? T<float>
+                "aerial", "Microsoft.Maps.MapTypeId.aerial"
+                "auto", "Microsoft.Maps.MapTypeId.auto"
+                "birdseye", "Microsoft.Maps.MapTypeId.birdseye"
+                "collinsBart", "Microsoft.Maps.MapTypeId.collinsBart"
+                "mercator", "Microsoft.Maps.MapTypeId.mercator"
+                "ordnanceSurvey", "Microsoft.Maps.MapTypeId.ordnanceSurvey"
+                "road", "Microsoft.Maps.MapTypeId.road"
             ]
+        |=> MapTypeId
 
     let ViewOptions = Type.New()
 
     let ViewOptionsClass =
-        Class "Microsoft.Maps.ViewOptions"
-        |=> ViewOptions
+        Pattern.Config "Microsoft.Maps.ViewOptions" {
+            Required = []
+            Optional =
+                [
+                    "animate", T<bool>
+                    "bounds", LocationRect
+                    "center", Location
+                    "centerOffset", Point
+                    "heading", T<float>
+                    "labelOverlay", LabelOverlay
+                    "mapTypeId", MapTypeId
+                ]
+        }
 
     let EntityCollection = Type.New()
 
@@ -283,12 +347,6 @@ module Bing =
                 "max" =? T<float>
                 |> WithComment "The maximum value in the range."
             ]
-
-    let MapTypeId = Type.New()
-
-    let MapTypeIdClass =
-        Class "Microsoft.Maps.MapTypeId"
-        |=> MapTypeId
 
     let PixelReference = Type.New()
 
