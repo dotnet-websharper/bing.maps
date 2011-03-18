@@ -155,43 +155,11 @@ module Bing =
                 |> WithComment "Determines whether the specified labelOverlay is a supported LabelOverlay."
             ]
 
+    let ViewOptions = Type.New()
     let MapOptions = Type.New()
+    let MapViewOptions = Type.New()
 
-    let MapOptionsClass =
-        Pattern.Config "Microsoft.Maps.MapOptions" {
-            Required = []
-            Optional =
-                [
-                    "credentials", T<string>
-                    "disableKeyboardInput", T<bool>
-                    "disableMouseInput", T<bool>
-                    "disableTouchInput", T<bool>
-                    "disableUserInput", T<bool>
-                    "enableClickableLogo", T<bool>
-                    "enableSearchLogo", T<bool>
-                    "height", T<int>
-                    "showCopyright", T<bool>
-                    "showDashboard", T<bool>
-                    "showMapTypeSelector", T<bool>
-                    "showScalebar", T<bool>
-                    "width", T<int>
-                ]
-        }
-        |=> MapOptions
-
-    let Size = Type.New()
-
-    let SizeClass =
-        Pattern.Config "Microsoft.Maps.Size" {
-            Required =
-                [
-                    "height", T<float>
-                    "width", T<float>
-                ]
-            Optional = []
-        }
-        |=> Size
-
+    
     let MapTypeId = Type.New()
 
     let MapTypeIdClass =
@@ -207,25 +175,73 @@ module Bing =
                 "road" =? MapTypeId
             ]
 
-    let ViewOptions = Type.New()
+    let private ViewOptionsFields =
+        [
+            "animate", T<bool>
+            "bounds", LocationRect
+            "center", Location
+            "centerOffset", Point
+            "heading", T<float>
+            "labelOverlay", LabelOverlay
+            "mapTypeId", MapTypeId
+            "padding", T<int>
+            "zoom", T<float>
+        ]
+    
+    let private MapOptionsFields =
+        [
+            "credentials", T<string>
+            "disableKeyboardInput", T<bool>
+            "disableMouseInput", T<bool>
+            "disableTouchInput", T<bool>
+            "disableUserInput", T<bool>
+            "enableClickableLogo", T<bool>
+            "enableSearchLogo", T<bool>
+            "height", T<int>
+            "showCopyright", T<bool>
+            "showDashboard", T<bool>
+            "showMapTypeSelector", T<bool>
+            "showScalebar", T<bool>
+            "width", T<int>
+        ]
 
     let ViewOptionsClass =
         Pattern.Config "Microsoft.Maps.ViewOptions" {
             Required = []
-            Optional =
-                [
-                    "animate", T<bool>
-                    "bounds", LocationRect
-                    "center", Location
-                    "centerOffset", Point
-                    "heading", T<float>
-                    "labelOverlay", LabelOverlay
-                    "mapTypeId", MapTypeId
-                    "padding", T<int>
-                    "zoom", T<float>
-                ]
+            Optional = ViewOptionsFields
         }
         |=> ViewOptions
+
+    let MapOptionsClass =
+        Pattern.Config "Microsoft.Maps.MapOptions" {
+            Required = []
+            Optional = MapOptionsFields
+        }
+        |=> MapOptions
+
+    let MapViewOptionsClass =
+        Pattern.Config "Microsoft.Maps.MapViewOptions" {
+            Required = []
+            Optional = MapOptionsFields @ ViewOptionsFields
+        }
+        |=> MapViewOptions
+
+    let Size = Type.New()
+
+    let SizeClass =
+        Pattern.Config "Microsoft.Maps.Size" {
+            Required =
+                [
+                    "height", T<float>
+                    "width", T<float>
+                ]
+            Optional = []
+        }
+        |=> Size
+
+
+
+
 
     let Entity = Type.New()
 
@@ -576,6 +592,7 @@ module Bing =
         |=> Map
         |=> Implements [EntityInterface]
         |+> [
+                Constructor (T<Node> * MapViewOptions)
                 Constructor (T<Node> * MapOptions)
                 Constructor (T<Node> * ViewOptions)
                 Constructor (T<Node>)
@@ -1018,6 +1035,7 @@ module Bing =
                 LabelOverlayClass
                 MapOptionsClass
                 ViewOptionsClass
+                MapViewOptionsClass
                 EntityInterface
                 EntityCollectionOptionsClass
                 EntityCollectionClass

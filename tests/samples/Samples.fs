@@ -17,18 +17,17 @@ module Main =
     *)
 
     [<JavaScript>]
-    let EX1 () =
-        let foo = Bing.Location(1., 2., 3., Bing.AltitudeReference.Ellipsoid)
-        let bar = Bing.Location.NormalizeLongitude 942.
+    let MapElement () =
         Div []
         |>! OnAfterRender (fun el ->
-            let opts =
-                Bing.MapOptions(
+            let options =
+                Bing.MapViewOptinos(
                     Credentials = credentials,
                     Width = 400,
-                    Height = 400
+                    Height = 400,
+                    MapTypeId = MapTypeId.Birdseye
                 )
-            let map = Bing.Map(el.Body, opts)
+            let map = Bing.Map(el.Body, options)
             map.SetMapType(MapTypeId.Birdseye)
         )
 
@@ -59,7 +58,7 @@ module Main =
     [<JavaScript>]
     let Samples () =
         Div [
-            EX1 ()
+            MapElement ()
         ]
 
 
