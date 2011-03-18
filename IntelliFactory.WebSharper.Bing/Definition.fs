@@ -139,110 +139,6 @@ module Bing =
                 |> WithComment "Converts the Point object into a string."
             ]
 
-    let EventHandler = Type.New()
-
-    let EventHandlerClass =
-        Class "Microsoft.Maps.EventHandler"
-        |=> EventHandler
-
-    let Events = Type.New()
-
-    let EventsClass =
-        Class "Microsoft.Maps.Events"
-        |=> Events
-        |+> [
-                "addHandler" => T<obj * string * (obj -> obj)> ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target."
-
-                "addThrottledHandler" => T<obj * string * (obj -> obj) * float> ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
-
-                "hasHandler" => T<obj * string -> bool>
-                |> WithComment "Checks if the target has any attached event handler."
-
-                "invoke" => T<obj * string -> unit>
-                |> WithComment "Invokes an event on the target. This causes all handlers for the specified eventName to be called."
-
-                "removeHandler" => EventHandler ^-> T<unit>
-                |> WithComment "Detaches the specified handler from the event."
-            ]
-
-    let KeyEventArgs = Type.New()
-
-    let KeyEventArgsClass =
-        Class "Microsoft.Maps.KeyEventArgs"
-        |=> KeyEventArgs
-        |+> Protocol
-            [
-                "altKey" =? T<bool>
-                |> WithComment "A boolean indicating if the ALT key was pressed."
-
-                "ctrlKey" =? T<bool>
-                |> WithComment "A boolean indicating if the CTRL key was pressed."
-
-                "eventName" =? T<string>
-                |> WithComment "The event that occurred."
-
-                "handled" =% T<bool>
-                |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
-
-                "keyCode" =? T<string>
-                |> WithComment "The code that identifies the keyboard key that was pressed."
-
-                "originalEvent" =? T<obj>
-                |> WithComment "The original browser event."
-
-                "shiftKey" =? T<bool>
-                |> WithComment "A boolean indicating if the SHIFT key was pressed."
-            ]
-
-    let MouseEventArgs = Type.New()
-
-    let MouseEventArgsClass =
-        Class "Microsoft.Maps.MouseEventArgs"
-        |=> MouseEventArgs
-        |+> Protocol
-            [
-                "eventName" =? T<string>
-                |> WithComment "The event that occurred."
-
-                "handled" =% T<bool>
-                |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
-
-                "isPrimary" =? T<bool>
-                |> WithComment "A boolean indicating if the primary button (such as the left mouse button or a tap on a touch screen) was used."
-
-                "isSecondary" =? T<bool>
-                |> WithComment "A boolean indicating if the secondary mouse button (such as the right mouse button) was used."
-
-                "isTouchEvent" =? T<bool>
-                |> WithComment "A boolean indicating whether the event that occurred was a touch event."
-
-                "originalEvent" =? T<obj>
-                |> WithComment "The original browser event."
-
-                "pageX" =? T<int>
-                |> WithComment "The x-value of the pixel coordinate on the page of the mouse cursor."
-
-                "pageY" =? T<int>
-                |> WithComment "The y-value of the pixel coordinate on the page of the mouse cursor."
-
-                "target" =? T<obj>
-                |> WithComment "The object that fired the event."
-
-                "targetType" =? T<string>
-                |> WithComment "The type of the object that fired the event. Valid values include the following: ‘map’, ‘polygon’, ‘polyline’, or ‘pushpin’"
-
-                "wheelData" =? T<int>
-                |> WithComment "The number of units that the mouse wheel has changed."
-
-                "getX" =? T<unit -> float>
-                |> WithComment "Returns the x-value of the pixel coordinate, relative to the map, of the mouse."
-
-                "getY" =? T<unit -> float>
-                |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
-            ]
-
     let LabelOverlay = Type.New()
 
     let LabelOverlayClass =
@@ -401,6 +297,149 @@ module Bing =
                 |> WithComment "Converts the EntityCollection object to a string."
             ]
 
+    let KeyEventArgs = Type.New()
+
+    let KeyEventArgsClass =
+        Class "Microsoft.Maps.KeyEventArgs"
+        |=> KeyEventArgs
+        |+> Protocol
+            [
+                "altKey" =? T<bool>
+                |> WithComment "A boolean indicating if the ALT key was pressed."
+
+                "ctrlKey" =? T<bool>
+                |> WithComment "A boolean indicating if the CTRL key was pressed."
+
+                "eventName" =? T<string>
+                |> WithComment "The event that occurred."
+
+                "handled" =% T<bool>
+                |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
+
+                "keyCode" =? T<string>
+                |> WithComment "The code that identifies the keyboard key that was pressed."
+
+                "originalEvent" =? T<obj>
+                |> WithComment "The original browser event."
+
+                "shiftKey" =? T<bool>
+                |> WithComment "A boolean indicating if the SHIFT key was pressed."
+            ]
+
+    let MouseEventArgs = Type.New()
+
+    let MouseEventArgsClass =
+        Class "Microsoft.Maps.MouseEventArgs"
+        |=> MouseEventArgs
+        |+> Protocol
+            [
+                "eventName" =? T<string>
+                |> WithComment "The event that occurred."
+
+                "handled" =% T<bool>
+                |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
+
+                "isPrimary" =? T<bool>
+                |> WithComment "A boolean indicating if the primary button (such as the left mouse button or a tap on a touch screen) was used."
+
+                "isSecondary" =? T<bool>
+                |> WithComment "A boolean indicating if the secondary mouse button (such as the right mouse button) was used."
+
+                "isTouchEvent" =? T<bool>
+                |> WithComment "A boolean indicating whether the event that occurred was a touch event."
+
+                "originalEvent" =? T<obj>
+                |> WithComment "The original browser event."
+
+                "pageX" =? T<int>
+                |> WithComment "The x-value of the pixel coordinate on the page of the mouse cursor."
+
+                "pageY" =? T<int>
+                |> WithComment "The y-value of the pixel coordinate on the page of the mouse cursor."
+
+                "target" =? Entity
+                |> WithComment "The object that fired the event."
+
+                "targetType" =? T<string>
+                |> WithComment "The type of the object that fired the event. Valid values include the following: 'map', 'polygon', 'polyline', or 'pushpin'"
+
+                "wheelData" =? T<int>
+                |> WithComment "The number of units that the mouse wheel has changed."
+
+                "getX" =? T<unit -> int>
+                |> WithComment "Returns the x-value of the pixel coordinate, relative to the map, of the mouse."
+
+                "getY" =? T<unit -> int>
+                |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
+            ]
+
+    let KeyEvent = Type.New()
+
+    let ConstantStrings ty l =
+        List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
+
+    let KeyEventClass =
+        Class "Microsoft.Maps.KeyEvent"
+        |=> KeyEvent
+        |+> ConstantStrings KeyEvent ["keydown"; "keyup"; "keypress"]
+
+    let MouseEvent = Type.New()
+
+    let MouseEventClass =
+        Class "Microsoft.Maps.MouseEvent"
+        |=> MouseEvent
+        |+> ConstantStrings MouseEvent
+            [
+                "click"; "dblclick"; "rightclick"
+                "mousedown"; "mouseup"; "mousemove"; "mouseover"; "mouseleave"; "mouseout"; "mousewheel"
+            ]
+
+    let UnitEvent = Type.New()
+
+    let UnitEventClass =
+        Class "Microsoft.Maps.UnitEvent"
+        |=> UnitEvent
+        |+> ConstantStrings UnitEvent
+            [
+                "copyrightchanged"; "imagerychanged"; "maptypechanged"; "targetviewchanged"; "tiledownloadcomplete"
+                "viewchange"; "viewchangeend"; "viewchangestart"
+                "entityadded"; "entitychanged"; "entityremoved"
+            ]
+
+    let EventHandler = Type.New()
+
+    let EventHandlerClass =
+        Class "Microsoft.Maps.EventHandler"
+        |=> EventHandler
+
+    let Events = Type.New()
+
+    let EventsClass =
+        Class "Microsoft.Maps.Events"
+        |=> Events
+        |+> [
+                "addHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * MouseEvent * (MouseEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * UnitEvent * T<unit -> unit> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addThrottledHandler" => Entity * T<string> * T<obj -> unit> * T<float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
+
+                "hasHandler" => Entity * T<string> ^-> T<bool>
+                |> WithComment "Checks if the target has any attached event handler."
+
+                "invoke" => Entity * T<string> ^-> T<unit>
+                |> WithComment "Invokes an event on the target. This causes all handlers for the specified eventName to be called."
+
+                "removeHandler" => EventHandler ^-> T<unit>
+                |> WithComment "Detaches the specified handler from the event."
+            ]
+
     let InfoboxAction = Type.New()
 
     let InfoboxActionClass =
@@ -535,6 +574,7 @@ module Bing =
     let MapClass =
         Class "Microsoft.Maps.Map"
         |=> Map
+        |=> Implements [EntityInterface]
         |+> [
                 Constructor (T<Node> * MapOptions)
                 Constructor (T<Node> * ViewOptions)
@@ -712,6 +752,53 @@ module Bing =
                 |> WithComment "Converts the Color object to a string."
             ]
 
+    let PolylineOptions = Type.New()
+
+    let PolylineOptionsClass =
+        Pattern.Config "Microsoft.Maps.PolylineOptions" {
+            Required = []
+            Optional =
+                [
+                    "strokeColor", Color
+                    "strokeThickness", T<float>
+                    "visible", T<bool>
+                ]
+        }
+
+    let Polyline = Type.New()
+
+    let PolylineClass =
+        Class "Microsoft.Maps.Polyline"
+        |=> Polyline
+        |=> Implements [EntityInterface]
+        |+> [
+                Constructor (Type.ArrayOf Location)
+                Constructor (Type.ArrayOf Location * PolylineOptions)
+            ]
+        |+> Protocol
+            [
+                "getLocations" => T<unit> ^-> Type.ArrayOf Location
+                |> WithComment "Returns the locations that define the polyline."
+
+                "getStrokeColor" => T<unit> ^-> Color
+                |> WithComment "Returns the color of the polyline."
+
+                "getStrokeThickness" => T<unit -> float>
+                |> WithComment "Returns the thickness of the polyline."
+
+                "getVisible" => T<unit -> bool>
+                |> WithComment "Returns whether the polyline is visible. A value of false indicates that the polyline is hidden, although it is still an entity on the map."
+
+                "setLocations" => Type.ArrayOf Location ^-> T<unit>
+                |> WithComment "Sets the locations that define the polyline."
+
+                "setOptions" => PolylineOptions ^-> T<unit>
+                |> WithComment "Sets options for the polyline."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Polyline object to a string."
+            ]
+
     let TileLayer = Type.New()
     let TileLayerOptions = Type.New()
     let TileSource = Type.New()
@@ -790,6 +877,130 @@ module Bing =
                 |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
             ]
 
+
+    let PolygonOptions = Type.New()
+
+    let PolygonOptionsClass =
+        Pattern.Config "Microsoft.Maps.PolygonOptions" {
+            Required = []
+            Optional =
+                [
+                    "fillColor", Color
+                    "strokeColor", Color
+                    "strokeThickness", T<float>
+                    "visible", T<bool>
+                ]
+        }
+
+    let Polygon = Type.New()
+
+    let PolygonClass =
+        Class "Microsoft.Maps.Polygon"
+        |=> Polygon
+        |=> Implements [EntityInterface]
+        |+> [
+                Constructor (Type.ArrayOf Location)
+                Constructor (Type.ArrayOf Location * PolygonOptions)
+            ]
+        |+> Protocol
+            [
+                "getFillColor" => T<unit> ^-> Color
+                |> WithComment "Returns the color of the inside of the polygon."
+
+                "getLocations" => T<unit> ^-> Type.ArrayOf Location
+                |> WithComment "Returns the locations that define the polygon."
+
+                "getStrokeColor" => T<unit> ^-> Color
+                |> WithComment "Returns the color of the polygon."
+
+                "getStrokeThickness" => T<unit -> float>
+                |> WithComment "Returns the thickness of the polygon."
+
+                "getVisible" => T<unit -> bool>
+                |> WithComment "Returns whether the polygon is visible. A value of false indicates that the polygon is hidden, although it is still an entity on the map."
+
+                "setLocations" => Type.ArrayOf Location ^-> T<unit>
+                |> WithComment "Sets the locations that define the polygon."
+
+                "setOptions" => PolygonOptions ^-> T<unit>
+                |> WithComment "Sets options for the Polygon."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Polygon object to a string."
+            ]
+
+    let PushpinOptions = Type.New()
+
+    let PushpinOptionsClass =
+        Pattern.Config "Microsoft.Maps.PushpinOptions" {
+            Required = []
+            Optional =
+                [
+                    "anchor", Point
+                    "draggable", T<bool>
+                    "icon", T<string>
+                    "height", T<int>
+                    "text", T<string>
+                    "textOffset", Point
+                    "typeName", T<string>
+                    "visible", T<bool>
+                    "width", T<int>
+                    "zIndex", T<int>
+                ]
+        }
+
+    let Pushpin = Type.New()
+
+    let PushpinClass =
+        Class "Microsoft.Maps.Pushpin"
+        |=> Pushpin
+        |=> Implements [EntityInterface]
+        |+> [
+                Constructor Location
+                Constructor (Location * PushpinOptions)
+            ]
+        |+> Protocol
+            [
+                "getAnchor" => T<unit> ^-> Point
+                |> WithComment "Returns the point on the pushpin icon which is anchored to the pushpin location. An anchor of (0,0) is the top left corner of the icon."
+
+                "getIcon" => T<unit -> string>
+                |> WithComment "Returns the pushpin icon."
+
+                "getHeight" => T<unit -> int>
+                |> WithComment "Returns the height of the pushpin, which is the height of the pushpin icon."
+
+                "getLocation" => T<unit> ^-> Location
+                |> WithComment "Returns the location of the pushpin."
+
+                "getText" => T<unit -> string>
+                |> WithComment "Returns the text associated with the pushpin."
+
+                "getTextOffset" => T<unit> ^-> Point
+                |> WithComment "Returns the amount the text is shifted from the pushpin icon."
+
+                "getTypeName" => T<unit -> string>
+                |> WithComment "Returns the type of the pushpin."
+
+                "getVisible" => T<unit -> bool>
+                |> WithComment "Returns whether the pushpin is visible. A value of false indicates that the pushpin is hidden, although it is still an entity on the map."
+
+                "getWidth" => T<unit -> int>
+                |> WithComment "Returns the width of the pushpin, which is the width of the pushpin icon."
+
+                "getZIndex" => T<unit -> int>
+                |> WithComment "Returns the z-index of the pushpin with respect to other items on the map."
+
+                "setLocation" => Location ^-> T<unit>
+                |> WithComment "Sets the location of the pushpin."
+
+                "setOptions" => PushpinOptions ^-> T<unit>
+                |> WithComment "Sets options for the pushpin."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Pushpin object to a string."
+            ]
+
     let Assembly =
         Assembly [
             Namespace "IntelliFactory.WebSharper.Bing" [
@@ -801,6 +1012,9 @@ module Bing =
                 EventsClass
                 KeyEventArgsClass
                 MouseEventArgsClass
+                KeyEventClass
+                MouseEventClass
+                UnitEventClass
                 LabelOverlayClass
                 MapOptionsClass
                 ViewOptionsClass
@@ -819,6 +1033,12 @@ module Bing =
                 TileLayerOptionsClass
                 TileSourceClass
                 TileSourceOptionsClass
+                PolylineOptionsClass
+                PolylineClass
+                PolygonOptionsClass
+                PolygonClass
+                PushpinOptionsClass
+                PushpinClass
             ]
         ]
 

@@ -15,6 +15,15 @@ module Main =
         let opt = Bing.MapOptions()
         opt.Credentials <- credentials
         let map = Bing.Map(container.Body, opt)
+        let displayLatLong (e:MouseEventArgs) =
+            let center = (e.Target :?> Bing.Map).GetCenter()
+            let message = "center: " + string center.Latitude + ", " + string center.Longitude +
+                          "\nmouse: " + string (e.GetX()) + "," + string (e.GetY())
+            JavaScript.Alert message
+            ()
+        let clickEvent = Bing.Events.AddHandler(map, Bing.MouseEvent.Click, displayLatLong)
+        let pin = Bing.Pushpin(map.GetCenter())
+        map.Entities.Push(pin)
         Div [
             Text "Bing Samples"
             Br [] :> _
