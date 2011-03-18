@@ -1,948 +1,458 @@
-﻿namespace IntelliFactory.WebSharper.JQueryExtension
+﻿namespace IntelliFactory.WebSharper.BingExtension
 
 open IntelliFactory.WebSharper.Dom
 
-module JQuery =
+module Bing =
     open IntelliFactory.WebSharper.InterfaceGenerator
-    
-    
-    let JQ = Type.New()
 
-    // TODO: Where to define??
-    let Error = Type.New ()
-    // TODO: Where to define???
-    let XmlHttpRequest = Type.New ()
+    let AltitudeReference = Type.New()
 
-    // Event
-    let Event = Type.New()
-    let EventClass =
-        Class "Event"
-        |=> Event
-        |+> Protocol
-                [
-                    "currentTarget" =? T<Element>
-                    "data" =? T<obj>
-                    "isDefaultPrevented" =?  T<unit->bool>
-                    "isImmediatePropagationStopped" =? T<unit->bool>
-                    "isPropagationStopped" =?  T<unit->bool>
-                    "namespace" =? T<string>
-                    "pageX" =?  T<int>
-                    "pageY" =? T<int>
-                    "preventDefault" =? T<unit->unit>
-                    "relatedTarget" =? T<Element>
-                    "result" =? T<obj>
-                    "stopImmediatePropagation" =? T<unit->unit>
-                    "stopPropagation" =? T<unit->unit>
-                    "target" =? T<Element>
-                    "timeStamp" =? T<int>
-                    "eventType" =? T<obj>
-                    "which" =? T<int>
-            ]
-
-    /// Request type
-    let RequestType = Type.New()
-
-    let RequestTypeClass =
-        "GET POST PUT DELETE".Split ' '
-        |> Pattern.EnumStrings "RequestType"
-        |=> RequestType
-
-    /// Data type
-    let DataType = Type.New()
-    let DataTypeClass =
-        "xml html script json jsonp text".Split ' '
-        |> Pattern.EnumStrings "DataType"
-        |=> DataType
-
-    /// Support
-    let Support = Type.New()
-    let SupportClass =
-        let fields =
-            "boxModel cssFloat hrefNormalized htmlSerialize \
-             leadingWhitespace noCloneEvent objectAll opacity \
-             scriptEval style tbody".Split ' '
-        let props =
-            [for f in fields ->
-                f =? T<bool> :> CodeModel.Member
-            ]
-        Class "Support"
-        |=> Support
-        |+> Protocol props
-
-
-
-    /// Ajax configuration
-    let AjaxConfig = Type.New()
-    let AjaxConfigClass =
-        Pattern.Config "AjaxConfig" {
-            Required = []
-            Optional =
-                [
-                    "accepts" , T<obj>
-                    "async" , T<bool>
-                    "beforeSend" ,  XmlHttpRequest ^-> T<unit>
-                    "cache" , T<bool>
-                    // 1.5 allows _also_ an array of functions. We can't have both so the array version is 
-                    // preferred.
-                    "complete" , Type.ArrayOf(XmlHttpRequest * T<string> ^-> T<unit>)
-                    "contents", T<obj>
-                    "contentType" ,  T<string>
-                    "context" , T<obj>
-                    "converters", T<obj>
-                    "crossDomain", T<bool>
-                    "data" , T<obj>
-                    "dataFilter" , T<obj> * DataType ^-> T<unit>
-                    "dataType" , DataType
-                    // See complete's comment.
-                    "error" , Type.ArrayOf(XmlHttpRequest * T<string> * Error ^-> T<unit>)
-                    "global" , T<bool>
-                    "headers", T<obj>
-                    "ifModified" , T<bool>
-                    "jsonp" , T<string>
-                    "jsonpCallback" , T<string>
-                    "password" , T<string>
-                    "processData" , T<bool>
-                    "scriptCharset" , T<string>
-                    "statusCode", T<obj>
-                    // See complete's comment.
-                    "success" , Type.ArrayOf(T<obj> * T<string> * XmlHttpRequest ^-> T<unit>)
-                    "timeout" , T<int>
-                    "traditional" , T<bool>
-                    "type" , RequestType
-                    "url" , T<string>
-                    "username" , T<string>
-                    "xhr" , T<unit> ^-> XmlHttpRequest
-                ]
-        }
-
-    let StringMap = Type.New()
-
-    // Position
-    let Position = Type.New()
-    let PositionClass =
-        Pattern.Config "Position" {
-            Required = []
-            Optional =
-                [
-                    "top", T<int>
-                    "left" , T<int>
-                ]
-        }
-        |=> Position
-
-    // Animate options
-    let AnimateConfig = Type.New()
-    let AnimateConfigClass =
-        Pattern.Config "AnimateConfig" {
-            Required = []
-            Optional =
-                [
-                    "duration", (T<int> + T<string>)
-                    "easing" , T<string>
-                    "complete" , T<unit -> unit>
-                    "step" , T<unit -> unit>
-                    "queue" , T<bool>
-                    "specialEasing" , StringMap
-                ]
-        }
-        |=> AnimateConfig
-
-
-    /// Abbreviations
-    let Content = T<Element> + T<string> + JQ
-    let IntString = T<int> + T<string>
-    let FloatString = T<float> + T<string>
-    let UnitCallback = (T<unit> ^-> T<unit>)
-    let AjaxHandler =
-        (
-            T<Element> -*
-            Event?event *
-
-            XmlHttpRequest?request *
-            AjaxConfig?config ^->
-            T<unit>
-        ) ^-> JQ
-
-    let AjaxErrorHandler = Type.New ()
-//    let AjaxErrorHandler =
-//        (
-//            T<Element> -*
-//            Event?event *
-//            XmlHttpRequest?request *
-//            AjaxConfig?config *
-//            !?Error?error ^->
-//            T<unit>
-//        ) ^-> JQ
-
-    let EventHandler =
-        (
-            T<Element>  -*
-            Event?event
-        ) ^-> T<unit>
-
-
-    let AddCmt = "Add elements to the set of matched elements."
-    let AddClassCmt = "Adds the specified class(es) to each of the set of matched elements."
-    let AfterCmt = "Insert content, specified by the parameter, after each element in the set of matched elements."
-    let AjaxCompleteCmt = "Register a handler to be called when Ajax requests complete. This is an Ajax Event."
-    let AnimateCmt = "Perform a custom animation of a set of CSS properties."
-    let AppendCmt = "Insert content, specified by the parameter, to the end of each element in the set of matched elements."
-    let BeforeCmt = " Insert content, specified by the parameter, before each element in the set of matched elements."
-    let CssCmt = "Get the value of a style property for the first element in the set of matched elements."
-    let DataCmt = "Store arbitrary data associated with the matched elements."
-    let DieCmt = "Remove all event handlers previously attached using .live() from the elements."
-    let IndexCmt = "Search for a given element from among the matched elements."
-    let FilterCmt = "Reduce the set of matched elements to those that match the selector or pass the function's test."
-    let GetCmt = "Retrieve the DOM elements matched by the jQuery object."
-    let HeightCmt = "Get the current computed height for the first element in the set of matched elements."
-
-    let FX =
-        Class "fx"
+    let AltitudeReferenceClass =
+        Class "Microsoft.Maps.AltitudeReference"
+        |=> AltitudeReference
         |+> [
-            "off" =@ T<bool>
-            "interval" =@ T<int>
-        ]
+                "ground" =? AltitudeReference
+                |> WithComment "The altitude is measured from the ground level."
 
-    let Deferred, Promise =
-        
-        let promiseDeferredCallbacks =
-            Type.ArrayOf((!+ T<obj>) ^-> T<unit>) 
-            + ((!+ T<obj>) ^-> T<unit>)
+                "ellipsoid" =? AltitudeReference
+                |> WithComment "The altitude is measured from the WGS 84 ellipsoid of the Earth."
 
-        let promiseDeferredProtocol retType : list<CodeModel.Member> =
-            [
-                // It actually returns the same type. Not sure how to express it.
-                "done" => promiseDeferredCallbacks ^-> retType
-                "fail" => promiseDeferredCallbacks ^-> retType 
-                "isRejected" => (T<unit>) ^-> T<bool>
-                "isResolved" => (T<unit>) ^-> T<bool>
-                "then" => promiseDeferredCallbacks * promiseDeferredCallbacks ^-> retType
+                "isValid" => AltitudeReference ^-> T<bool>
+                |> WithComment "Determines if the specified reference is a supported AltitudeReference."
             ]
-        let PromiseClass = Class "jQuery.Promise"
 
-        let Promise =
-            PromiseClass
-            |+> [Constructor T<unit>]
-            |+> Protocol (promiseDeferredProtocol PromiseClass)
+    let Location = Type.New()
+    
+    let LocationClass =
+        Class "Microsoft.Maps.Location"
+        |=> Location
+        |+> [
+                Constructor (T<float> * T<float> * T<float> * AltitudeReference)
+                Constructor (T<float * float * float>)
+                Constructor (T<float * float>)
 
-        let Deferred =
-            let Deferred = Class "jQuery.Deferred"
-            let mems : list<CodeModel.Member> =
-                [
-                    // It actually returns the same type. Not sure how to express it.
-                    "resolve" => !+ T<obj> ^-> Deferred 
-                    "resolveWith" => (T<obj>?context *+ T<obj>) ^-> Deferred
-                    "reject" => !+ T<obj> ^-> Deferred 
-                    "rejectWith" => (T<obj>?context *+ T<obj>) ^-> Deferred
-                    "promise" => T<unit> ^-> PromiseClass
-                ]
-            Deferred
-            |+> [Constructor T<unit>]
-            |+> Protocol ((promiseDeferredProtocol Deferred) @ mems)
-        Deferred, Promise
+                "areEqual" => Location * Location ^-> T<bool>
+                |> WithComment "Determines if the specified Location objects are equal."
 
-    let JqXHR =
-        let JqXHR = Class "jqXHR"
-        JqXHR
-        |=> Inherits Deferred
+                "normalizeLongitude" => T<float -> float>
+                |> WithComment "Normalizes the specified longitude so that it is between -180 and 180."
+            ]
+        |+> Protocol
+            [
+                "altitude" =? T<float>
+                |> WithComment "The altitude of the location."
+
+                "altitudeMode" =? AltitudeReference
+                |> WithComment "The reference from which the altitude is measured."
+
+                "latitude" =? T<float>
+                |> WithComment "The latitude of the location."
+
+                "longitude" =? T<float>
+                |> WithComment "The longitude of the location."
+
+                "clone" => T<unit> ^-> Location
+                |> WithComment "Returns a copy of the Location object."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Location object to a string."
+            ]
+
+    let LocationRect = Type.New()
+
+    let LocationRectClass =
+        Class "Microsoft.Maps.LocationRect"
+        |=> LocationRect
+        |+> [
+                Constructor (Location * T<float> * T<float>)
+
+                "fromCorners" => Location * Location ^-> LocationRect
+                |> WithComment "Returns a LocationRect using the specified locations for the northwest and southeast corners."
+
+                "fromEdges" => T<float> * T<float> * T<float> * T<float> * T<float> * AltitudeReference ^-> LocationRect
+                |> WithComment "Returns a LocationRect using the specified northern and southern latitudes and western and eastern longitudes for the rectangle boundaries."
+
+                "fromLocation" => Type.ArrayOf Location ^-> LocationRect
+                |> WithComment "Returns a LocationRect using an array of locations."
+
+                "fromString" => T<string> ^-> LocationRect
+                |> WithComment "Creates a LocationRect from a string with the following format: \"north,west,south,east\". North, west, south and east specify the coordinate number values."
+            ]
         |+> Protocol [
-            // The documentation isn't clear about the types of each of the functions.
-            "readyState" =? T<bool> 
-            "statusText" =? T<string>
-            "responseXML" =? T<string> 
-            "responseText" =? T<string>
-            "setRequestHeader" => T<string> * T<obj> ^-> T<unit>
-            "getAllResponseHeaders" => T<unit> ^-> T<obj>
-            "getResponseHeader" => T<unit> ^-> T<obj>
-            "abort" => T<unit> ^-> T<unit>
-            "success" => (T<obj> * T<string> * XmlHttpRequest ^-> T<unit>) ^-> JqXHR
-            "error" => (XmlHttpRequest * T<string> * Error ^-> T<unit>) ^-> JqXHR
-            "complete" => (XmlHttpRequest * T<string> ^-> T<unit>) ^-> JqXHR
+                "center" =? Location
+                |> WithComment "The location that defines the center of the rectangle."
 
-        ]
+                "height" =? T<float>
+                |> WithComment "The height, in degrees, of the rectangle."
 
-    /// JQuery class
-    let JQueryClass =
-        Class "jQuery"
-        |=> JQ
+                "width" =? T<float>
+                |> WithComment "The width, in degrees, of the rectangle."
+
+                "clone" => T<unit> ^-> LocationRect
+                |> WithComment "Returns a copy of the LocationRect object."
+
+                "contains" => Location ^-> T<bool>
+                |> WithComment "Returns whether the specified Location is within the LocationRect."
+
+                "getEast" => T<unit -> float>
+                |> WithComment "Returns the longitude that defines the eastern edge of the LocationRect."
+                "getWest" => T<unit -> float>
+                |> WithComment "Returns the latitude that defines the western edge of the LocationRect."
+                "getNorth" => T<unit -> float>
+                |> WithComment "Returns the latitude that defines the northern edge of the LocationRect."
+                "getSouth" => T<unit -> float>
+                |> WithComment "Returns the latitude that defines the southern edge of the LocationRect."
+
+                "getSouthEast" => T<unit> ^-> Location
+                |> WithComment "Returns the Location that defines the southeast corner of the LocationRect."
+                "getNorthWest" => T<unit> ^-> Location
+                |> WithComment "Returns the Location that defines the northwest corner of the LocationRect."
+
+                "intersects" => LocationRect ^-> T<bool>
+                |> WithComment "Returns whether the specified LocationRect intersects with this LocationRect."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the LocationRect object to a string."
+            ]
+
+    let Point = Type.New()
+
+    let PointClass =
+        Class "Microsoft.Maps.Point"
+        |=> Point
+        |+> [
+                Constructor (T<float> * T<float>)
+
+                "areEqual" => Point * Point ^-> T<bool>
+                |> WithComment "Determines if the specified points are equal."
+
+                "clonePoint" => Point ^-> Point
+                |> WithSourceName "clone"
+                |> WithComment "Returns a copy of the Point object."
+            ]
         |+> Protocol
             [
-                "ignore" =? T<unit>
-                |> WithGetterInline "$this"
-
-                // Add (Tested)
-                "add" => T<string> ^-> JQ
-                |> WithComment AddCmt
-                "add" => T<Element> ^-> JQ
-                |> WithComment AddCmt
-                "add" => Type.ArrayOf T<Element> ^-> JQ
-                |> WithComment AddCmt
-
-                // Add class (Tested)
-                "addClass" => T<string>?className ^-> JQ
-                |> WithComment AddClassCmt
-                "addClass" => (T<int> *  T<string> ^-> T<string>)?nameGen ^-> JQ
-                |> WithComment AddClassCmt
-
-                // After (Tested)
-                "after" => (Content + (T<int> ^-> T<string>)) ^-> JQ
-                |> WithComment AfterCmt
-
-                "ajaxComplete" => AjaxHandler ^-> JQ
-                |> WithComment AjaxCompleteCmt
-
-                "ajaxError" => AjaxErrorHandler ^-> JQ
-
-                "ajaxSend" => AjaxHandler ^-> JQ
-
-                "ajaxStart" => AjaxHandler ^-> JQ
-
-                "ajaxSuccess" => AjaxHandler ^-> JQ
-
-                "andSelf" => T<unit> ^-> JQ
-
-                // Animate (Tested)
-                "animate" => StringMap?properties * AnimateConfig?options ^-> JQ
-                |> WithComment AnimateCmt
-                "animate" => StringMap * IntString?duration ^-> JQ
-                |> WithComment AnimateCmt
-                "animate" => StringMap * IntString?duration * T<string>?easing ^-> JQ
-                |> WithComment AnimateCmt
-                "animate" => StringMap * IntString?duration * UnitCallback?callback ^-> JQ
-                |> WithComment AnimateCmt
-                "animate" => StringMap * IntString?duration * T<string>?easing * UnitCallback?callback ^-> JQ
-                |> WithComment AnimateCmt
-
-                // Append (Tested)
-                "append" => Content?content ^-> JQ
-                |> WithComment AppendCmt
-                "append" => (T<int> * T<string> ^-> T<string>)?contentGen ^-> JQ
-                |> WithComment AppendCmt
-
-
-                // AppendTo (Tested)
-                "appendTo" => Content ^-> JQ
-                |> WithComment "Insert every element in the set of matched elements to the end of the target."
-
-                // Attr (Tested)
-                "attr" => T<string>?attributeName ^-> T<string>
-                |> WithComment "Get the value of an attribute for the first element in the set of matched elements."
-                "attr" => T<string>?attributeName * T<string>?value ^-> JQ
-                |> WithComment "Set the value of an attribute for the first element in the set of matched elements."
-
-                // Before
-                "before" => Content?content ^-> JQ
-                |> WithComment BeforeCmt
-                "before" => (T<unit> ^-> T<string>)?contentGen ^-> JQ
-                |> WithComment BeforeCmt
-
-                // Bind (Tested)
-                "bind" => T<string>?event * !?StringMap?eventData * EventHandler?handler ^-> JQ
-                |> WithComment "Attach a handler to an event for the elements."
-
-                "bindFalse" => T<string>?event * StringMap?eventData ^-> JQ
-                |> WithComment "Attach a handler to an event for the elements."
-                |> WithInline "$this.bind($event, $eventData, false)"
-
-
-                // Blur (Tested)
-                "blur" => !?EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"blur\" JavaScript event, or trigger that event on an element."
-
-                "blur" => StringMap?eventData * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"blur\" JavaScript event, or trigger that event on an element."
-
-
-                // Change
-                "change" => !?EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"change\" JavaScript event, or trigger that event on an element."
-
-                "change" => StringMap?eventData * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"change\" JavaScript event, or trigger that event on an element."
-
-
-                // Children (Tested)
-                "children" => !?T<string>?selector ^-> JQ
-                |> WithComment "Get the children of each element in the set of matched elements, optionally filtered by a selector."
-
-                // ClearQueue
-                "clearQueue" => !?T<string>?selector ^-> JQ
-                |> WithComment "Remove from the queue all items that have not yet been run."
-
-                // Click
-                "click" => !?EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"click\" JavaScript event, or trigger that event on an element."
-
-                "click" => StringMap?eventData * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"click\" JavaScript event, or trigger that event on an element."
-
-                // Clone
-                "clone" => !?T<bool>?withDataAndEvents ^-> JQ
-                |> WithComment "Create a copy of the set of matched elements."
-
-                // Closest
-                "closest" => T<string>?selector * !?T<Element>?context ^-> JQ
-                |> WithComment "Get the first ancestor element that matches the selector, beginning at the current element and progressing up through the DOM tree."
-
-                // Contents
-                "contents" => T<unit> ^-> T<unit>
-                |> WithComment "Get the children of each element in the set of matched elements, including text nodes."
-
-                // Context (Tested)
-                "context" =? T<Element>
-                |> WithComment "The DOM node context originally passed to jQuery(); if none was passed then context will likely be the document."
-
-                // Css (Tested)
-                "css" => T<unit> ^-> T<string>
-                |> WithComment CssCmt
-                "css" => T<string> ^-> T<string>
-                |> WithComment CssCmt                
-                "css" => T<string>?propertyName * T<string>?propertyValue ^-> JQ
-                |> WithComment CssCmt
-                "css" => T<string>?propertyName * (T<int> * T<string> ^-> T<string>)?valGen ^-> JQ
-                |> WithComment CssCmt
-                "css" => StringMap?map ^-> JQ
-                |> WithComment CssCmt
-
-                // Data
-                "data" => T<string>?key * T<obj>?value ^-> JQ
-                |> WithComment DataCmt
-                "data" => StringMap?updates ^-> JQ
-                |> WithComment DataCmt
-                "data" => T<string>?key ^-> T<obj>
-                |> WithComment DataCmt
-
-                // Dblclick
-                "dblclick" => !?EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"dblclick\" JavaScript event, or trigger that event on an element"
-
-                "dblclick" => StringMap?data * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"dblclick\" JavaScript event, or trigger that event on an element"
-
-                // Delay
-                "delay" => T<int>?duration * !?T<string>?queueName ^-> JQ
-                |> WithComment "Set a timer to delay execution of subsequent items in the queue"
-
-                // Delegate
-                "delegate" => T<string>?selector * Event?eventType * !?StringMap?eventData * EventHandler?handler ^-> JQ
-                |> WithComment "Attach a handler to one or more events for all elements that match the selector, now or in the future, based on a specific set of root elements."
-
-                // Dequeue
-                "dequeue" => !?T<string>?queueName ^-> JQ
-                |> WithComment "Execute the next function on the queue for the matched elements."
-
-                // Detach
-                "detach" => !?T<string>?selector ^-> JQ
-                |> WithComment "Remove the set of matched elements from the DOM."
-
-                // Die
-                "die" => T<unit> ^-> JQ
-                |> WithComment DieCmt
-                "die" => T<string> * !?EventHandler ^-> JQ
-                |> WithComment DieCmt
-
-                // Each
-                "each" => (T<Element> -* !?T<int> ^-> T<unit>)?handler ^-> JQ
-                |> WithComment "Iterate over a jQuery object, executing a function for each matched element."
-
-                // Empty
-                "empty" => T<unit> ^-> JQ
-                |> WithComment "Remove all child nodes of the set of matched elements from the DOM."
-
-                // End
-                "end" => T<unit> ^-> JQ
-                |> WithComment "End the most recent filtering operation in the current chain and return the set of matched elements to its previous state."
-
-                // Error
-                "error" => EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"error\" JavaScript event."
-
-                // Error
-                "error" => StringMap?data * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"error\" JavaScript event."
-
-                // Fade in
-                "fadeIn"  => !?FloatString?duration * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Display the matched elements by fading them to opaque."
-
-                "fadeIn"  => FloatString?duration * T<string>?easing * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Display the matched elements by fading them to opaque."
-
-                // FadeOut
-                "fadeOut"  => !?FloatString?duration * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Display the matched elements by fading them to transparent."
-
-                "fadeOut"  => FloatString?duration * T<string>?easing * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Display the matched elements by fading them to transparent."
-
-                // FadeTo
-                "fadeTo" => FloatString?duration * T<float>?value * T<string>?easing * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Adjust the opacity of the matched elements."
-                "fadeTo" => FloatString?duration * T<float>?value * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Adjust the opacity of the matched elements."
-
-                // FadeToggle
-                "fadeToggle" => !? FloatString?duration * !?UnitCallback?callback ^-> JQ
-                |> WithComment "Display or hide the matched elements by animating their opacity."
-                "fadeToggle" => FloatString?duration * T<string>?easing* !?UnitCallback?callback ^-> JQ
-                |> WithComment "Display or hide the matched elements by animating their opacity."
-
-                // Filter
-                "filter" => T<string>?selector ^-> JQ
-                |> WithComment FilterCmt
-                "filter" => (T<Element> -* !?T<int> ^-> T<bool>)?predicate ^-> JQ
-                |> WithComment FilterCmt
-
-                // Find
-                "find" => T<string> ^-> JQ
-                |> WithComment "Get the descendants of each element in the current set of matched elements, filtered by a selector."
-
-                // First
-                "first" => T<unit> ^-> JQ
-                |> WithComment "Reduce the set of matched elements to the first in the set."
-
-                // Focus
-                "focus" => !?EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"focus\" JavaScript event, or trigger that event on an element."
-                "focus" => StringMap?data * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"focus\" JavaScript event, or trigger that event on an element."
-
-
-                // Focusin
-                "focusin" => EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"focusin\" JavaScript event."
-                "focusin" => StringMap?data * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"focusin\" JavaScript event."
-
-                // Focusout
-                "focusout" => EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"focusout\" JavaScript event."
-                "focusout" => StringMap?data * EventHandler?handler ^-> JQ
-                |> WithComment "Bind an event handler to the \"focusout\" JavaScript event."
-
-                // Get
-                "get" => T<int>?index ^-> T<Node>
-                |> WithComment GetCmt
-                "get" => T<unit> ^-> Type.ArrayOf T<Node>
-                |> WithComment GetCmt
-
-                // Has
-                "has" => (T<string>?selector * T<Element>?element) ^-> JQ
-                |> WithComment "Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element."
-
-                // HasClass
-                "hasClass" => T<string>?className ^-> JQ
-                |> WithComment "Determine whether any of the matched elements are assigned the given class."
-
-                // Height
-                "height" => T<unit> ^-> T<int>
-                |> WithComment HeightCmt
-                "height" => T<int> ^-> JQ
-                |> WithComment HeightCmt
-
-
-                // Hide (Tested)
-                "hide" => !?IntString?duration * !?(T<Element> -* T<unit> ^-> T<unit>)?handler  ^-> JQ
-                |> WithComment "Hide the matched elements."
-                "hide" => IntString?duration * T<string>?easing * !?(T<Element> -* T<unit> ^-> T<unit>)?handler  ^-> JQ
-                |> WithComment "Hide the matched elements."
-
-                // Hover
-                "hover" => EventHandler?handlerIn * !? EventHandler?handlerOut ^-> JQ
-                |> WithComment "Bind two handlers to the matched elements, to be executed when the mouse pointer enters and leaves the elements."
-
-                // Html
-                "html" => T<unit> ^-> T<string>
-                "html" => T<string> ^-> JQ
-
-                // Index
-                "index" => T<unit> ^-> T<int>
-                |> WithComment IndexCmt
-
-                "index" => T<string>?selector ^-> JQ
-                |> WithComment IndexCmt
-
-                "index" => T<Element>?element ^-> JQ
-                |> WithComment IndexCmt
-
-                "innerHeight" => T<unit> ^-> T<int>
-
-                "innerWidth" => T<unit> ^-> T<int>
-
-                "insertAfter" => Content ^-> JQ
-
-                "insertBefore" => Content ^-> JQ
-
-                "is" => T<string> ^-> T<bool>
-
-                "keydown" => !?EventHandler ^-> JQ
-                "keydown" => StringMap?data * EventHandler ^-> JQ
-
-                "keypress" => !?EventHandler ^-> JQ
-                "keypress" => StringMap?data * EventHandler ^-> JQ
-
-                "keyup" => !?EventHandler ^-> JQ
-                "keyup" => StringMap?data * EventHandler ^-> JQ
-
-                "last" => T<unit> ^-> JQ
-
-                "length" =% T<int>
-
-                "live" => T<string> * EventHandler ^-> JQ
-
-                "live" => T<string> * T<obj> ^-> JQ
-
-                "load" => T<string>  * !?(T<string> + T<obj>) * !?(T<string> * T<string> * XmlHttpRequest ^-> T<unit>) ^-> JQ
-
-                "load" => EventHandler ^-> JQ
-                "load" => StringMap?data * EventHandler ^-> JQ
-
-                Generic -   ( fun t ->
-                                Method "map" ((T<int> * T<Element> ^-> t) ^-> JQ)
-                            )
-                
-                "mousedown" => StringMap?data * EventHandler ^-> JQ
-                "mousedown" => !?EventHandler ^-> JQ
-
-                "mouseenter" => !?EventHandler ^-> JQ
-                "mouseenter" => StringMap?data * EventHandler ^-> JQ
-                
-                "mouseleave" => !?EventHandler ^-> JQ
-                "mouseleave" => StringMap?data * EventHandler ^-> JQ
-                
-                "mousemove" => !?EventHandler ^-> JQ
-                "mousemove" => StringMap?data * EventHandler ^-> JQ
-                
-                "mouseout" => !?EventHandler ^-> JQ
-                "mouseout" => StringMap?data * EventHandler ^-> JQ
-                
-                "mouseover" => !?EventHandler ^-> JQ
-                "mouseover" => StringMap?data * EventHandler ^-> JQ
-
-                "mouseup" => !?EventHandler ^-> JQ
-                "mouseup" => StringMap?data * EventHandler ^-> JQ
-
-                "next" => !?T<string> ^-> JQ
-
-                "nextAll" => !?T<string> ^-> JQ
-
-                "nextUntil" => !?T<string> ^-> JQ
-
-                "not" => T<string> ^-> JQ
-                "not" => T<Element> ^-> JQ
-                "not" => Type.ArrayOf T<Element> ^-> JQ
-
-                "not" => (T<Element> -* T<int> ^-> T<unit>) ^-> JQ
-
-                "offset" => T<unit> ^-> Position
-                "offset" => Position ^-> JQ
-
-                "offsetParent" => T<unit> ^-> JQ
-
-                "one" => T<string> * !?T<obj> * EventHandler ^-> JQ
-
-                "outerHeight" => !?T<bool> ^-> T<int>
-
-                "outerWidth" => !?T<bool> ^-> T<int>
-
-                "parent" => !?T<string> ^-> JQ
-
-                "parents" => !?T<string> ^-> JQ
-
-                "parentsUntil" => !?T<string> ^-> JQ
-
-                "position" => T<unit> ^-> JQ
-
-                "prepend" => Content ^-> JQ
-                "prepend" => (T<int> * T<string> ^-> T<string>) ^-> JQ
-
-                "prependTo" => Content ^-> JQ
-
-                "prev" => !?T<string> ^-> JQ
-
-                "prevUntil" => !?T<string> ^-> JQ
-
-                "pushStack" => Type.ArrayOf T<Element> ^-> JQ
-                "pushStack" => Type.ArrayOf T<Element> * T<string> * Type.ArrayOf T<obj> ^-> JQ
-
-                "queue" => !?T<string> ^-> JQ
-                "queue" => !?T<string> * Type.ArrayOf T<obj> ^-> JQ
-                "queue" => !?T<string> * (T<obj> ^-> T<unit>) ^-> JQ
-
-                "ready" => UnitCallback ^-> JQ
-
-                "remove" => !?T<string> ^-> JQ
-
-                "removeAttr" => T<string> ^-> JQ
-
-                "removeClass" => T<string> ^-> JQ
-
-                "removeData" => !?T<string> ^-> JQ
-
-                "replaceAll" => !?T<string> ^-> JQ
-
-                "replaceWith" => Content ^-> JQ
-
-                "replaceWith" => (T<unit> ^-> T<string>) ^-> JQ
-
-                "resize" => !?EventHandler ^-> JQ
-                "resize" => StringMap?data * !?EventHandler ^-> JQ
-
-                "scroll" => !?EventHandler ^-> JQ
-                "scroll" => StringMap?data * !?EventHandler ^-> JQ
-
-                "scrollLeft" => !?T<int> ^-> JQ
-
-                "scrollTop" => !?T<int> ^-> JQ
-
-                "select" => !?EventHandler ^-> JQ
-                "select" => StringMap?data * !?EventHandler ^-> JQ
-
-                "serialize" => T<unit> ^-> T<string>
-
-                "serializeArray" => T<unit> ^-> Type.ArrayOf T<obj>
-
-                "show" => !?IntString * !?(T<Element> -* T<unit> ^-> T<unit>)  ^-> JQ
-                "show" => IntString * T<string>?easing * !?(T<Element> -* T<unit> ^-> T<unit>)  ^-> JQ
-
-
-                "siblings" => !?T<string> ^-> JQ
-
-                "size" => T<unit> ^-> T<int>
-
-                "slice" => T<int> * !?T<int> ^-> JQ
-
-                "slideDown" => !?IntString * !?UnitCallback ^-> JQ
-                "slideDown" => IntString * T<string>?easing * !?UnitCallback ^-> JQ
-
-                "slideToggle" => !?IntString * !?UnitCallback ^-> JQ
-                "slideToggle" => IntString * T<string>?easing * !?UnitCallback ^-> JQ
-
-                "slideUp" => !?IntString * !?UnitCallback ^-> JQ
-                "slideUp" => IntString * T<string>?easing * !?UnitCallback ^-> JQ
-
-                "stop" => !?T<bool> * !?T<bool> ^-> JQ
-
-                "submit" => !?EventHandler ^-> JQ
-                "submit" => StringMap?data * !?EventHandler ^-> JQ
-
-                "text" => T<unit> ^-> T<string>
-                "text" => T<string> ^-> JQ
-
-                "toArray" => T<unit> ^-> Type.ArrayOf T<Element>
-
-                "toggle" => !?T<int> * !?EventHandler ^-> JQ
-                "toggle" => T<int> * T<string>?easing * !?EventHandler ^-> JQ
-                "toggle" => T<bool>?showOrHide ^-> JQ
-
-                "toggleClass" => T<string> * !?T<bool> ^-> JQ
-                "toggleClass" => (T<int> * T<string> ^-> T<unit>)  * !?T<bool> ^-> JQ
-
-                "trigger" => T<string> * !?(Type.ArrayOf T<obj>) ^-> JQ
-                "triggerHandler" => T<string> * !?(Type.ArrayOf T<obj>) ^-> JQ
-
-                "unbind" => T<string> * !?EventHandler ^-> JQ
-                "unbindFalse" => T<string>?event * StringMap?eventData ^-> JQ
-                |> WithComment "Attach a handler to an event for the elements."
-                |> WithInline "$this.bind($event, $eventData, false)"
-
-                "undelegate" => T<unit> ^-> JQ
-                "undelegate" => T<string> * T<string> * !?EventHandler ^-> JQ
-
-                "unload" => EventHandler ^-> JQ
-                "unload" => StringMap?data * EventHandler ^-> JQ
-
-                "unwrap" => T<unit> ^-> JQ
-
-                "val" => T<unit> ^-> T<obj>
-                "val" => T<string> ^-> JQ
-
-                "width" => T<unit> ^-> T<int>
-                "width" => T<int> ^-> JQ
-
-                "wrap" => Content ^-> JQ
-                "wrap" => (T<unit> ^-> T<string>) ^-> JQ
-
-                "wrapAll" => Content ^-> JQ
-
-                "wrapInner" => Content ^-> JQ
-                "wrapInner" => (T<unit> ^-> T<string>) ^-> JQ
+                "clone" => T<unit> ^-> Point
+                |> WithComment "Returns a copy of the Point object."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Point object into a string."
             ]
+
+    let EventHandler = Type.New()
+
+    let EventHandlerClass =
+        Class "Microsoft.Maps.EventHandler"
+        |=> EventHandler
+
+    let Events = Type.New()
+
+    let EventsClass =
+        Class "Microsoft.Maps.Events"
+        |=> Events
         |+> [
-                "of" => T<string>?selector ^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "Accepts a string containing a CSS selector which is then used to match a set of elements."
+                "addHandler" => T<obj * string * (obj -> obj)> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
 
-                "of" => T<string>?selector * Content?context ^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "Accepts a string containing a CSS selector and a DOM Element, Document, or jQuery to use as context."
+                "addThrottledHandler" => T<obj * string * (obj -> obj) * float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
 
-                "of" => (Type.ArrayOf T<Node>)?elementArray ^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "An array containing a set of DOM elements to wrap in a jQuery object."
+                "hasHandler" => T<obj * string -> bool>
+                |> WithComment "Checks if the target has any attached event handler."
 
-                "of" => T<Node>?node^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "DOM node to wrap in a jQuery object."
+                "invoke" => T<obj * string -> unit>
+                |> WithComment "Invokes an event on the target. This causes all handlers for the specified eventName to be called."
 
-                "of" => T<string>?html * T<Document>?ownerDocument ^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "Creates DOM elements on the fly from the provided string of raw HTML."
+                "removeHandler" => EventHandler ^-> T<unit>
+                |> WithComment "Detaches the specified handler from the event."
+            ]
 
-                "of" => T<string>?html * StringMap?props ^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "Creates DOM elements on the fly from the provided string of raw HTML."
+    let KeyEventArgs = Type.New()
 
-                "of" => (T<unit> ^-> T<unit>) ?callback ^-> JQ
-                |> WithInline "jQuery($0)"
-                |> WithComment "Binds a function to be executed when the DOM has finished loading."
+    let KeyEventArgsClass =
+        Class "Microsoft.Maps.KeyEventArgs"
+        |=> KeyEventArgs
+        |+> Protocol
+            [
+                "altKey" =? T<bool>
+                |> WithComment "A boolean indicating if the ALT key was pressed."
 
+                "ctrlKey" =? T<bool>
+                |> WithComment "A boolean indicating if the CTRL key was pressed."
 
-                "ajax" => AjaxConfig ^-> JqXHR
-                "ajax" => T<string> * AjaxConfig ^-> JqXHR
+                "eventName" =? T<string>
+                |> WithComment "The event that occurred."
 
+                "handled" =? T<bool>
+                |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
 
-                "ajaxSetup" => AjaxConfig ^-> T<unit>
+                "keyCode" =? T<string>
+                |> WithComment "The code that identifies the keyboard key that was pressed."
 
-                "contains" =>
-                    T<Element>?container * T<Node>?contained ^-> T<bool>
+                "originalEvent" =? T<obj>
+                |> WithComment "The original browser event."
 
-                "data" =>
-                    (T<Element> * T<string> * T<obj> ^-> T<unit>)
-                    + (T<Element> * T<string> ^-> T<obj>)
-                    + (T<Element> ^-> T<obj>)
+                "shiftKey" =? T<bool>
+                |> WithComment "A boolean indicating if the SHIFT key was pressed."
+            ]
 
-                "dequeue" => T<Element> * !?T<string>?queueName ^-> T<unit>
+    let LabelOverlay = Type.New()
 
-                Generic -   ( fun t ->
-                                Method "each" (Type.ArrayOf t * (T<int> * t ^-> T<unit>) ^-> T<unit>)
-                            )
-                "each" => T<obj> * (T<obj> * T<obj> ^-> T<unit>) ^-> T<unit>
+    let LabelOverlayClass =
+        Class "Microsoft.Maps.LabelOverlay"
+        |=> LabelOverlay
+        |+> [
+                "hidden" =? LabelOverlay
+                |> WithComment "Map labels are not shown on top of imagery."
 
-                "error" => T<string->unit>
+                "visible" =? LabelOverlay
+                |> WithComment "Map labels are shown on top of imagery."
 
-                "extend" => !?T<bool>?deep * T<obj> *+ T<obj> ^-> T<obj>
-                
-                "fx" =? FX 
-                
-                "get" =>
-                    T<string>?url *
-                    !?(T<string> + T<obj>)?data *
-                    !?(T<obj> * T<string> * XmlHttpRequest ^-> T<unit>)?fn *
-                    !?DataType?dataType ^->
-                    JqXHR
+                "isValid" => LabelOverlay ^-> T<bool>
+                |> WithComment "Determines whether the specified labelOverlay is a supported LabelOverlay."
+            ]
 
-                "getJSON" =>
-                    T<string>?url *
-                    !?(T<obj*string->unit>)?callback ^->
-                    JqXHR
+    let MapOptions = Type.New()
 
-                "getJSON" =>
-                    T<string>?url *
-                    (T<string> + T<obj>)?data *
-                    !?(T<obj*string->unit>)?callback ^->
-                    JqXHR
+    let MapOptionsClass =
+        Class "Microsoft.Maps.MapOptions"
+        |=> MapOptions
+        |+> [
+                Constructor T<unit>
+            ]
+        |+> Protocol
+            [
+                "credentials" =% T<string>
+                |> WithComment "The Bing Maps Key used to authenticate the application. This property is required and can only be set when using the Map constructor."
 
-                "getScript" =>
-                    T<string>?url *
-                    !?(T<obj*string->unit>)?callback ^->
-                    JqXHR
+                "disableKeyboardInput" =? T<bool>
+                |> WithComment "A boolean value indicating whether to disable the map’s response to keyboard input. The default value is false. This property can only be set when using the Map constructor."
 
-                "globalEval" => T<string->obj>
+                "disableMouseInput" =? T<bool>
+                |> WithComment "A boolean value indicating whether to disable the map’s response to mouse input. The default value is false. This property can only be set when using the Map constructor."
 
-                Generic - ( fun t ->
-                                Method "grep" (
-                                    Type.ArrayOf t * (t * T<int> ^-> T<bool>) * !?T<bool>?invert ^-> Type.ArrayOf t
-                                )
-                          )
+                "disableTouchInput" =? T<bool>
+                |> WithComment "A boolean value indicating whether to disable the map’s response to touch input. The default value is false. This property can only be set when using the Map constructor."
 
+                "disableUserInput" =? T<bool>
+                |> WithComment "A boolean value indicating whether to disable the map’s response to any user input. The default value is false. This property can only be set when using the Map constructor."
 
-                "hasData" => T<Element -> bool>
-                Generic -   (fun t ->
-                                Method "inArray" (
-                                    t * (Type.ArrayOf t)  ^-> T<int>
-                                )
-                            )
+                "enableClickableLogo" =? T<bool>
+                |> WithComment "A boolean value indicating whether the Bing(TM) logo on the map is clickable. The default value is true. This property can only be set when using the Map constructor."
 
-                "isWindow" => T<obj> ^-> T<bool>
-                |> WithComment "This is used in a number of places in jQuery to determine if we're operating against a browser window (such as the current window or an iframe)."
-                
-                "isArray" => T<obj->bool>
+                "enableSearchLogo" =? T<bool>
+                |> WithComment "A boolean value indicating whether to enable the Bing(TM) hovering search logo on the map. The default value is true. This property can only be set when using the Map constructor."
 
-                "isEmptyObject" => T<obj> ^-> T<bool>
+                "height" =? T<bool>
+                |> WithComment "The height of the map. The default value is null. If no height is specified, the height of the div is used. If height is specified, then width must be specified as well."
+            ]
 
-                "isFunction" => T<obj> ^-> T<bool>
+    let Size = Type.New()
 
-                "isPlainObject" => T<obj->bool>
+    let SizeClass =
+        Class "Microsoft.Maps.Size"
+        |=> Size
+        |+> Protocol
+            [
+                "height" =? T<float>
+                "width" =? T<float>
+            ]
 
-                "isXMLDoc" => T<Node> ^-> T<bool>
+    let ViewOptions = Type.New()
 
-                "makeArray" => T<obj> ^-> Type.ArrayOf T<obj>
+    let ViewOptionsClass =
+        Class "Microsoft.Maps.ViewOptions"
+        |=> ViewOptions
 
-                Generic -   ( fun t u ->
-                                Method "map" (Type.ArrayOf t * (t * T<int> ^-> u ) ^-> Type.ArrayOf u)
-                            )
+    let EntityCollection = Type.New()
 
-                Generic -   (fun t ->
-                                Method "merge" ((Type.ArrayOf t) * (Type.ArrayOf t) ^-> (Type.ArrayOf t))
-                            )
+    let EntityCollectionClass =
+        Class "Microsoft.Maps.EntityCollection"
+        |=> EntityCollection
 
-                "noConflict" => !?T<bool>?removeAll ^-> T<unit>
+    let Range = Type.New()
 
-                "noop" => T<unit->unit>
+    let RangeClass =
+        Class "Range"
+        |=> Range
+        |+> Protocol
+            [
+                "min" =? T<float>
+                |> WithComment "The minimum value in the range."
 
-                "param" => T<obj> * !?T<bool>?traditional ^-> T<string>
+                "max" =? T<float>
+                |> WithComment "The maximum value in the range."
+            ]
 
-                "parseJSON" => T<string->obj>
-                
-                "parseXML" => T<string -> Document>
+    let MapTypeId = Type.New()
 
-                "post" =>
-                    T<string>?url *
-                    !?(T<string> + T<obj>)?data *
-                    !?(T<obj> * T<string> * XmlHttpRequest ^-> T<unit>)?success *
-                    !?DataType?dataType ^->
-                    JqXHR
+    let MapTypeIdClass =
+        Class "Microsoft.Maps.MapTypeId"
+        |=> MapTypeId
 
-                "sub" => T<unit> ^-> JQ
+    let PixelReference = Type.New()
 
-                "when" => !+ Deferred ^-> Deferred
+    let PixelReferenceClass =
+        Class "Microsoft.Maps.PixelReference"
+        |=> PixelReference
 
-                //TODO!!!!!
-                "proxy" => (T<obj> * T<string> ^-> T<obj>)
+    let Map = Type.New()
 
-                "queue" =>
-                    T<Element> * !?T<string>?queueName *
-                    !?(T<unit->unit> + T<(unit->unit)[]>)?callback ^-> T<int>
+    let MapClass =
+        Class "Microsoft.Maps.Map"
+        |=> Map
+        |+> [
+                Constructor (T<Node> * MapOptions)
+                Constructor (T<Node> * ViewOptions)
+                Constructor (T<Node>)
+            ]
+        |+> Protocol
+            [
+                "entities" =? EntityCollection
+                |> WithComment "The map’s entities. Use this property to add or remove entities from the map."
 
-                "removeData" => T<Element> * !?T<string>?name ^-> T<unit>
+                "blur" => T<unit -> unit>
+                |> WithComment "Removes focus from the map control so that it does not respond to keyboard events."
 
-                // TODO!!!
-                // "support" =? Support
-                "trim" => T<string->string>
-                
-                "type" => T<unit> ^-> T<string>
-                |> WithComment "Determine the internal JavaScript [[Class]] of an object"
-                
-                "unique" =>
-                    Type.ArrayOf T<Element> ^-> Type.ArrayOf T<Element>
+                "dispose" => T<unit -> unit>
+                |> WithComment "Deletes the Map object and releases any associated resources."
+
+                "focus" => T<unit -> unit>
+                |> WithComment "Applies focus to the map control so that it responds to keyboard events."
+
+                "getBounds" => T<unit> ^-> LocationRect
+                |> WithComment "Returns the location rectangle that defines the boundaries of the current map view."
+
+                "getCenter" => T<unit> ^-> Location
+                |> WithComment "Returns the location of the center of the current map view."
+
+                "getCopyrights" => T<unit> ^-> Type.ArrayOf T<string>
+                |> WithComment "Gets the array of strings representing the attributions of the imagery currently displayed on the map."
+
+                "getCredentials" => T<(string option -> unit) -> unit>
+                |> WithComment "Gets the session ID. This method calls the callback function with the session ID as the first parameter."
+
+                "getHeading" => T<unit -> float>
+                |> WithComment "Returns the heading of the current map view."
+
+                "getHeight" => T<unit -> int>
+                |> WithComment "Returns the height of the map control."
+
+                "getImageryId" => T<unit -> string>
+                |> WithComment "Returns the string that represents the imagery currently displayed on the map."
+
+                "getMapTypeId" => T<unit -> string>
+                |> WithComment "Returns a string that represents the current map type displayed on the map."
+
+                "getMetersPerPixel" => T<unit -> float>
+                |> WithComment "Returns the current scale in meters per pixel of the center of the map."
+
+                "getModeLayer" => T<unit -> Node>
+                |> WithComment "Returns the map’s mode node."
+
+                "getOptions" => T<unit> ^-> MapOptions
+                |> WithComment "Returns the map options that have been set. Note that if an option is not set, then the default value for that option is assumed and getOptions returns undefined for that option."
+
+                "getPageX" => T<unit -> int>
+                |> WithComment "Returns the x coordinate of the top left corner of the map control, relative to the page."
+
+                "getPageY" => T<unit -> int>
+                |> WithComment "Returns the y coordinate of the top left corner of the map control, relative to the page."
+
+                "getRootElement" => T<unit -> Node>
+                |> WithComment "Returns the map’s root node."
+
+                "getTargetBounds" => T<unit> ^-> LocationRect
+                |> WithComment "Returns the location rectangle that defines the boundaries of the view to which the map is navigating."
+
+                "getTargetCenter" => T<unit> ^-> Location
+                |> WithComment "Returns the center location of the view to which the map is navigating."
+
+                "getTargetHeading" => T<unit -> float>
+                |> WithComment "Returns the heading of the view to which the map is navigating."
+
+                "getTargetMetersPerPixel" => T<unit -> float>
+                |> WithComment "Returns the scale in meters per pixel of the center of the view to which the map is navigating."
+
+                "getTargetZoom" => T<unit -> float>
+                |> WithComment "Returns the zoom level of the view to which the map is navigating."
+
+                "getUserLayer" => T<unit -> Node>
+                |> WithComment "Returns the map’s user node."
+
+                "getViewportX" => T<unit -> int>
+                |> WithComment "Returns the x coordinate of the viewport origin (the center of the map), relative to the page."
+
+                "getViewportY" => T<unit -> int>
+                |> WithComment "Returns the y coordinate of the viewport origin (the center of the map), relative to the page."
+
+                "getWidth" => T<unit -> int>
+                |> WithComment "Returns the width of the map control."
+
+                "getZoom" => T<unit -> float>
+                |> WithComment "Returns the zoom level of the current map view."
+
+                "getZoomRange" => T<unit> ^-> Range
+                |> WithComment "Returns the range of valid zoom levels for the current map view."
+
+                "isMercator" => T<unit -> bool>
+                |> WithComment "Returns whether the map is in a regular Mercator nadir mode."
+
+                "isRotationEnabled" => T<unit -> bool>
+                |> WithComment "Returns true if the current map type allows the heading to change; false if the display heading is fixed."
+
+                "setMapType" => MapTypeId ^-> T<unit>
+                |> WithComment "Sets the current map type. The specified mapTypeId must be a valid map type ID or a registered map type ID."
+
+                "setOptions" => Size ^-> T<unit>
+                |> WithComment "Sets the height and width of the map."
+
+                "setView" => ViewOptions ^-> T<unit>
+                |> WithComment "Sets the map view based on the specified options."
+
+                "tryLocationToPixel" => Location * PixelReference ^-> Point
+                |> WithComment "Converts a specified Location to a Point on the map relative to the specified PixelReference. If the map is not able to convert the Location, null is returned."
+
+                "tryLocationToPixel" => Location ^-> Point
+                |> WithComment "Converts a specified Location to a Point on the map relative to PixelReference.Viewport. If the map is not able to convert the Location, null is returned."
+
+                "tryLocationToPixel" => Type.ArrayOf Location * PixelReference ^-> Point
+                |> WithComment "Converts an array of Locations relative to the specified PixelReference and returns an array of Points if all locations were converted. If any of the conversions fail, null is returned."
+
+                "tryLocationToPixel" => Type.ArrayOf Location ^-> Point
+                |> WithComment "Converts an array of Locations relative to PixelReference.Viewport and returns an array of Points if all locations were converted. If any of the conversions fail, null is returned."
+
+                "tryPixelToLocation" => Point * PixelReference ^-> Location
+                |> WithComment "Converts a specified Point to a Location on the map relative to the specified PixelReference. If the map is not able to convert the Point, null is returned."
+
+                "tryPixelToLocation" => Point ^-> Location
+                |> WithComment "Converts a specified Point to a Location on the map relative to PixelReference.Viewport. If the map is not able to convert the Point, null is returned."
+
+                "tryPixelToLocation" => Type.ArrayOf Point * PixelReference ^-> Location
+                |> WithComment "Converts an array of Points relative to the specified PixelReference and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
+
+                "tryPixelToLocation" => Type.ArrayOf Point ^-> Location
+                |> WithComment "Converts an array of Points relative to PixelReference.Viewport and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
             ]
 
     let Assembly =
         Assembly [
-            Namespace "IntelliFactory.WebSharper.JQuery" [
-                 RequestTypeClass
-                 DataTypeClass
-                 Promise
-                 Deferred
-                 JqXHR
-                 SupportClass
-                 PositionClass
-                 AnimateConfigClass
-                 AjaxConfigClass
-                 EventClass
-                 JQueryClass
-                 FX
+            Namespace "IntelliFactory.WebSharper.Bing" [
+                AltitudeReferenceClass
+                LocationClass
+                LocationRectClass
+                PointClass
+                EventHandlerClass
+                EventsClass
+                KeyEventArgsClass
+                LabelOverlayClass
+                MapOptionsClass
+                ViewOptionsClass
+                EntityCollectionClass
+                RangeClass
+                MapTypeIdClass
+                SizeClass
+                MapClass
             ]
         ]
 
