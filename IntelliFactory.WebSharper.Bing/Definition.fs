@@ -28,8 +28,8 @@ module Bing =
         |=> Location
         |+> [
                 Constructor (T<float> * T<float> * T<float> * AltitudeReference)
-                Constructor (T<float * float * float>)
-                Constructor (T<float * float>)
+                Constructor (T<float> * T<float> * T<float>)
+                Constructor (T<float> * T<float>)
 
                 "areEqual" => Location * Location ^-> T<bool>
                 |> WithComment "Determines if the specified Location objects are equal."
@@ -72,7 +72,7 @@ module Bing =
                 "fromEdges" => T<float> * T<float> * T<float> * T<float> * T<float> * AltitudeReference ^-> LocationRect
                 |> WithComment "Returns a LocationRect using the specified northern and southern latitudes and western and eastern longitudes for the rectangle boundaries."
 
-                "fromLocation" => Type.ArrayOf Location ^-> LocationRect
+                "fromLocations" => Type.ArrayOf Location ^-> LocationRect
                 |> WithComment "Returns a LocationRect using an array of locations."
 
                 "fromString" => T<string> ^-> LocationRect
@@ -715,7 +715,7 @@ module Bing =
         Class "Microsoft.Maps.Color"
         |=> Color
         |+> [
-                Constructor T<int * int * int * int>
+                Constructor (T<int> * T<int> * T<int> * T<int>)
                 |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
 
                 "cloneColor" => Color ^-> Color
