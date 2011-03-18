@@ -4,8 +4,33 @@ open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Html
 open IntelliFactory.WebSharper.Bing
 module Main =
+
     [<JavaScript>]
     let credentials = "Ai6uQaKEyZbUvd33y5HU41hvoov_piUMn6t78Qzg7L1DWY4MFZqhjZdgEmCpQlbe"
+
+    (*
+      var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"), 
+                               {credentials: "Your Bing Maps Key",
+                                center: new Microsoft.Maps.Location(45.5, -122.5),
+                                mapTypeId: Microsoft.Maps.MapTypeId.road,
+                                zoom: 7});
+    *)
+
+    [<JavaScript>]
+    let EX1 () =
+        let foo = Bing.Location(1., 2., 3., Bing.AltitudeReference.Ellipsoid)
+        let bar = Bing.Location.NormalizeLongitude 942.
+        Div []
+        |>! OnAfterRender (fun el ->
+            let opts =
+                Bing.MapOptions(
+                    Credentials = credentials,
+                    Width = 400,
+                    Height = 400
+                )
+            let map = Bing.Map(el.Body, opts)
+            map.SetMapType(MapTypeId.Birdseye)
+        )
 
     [<JavaScript>]
     let Main () =
@@ -30,6 +55,13 @@ module Main =
             Text (string bar + " " + foo.ToString())
             container :> _
             ]
+
+    [<JavaScript>]
+    let Samples () =
+        Div [
+            EX1 ()
+        ]
+
 
 [<JavaScriptType>]
 type Samples() = 

@@ -195,17 +195,17 @@ module Bing =
     let MapTypeId = Type.New()
 
     let MapTypeIdClass =
-        Pattern.EnumInlines "Microsoft.Maps.MapTypeId"
-            [
-                "aerial", "Microsoft.Maps.MapTypeId.aerial"
-                "auto", "Microsoft.Maps.MapTypeId.auto"
-                "birdseye", "Microsoft.Maps.MapTypeId.birdseye"
-                "collinsBart", "Microsoft.Maps.MapTypeId.collinsBart"
-                "mercator", "Microsoft.Maps.MapTypeId.mercator"
-                "ordnanceSurvey", "Microsoft.Maps.MapTypeId.ordnanceSurvey"
-                "road", "Microsoft.Maps.MapTypeId.road"
-            ]
+        Class "Microsoft.Maps.MapTypeId"
         |=> MapTypeId
+        |+> [
+                "mercator" =? MapTypeId
+                "aerial" =? MapTypeId
+                "auto" =? MapTypeId
+                "birdseye" =? MapTypeId
+                "collinsBart" =? MapTypeId
+                "ordnanceSurvey" =? MapTypeId
+                "road" =? MapTypeId
+            ]
 
     let ViewOptions = Type.New()
 
