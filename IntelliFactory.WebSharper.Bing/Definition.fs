@@ -325,6 +325,27 @@ module Bing =
                     "heading", T<float>
                     "labelOverlay", LabelOverlay
                     "mapTypeId", MapTypeId
+                    "padding", T<int>
+                    "zoom", T<float>
+                ]
+        }
+        |=> ViewOptions
+
+    let Entity = Type.New()
+
+    let EntityInterface =
+        Interface "Microsoft.Maps.Entity"
+        |=> Entity
+
+    let EntityCollectionOptions = Type.New()
+
+    let EntityCollectionOptionsClass =
+        Pattern.Config "Microsoft.Maps.EntityCollectionOptions" {
+            Required = []
+            Optional =
+                [
+                    "visible", T<bool>
+                    "zIndex", T<int>
                 ]
         }
 
@@ -333,6 +354,161 @@ module Bing =
     let EntityCollectionClass =
         Class "Microsoft.Maps.EntityCollection"
         |=> EntityCollection
+        |=> Implements [EntityInterface]
+        |+> [
+                Constructor T<unit>
+                Constructor EntityCollectionOptions
+            ]
+        |+> Protocol
+            [
+                "clear" => T<unit -> unit>
+                |> WithComment "Removes all entities from the collection."
+
+                "get" => T<int> ^-> Entity
+                |> WithComment "Returns the entity at the specified index in the collection."
+
+                "getLength" => T<unit -> int>
+                |> WithComment "Returns the number of entities in the collection."
+
+                "getVisible" => T<unit -> bool>
+                |> WithComment "Returns whether the entity collection is visible on the map."
+
+                "getZIndex" => T<unit -> int>
+                |> WithComment "Gets the z-index of the entity collection with respect to other items on the map."
+
+                "indexOf" => Entity ^-> T<int>
+                |> WithComment "Returns the index of the specified entity in the collection. If the entity is not found in the collection, -1 is returned."
+
+                "insert" => Entity * T<int> ^-> T<unit>
+                |> WithComment "Inserts the specified entity into the collection at the given index."
+
+                "pop" => T<unit> ^-> Entity
+                |> WithComment "Removes the last entity from the collection and returns it."
+
+                "push" => Entity ^-> T<unit>
+                |> WithComment "Adds the specified entity to the last position in the collection."
+
+                "remove" => Entity ^-> Entity
+                |> WithComment "Removes the specified entity from the collection and returns it."
+
+                "removeAt" => T<int> ^-> Entity
+                |> WithComment "Removes the entity at the specified index from the collection and returns it."
+
+                "setOptions" => EntityCollectionOptions ^-> T<unit>
+                |> WithComment "Sets the options for the entity collection."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the EntityCollection object to a string."
+            ]
+
+    let InfoboxAction = Type.New()
+
+    let InfoboxActionClass =
+        Pattern.Config "Microsoft.Maps.InfoboxAction" {
+            Required =
+                [
+                    "label", T<string>
+                    "eventHandler", MouseEventArgs ^-> T<unit>
+                ]
+            Optional = []
+        }
+
+    let InfoboxOptions = Type.New()
+
+    let InfoboxOptionsClass =
+        Pattern.Config "Microsoft.Maps.InfoboxOptions" {
+            Required = []
+            Optional =
+                [
+                    "actions", Type.ArrayOf InfoboxAction
+                    "description", T<string>
+                    "height", T<int>
+                    "htmlContent", T<string>
+                    "id", T<string>
+                    "location", Location
+                    "offset", Point
+                    "showCloseButton", T<bool>
+                    "showPointer", T<bool>
+                    "title", T<string>
+                    "titleClickHandler", MouseEventArgs ^-> T<unit>
+                    "visible", T<bool>
+                    "width", T<int>
+                    "zIndex", T<int>
+                ]
+        }
+
+    let Infobox = Type.New()
+
+    let InfoboxClass =
+        Class "Microsoft.Maps.Infobox"
+        |=> Infobox
+        |=> Implements [EntityInterface]
+        |+> [
+                Constructor Location
+                Constructor (Location * InfoboxOptions)
+            ]
+        |+> Protocol
+            [
+                "getActions" => T<unit> ^-> Type.ArrayOf InfoboxAction
+                |> WithComment "Returns a list of actions, where each item is a name-value pair indicating an action link name and the event name for the action that corresponds to that action link."
+
+                "getAnchor" => T<unit> ^-> Point
+                |> WithComment "Returns the point on the infobox which is anchored to the map. An anchor of (0,0) is the top left corner of the infobox."
+
+                "getDescription" => T<unit -> string>
+                |> WithComment "Returns the string that is printed inside the infobox."
+
+                "getHeight" => T<unit -> int>
+                |> WithComment "Returns the height of the infobox."
+
+                "getHtmlContent" => T<unit -> string>
+                |> WithComment "Returns the infobox as HTML."
+
+                "getId" => T<unit -> string>
+                |> WithComment "Returns the ID of the infobox."
+
+                "getLocation" => T<unit> ^-> Location
+                |> WithComment "Returns the location on the map where the infobox’s anchor is attached."
+
+                "getOffset" => T<unit -> int>
+                |> WithComment "Returns the amount the infobox pointer is shifted from the location of the infobox, or if showPointer is false, then it is the amount the infobox bottom left edge is shifted from the location of the infobox. The default value is (0,0), which means there is no offset."
+
+                "getOptions" => T<unit> ^-> InfoboxOptions
+                |> WithComment "Returns the infobox options."
+
+                "getShowCloseButton" => T<unit -> bool>
+                |> WithComment "Returns a boolean indicating whether the infobox close button is shown."
+
+                "getShowPointer" => T<unit -> bool>
+                |> WithComment "Returns a boolean indicating whether the infobox is drawn with a pointer."
+
+                "getTitle" => T<unit -> string>
+                |> WithComment "Returns a string that is the title of the infobox."
+
+                "getTitleClickHandler" => T<unit -> string>
+                |> WithComment "Returns the name of the function to call when the title of the infobox is clicked."
+
+                "getVisible" => T<unit -> bool>
+                |> WithComment "Returns whether the infobox is visible. A value of false indicates that the infobox is hidden, although it is still an entity on the map."
+
+                "getWidth" => T<unit -> int>
+                |> WithComment "Returns the width of the infobox."
+
+                "getZIndex" => T<unit -> int>
+                |> WithComment "Returns the z-index of the infobox with respect to other items on the map."
+
+                "setHtmlContent" => T<string -> unit>
+                |> WithComment "Sets the HTML content of the infobox. You can use this method to change the look of the infobox."
+
+                "setLocation" => Location ^-> T<unit>
+                |> WithComment "Sets the location on the map where the anchor of the infobox is attached."
+
+                "setOption" => InfoboxOptions ^-> T<unit>
+                |> WithComment "Sets options for the infobox."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Infobox object to a string."
+            ]
 
     let Range = Type.New()
 
@@ -493,6 +669,49 @@ module Bing =
                 |> WithComment "Converts an array of Points relative to PixelReference.Viewport and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
             ]
 
+    let Color = Type.New()
+
+    let ColorClass =
+        Class "Microsoft.Maps.Color"
+        |=> Color
+        |+> [
+                Constructor T<int * int * int * int>
+                |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
+
+                "cloneColor" => Color ^-> Color
+                |> WithInline "clone"
+                |> WithComment "Creates a copy of the Color object."
+
+                "fromHex" => T<string> ^-> Color
+                |> WithComment "Converts the specified hex string to a Color."
+            ]
+        |+> Protocol
+            [
+                "a" =? T<int>
+                |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
+
+                "r" =? T<int>
+                |> WithComment "The red value of the color. The range of valid values is 0 to 255."
+
+                "g" =? T<int>
+                |> WithComment "The green value of the color. The range of valid values is 0 to 255."
+
+                "b" =? T<int>
+                |> WithComment "The blue value of the color. The range of valid values is 0 to 255."
+
+                "clone" => T<unit> ^-> Color
+                |> WithComment "Returns a copy of the Color object."
+
+                "getOpacity" => T<unit -> float>
+                |> WithComment "Returns the opacity of the Color as a value between 0 (a=0) and 1 (a=255)."
+
+                "toHex" => T<unit -> string>
+                |> WithComment "Converts the Color into a 6-digit hex string. Opacity is ignored. For example, a Color with values (255,0,0,0) is returned as hex string #000000."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Color object to a string."
+            ]
+
     let Assembly =
         Assembly [
             Namespace "IntelliFactory.WebSharper.Bing" [
@@ -503,14 +722,21 @@ module Bing =
                 EventHandlerClass
                 EventsClass
                 KeyEventArgsClass
+                MouseEventArgsClass
                 LabelOverlayClass
                 MapOptionsClass
                 ViewOptionsClass
+                EntityInterface
+                EntityCollectionOptionsClass
                 EntityCollectionClass
                 RangeClass
                 MapTypeIdClass
                 SizeClass
                 MapClass
+                ColorClass
+                InfoboxActionClass
+                InfoboxOptionsClass
+                InfoboxClass
             ]
         ]
 
