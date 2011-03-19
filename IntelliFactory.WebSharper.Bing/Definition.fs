@@ -5,6 +5,9 @@ open IntelliFactory.WebSharper.Dom
 module Bing =
     open IntelliFactory.WebSharper.InterfaceGenerator
 
+    ///////////////////////////////////////////////////////////////////
+    // Ajax API
+
     let AltitudeReference = Type.New()
 
     let AltitudeReferenceClass =
@@ -132,6 +135,12 @@ module Bing =
             ]
         |+> Protocol
             [
+                "x" =? T<float>
+                |> WithComment "The x value of the coordinate."
+
+                "y" =? T<float>
+                |> WithComment "The y value of the coordinate."
+
                 "clone" => T<unit> ^-> Point
                 |> WithComment "Returns a copy of the Point object."
 
@@ -391,7 +400,7 @@ module Bing =
 
     let KeyEvent = Type.New()
 
-    let ConstantStrings ty l =
+    let private ConstantStrings ty l =
         List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
 
     let KeyEventClass =
@@ -1018,6 +1027,92 @@ module Bing =
                 |> WithComment "Converts the Pushpin object to a string."
             ]
 
+    ///////////////////////////////////////////////////////////////////
+    // REST API
+
+    let AuthenticationResultCode = Type.New()
+    let RestResponse = Type.New()
+    let ResourceSet = Type.New()
+    let Address = Type.New()
+    let LocationResource = Type.New()
+    let Confidence = Type.New()
+    let PointResource = Type.New()
+
+    let RestResponseClass =
+        Class "Microsoft.Maps.RestResponse"
+        |=> RestResponse
+        |+> Protocol
+            [
+                "statusCode" =? T<int>
+                "statusDescription" =? T<string>
+                "authenticationResultCode" =? AuthenticationResultCode
+                "traceId" =? T<string>
+                "copyright" =? T<string>
+                "brandLogoUri" =? T<string>
+                "resourceSets" =? Type.ArrayOf ResourceSet
+                "errorDetails" =? Type.ArrayOf T<string>
+            ]
+
+    let AuthenticationResultCodeClass =
+        Class "Microsoft.Maps.AuthenticationResultCode"
+        |=> AuthenticationResultCode
+        |+> ConstantStrings AuthenticationResultCode
+            ["ValidCredentials"; "InvalidCredentials"; "CredentialsExpired"; "NotAuthorized"; "NoCredentials"]
+
+    let ResourceSetClass =
+        Class "Microsoft.Maps.ResourceSet"
+        |=> ResourceSet
+        |+> Protocol
+            [
+                "estimatedTotal" =? T<int>
+                "resources" =? Type.ArrayOf T<obj>
+            ]
+
+    let LocationResourceClass =
+        Class "Microsoft.Maps.LocationResource"
+        |=> LocationResource
+        |+> Protocol
+            [
+                "__type" =? T<string>
+                "name" =? T<string>
+                "point" =? PointResource
+                "bbox" =? Type.ArrayOf T<float>
+                "entityType" =? T<string>
+                "address" =? Address
+                "confidence" =? Confidence
+            ]
+
+    let PointResourceClass =
+        Pattern.Config "Microsoft.Maps.PointResource" {
+            Required =
+                [
+                    "type", T<string>
+                    "coordinates", Type.ArrayOf T<float>
+                ]
+            Optional = []
+        }
+        |=> PointResource
+
+    let ConfidenceClass =
+        Class "Microsoft.Maps.Confidence"
+        |=> Confidence
+        |+> ConstantStrings Confidence ["High"; "Medium"; "Low"; "Unknown"]
+
+    let AddressClass =
+        Pattern.Config "Microsoft.Maps.Address" {
+            Required = []
+            Optional =
+                [
+                    "adminDistrict", T<string>
+                    "locality", T<string>
+                    "postalCode", T<string>
+                    "addressLine", T<string>
+                    "countryRegion", T<string>
+                ]
+        }
+        |=> Address
+
+
     let Assembly =
         Assembly [
             Namespace "IntelliFactory.WebSharper.Bing" [
@@ -1057,6 +1152,15 @@ module Bing =
                 PolygonClass
                 PushpinOptionsClass
                 PushpinClass
+
+                // REST
+                AuthenticationResultCodeClass
+                RestResponseClass
+                ResourceSetClass
+                LocationResourceClass
+                ConfidenceClass
+                AddressClass
+                PointResourceClass
             ]
         ]
 
