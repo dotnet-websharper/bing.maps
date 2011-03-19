@@ -1028,7 +1028,7 @@ module Bing =
             ]
 
     ///////////////////////////////////////////////////////////////////
-    // REST API
+    // REST Locations API
 
     let AuthenticationResultCode = Type.New()
     let RestResponse = Type.New()
@@ -1083,15 +1083,13 @@ module Bing =
             ]
 
     let PointResourceClass =
-        Pattern.Config "Microsoft.Maps.PointResource" {
-            Required =
-                [
-                    "type", T<string>
-                    "coordinates", Type.ArrayOf T<float>
-                ]
-            Optional = []
-        }
+        Class "Microsoft.Maps.PointResource"
         |=> PointResource
+        |+> Protocol
+            [
+                "type" =? T<string>
+                "coordinates" =? Type.ArrayOf T<float>
+            ]
 
     let ConfidenceClass =
         Class "Microsoft.Maps.Confidence"
@@ -1099,19 +1097,147 @@ module Bing =
         |+> ConstantStrings Confidence ["High"; "Medium"; "Low"; "Unknown"]
 
     let AddressClass =
-        Pattern.Config "Microsoft.Maps.Address" {
-            Required = []
-            Optional =
-                [
-                    "adminDistrict", T<string>
-                    "locality", T<string>
-                    "postalCode", T<string>
-                    "addressLine", T<string>
-                    "countryRegion", T<string>
-                ]
-        }
+        Class "Microsoft.Maps.Address"
         |=> Address
+        |+> Protocol
+            [
+                "adminDistrict" =? T<string>
+                "locality" =? T<string>
+                "postalCode" =? T<string>
+                "addressLine" =? T<string>
+                "countryRegion" =? T<string>
+            ]
 
+    ///////////////////////////////////////////////////////////////////
+    // REST Routes API
+
+    let Route = Type.New()
+    let RouteLeg = Type.New()
+    let ItineraryItem = Type.New()
+    let ItineraryDetail = Type.New()
+    let ItineraryIcon = Type.New()
+    let ItineraryInstruction = Type.New()
+    let TransitLine = Type.New()
+    let RoutePath = Type.New()
+    let LineResource = Type.New()
+
+    let RouteClass =
+        Class "Microsoft.Maps.Route"
+        |=> Route
+        |+> Protocol
+            [
+                "id" =? T<string>
+                "bbox" =? Type.ArrayOf T<float>
+                "distanceUnit" =? T<string>
+                "durationUnit" =? T<string>
+                "travelDistance" =? T<float>
+                "travelDuration" =? T<float>
+                "routeLegs" =? Type.ArrayOf RouteLeg
+                "routePath" =? Type.ArrayOf RoutePath
+            ]
+
+    let RouteLegClass =
+        Class "Microsoft.Maps.RouteLeg"
+        |=> RouteLeg
+        |+> Protocol
+            [
+                "travelDistance" =? T<float>
+                "travelDuration" =? T<float>
+                "actualStart" =? PointResource
+                "actualEnd" =? PointResource
+                "startLocation" =? Type.ArrayOf LocationResource
+                "endLocation" =? Type.ArrayOf LocationResource
+                "itineraryItem" =? Type.ArrayOf ItineraryItem
+            ]
+
+    let ItineraryItemClass =
+        Class "Microsoft.Maps.ItineraryItem"
+        |=> ItineraryItem
+        |+> Protocol
+            [
+                "childItineraryItems" =? Type.ArrayOf ItineraryItem
+                "compassDirection" =? T<string>
+                "details" =? Type.ArrayOf ItineraryDetail
+                "exit" =? T<string>
+                "hints" =? T<string>
+                "iconType" =? ItineraryIcon
+                "instruction" =? T<string>
+                "maneuverPoint" =? PointResource
+                "sideOfStreet" =? T<string>
+                "signs" =? T<string>
+                "time" =? T<string>
+                "tollZone" =? T<string>
+                "towardsRoadName" =? T<string>
+                "transitLine" =? Type.ArrayOf TransitLine
+                "transitStopId" =? T<string>
+                "transitTerminus" =? T<string>
+                "travelDistance" =? T<float>
+                "travelDuration" =? T<float>
+                "travelMode" =? T<string>
+                "warnings" =? T<string>
+            ]
+
+    let ItineraryInstructionClass =
+        Class "Microsoft.Maps.ItineraryInstruction"
+        |=> ItineraryInstruction
+        |+> Protocol
+            [
+                "maneuverType" =? T<string>
+                "text" =? T<string>
+            ]
+
+    let ItineraryIconClass =
+        Class "Microsoft.Maps.ItineraryIcon"
+        |=> ItineraryIcon
+        |+> ConstantStrings ItineraryIcon ["None"; "Airline"; "Auto"; "Bus"
+                                           "Ferry"; "Train"; "Walk"; "Other"]
+
+    let ItineraryDetailClass =
+        Class "Microsoft.Maps.ItineraryDetail"
+        |=> ItineraryDetail
+        |+> Protocol
+            [
+                "compassDegrees" =? T<string>
+                "maneuverType" =? T<string>
+                "names" =? T<string>
+                "startPathIndices" =? Type.ArrayOf T<int>
+                "endPathIndices" =? Type.ArrayOf T<int>
+                "roadType" =? T<string>
+            ]
+
+    let TransitLineClass =
+        Class "Microsoft.Maps.TransitLine"
+        |=> TransitLine
+        |+> Protocol
+            [
+                "verboseName" =? T<string>
+                "abbreviatedName" =? T<string>
+                "agencyId" =? T<string>
+                "agencyName" =? T<string>
+                "lineColor" =? T<string>
+                "lineTextColor" =? T<string>
+                "uri" =? T<string>
+                "phoneNumber" =? T<string>
+                "providerInfo" =? T<string>
+            ]
+
+    let RoutePathClass =
+        Class "Microsoft.Maps.RoutePath"
+        |=> RoutePath
+        |+> Protocol
+            [
+                "line" =? LineResource
+                "point" =? PointResource
+            ]
+
+    let LineResourceClass =
+        Class "Microsoft.Maps.LineResource"
+        |=> LineResource
+        |+> Protocol
+            [
+                "type" =? T<string>
+                "coordinates" =? Type.ArrayOf (Type.ArrayOf T<float>)
+            ]
 
     let Assembly =
         Assembly [
@@ -1153,7 +1279,7 @@ module Bing =
                 PushpinOptionsClass
                 PushpinClass
 
-                // REST
+                // REST locations
                 AuthenticationResultCodeClass
                 RestResponseClass
                 ResourceSetClass
@@ -1161,6 +1287,17 @@ module Bing =
                 ConfidenceClass
                 AddressClass
                 PointResourceClass
+
+                // REST Routes
+                RouteClass
+                RouteLegClass
+                ItineraryItemClass
+                ItineraryDetailClass
+                ItineraryIconClass
+                ItineraryInstructionClass
+                TransitLineClass
+                RoutePathClass
+                LineResourceClass
             ]
         ]
 

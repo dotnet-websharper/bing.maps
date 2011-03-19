@@ -52,11 +52,14 @@ module Main =
         Dom.Document.Current.DocumentElement.AppendChild script.Dom |> ignore
 
     [<JavaScript>]
-    let RequestStringBoilerplate = "output=json&jsonp=BingOnReceive&key=" + credentials
+    let RequestCallbackName = "BingOnReceive"
+
+    [<JavaScript>]
+    let RequestStringBoilerplate = "output=json&jsonp=" + RequestCallbackName + "&key=" + credentials
 
     [<JavaScript>]
     let RequestLocationByAddress (address : Bing.Address) (callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global "BingOnReceive" callback
+        JavaScript.Set JavaScript.Global RequestCallbackName callback
         let fields = seq {
             if address.AdminDistrict <> JavaScript.Undefined then
                 yield "adminDistrict=" + address.AdminDistrict
@@ -75,7 +78,7 @@ module Main =
 
     [<JavaScript>]
     let RequestLocationByQuery (query : string) (callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global "BingOnReceive" callback
+        JavaScript.Set JavaScript.Global RequestCallbackName callback
         let req = restApiUri + "Locations?query=" + query + "&" + RequestStringBoilerplate
         SendRequest req
 
@@ -84,7 +87,7 @@ module Main =
         let retrieveEntities = function
         | [] -> ""
         | l -> "&includeEntityTypes=" + String.concat "," l
-        JavaScript.Set JavaScript.Global "BingOnReceive" callback
+        JavaScript.Set JavaScript.Global RequestCallbackName callback
         let req = restApiUri + "Locations/" + string x + "," + string y +
                   "?" + RequestStringBoilerplate +
                   retrieveEntities entities
