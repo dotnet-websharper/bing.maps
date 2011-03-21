@@ -1111,7 +1111,7 @@ module Bing =
     ///////////////////////////////////////////////////////////////////
     // REST Routes API
 
-    let Route = Type.New()
+    let RouteResource = Type.New()
     let RouteLeg = Type.New()
     let ItineraryItem = Type.New()
     let ItineraryDetail = Type.New()
@@ -1120,20 +1120,27 @@ module Bing =
     let TransitLine = Type.New()
     let RoutePath = Type.New()
     let LineResource = Type.New()
+    let RouteRequest = Type.New()
+    let RouteOptimize = Type.New()
+    let RouteAvoid = Type.New()
+    let RoutePathOutput = Type.New()
+    let DistanceUnit = Type.New()
+    let TimeType = Type.New()
+    let TravelMode = Type.New()
 
-    let RouteClass =
-        Class "Microsoft.Maps.Route"
-        |=> Route
+    let RouteResourceClass =
+        Class "Microsoft.Maps.RouteResource"
+        |=> RouteResource
         |+> Protocol
             [
                 "id" =? T<string>
                 "bbox" =? Type.ArrayOf T<float>
-                "distanceUnit" =? T<string>
+                "distanceUnit" =? DistanceUnit
                 "durationUnit" =? T<string>
                 "travelDistance" =? T<float>
                 "travelDuration" =? T<float>
                 "routeLegs" =? Type.ArrayOf RouteLeg
-                "routePath" =? Type.ArrayOf RoutePath
+                "routePath" =? RoutePath
             ]
 
     let RouteLegClass =
@@ -1147,7 +1154,7 @@ module Bing =
                 "actualEnd" =? PointResource
                 "startLocation" =? Type.ArrayOf LocationResource
                 "endLocation" =? Type.ArrayOf LocationResource
-                "itineraryItem" =? Type.ArrayOf ItineraryItem
+                "itineraryItems" =? Type.ArrayOf ItineraryItem
             ]
 
     let ItineraryItemClass =
@@ -1161,7 +1168,7 @@ module Bing =
                 "exit" =? T<string>
                 "hints" =? T<string>
                 "iconType" =? ItineraryIcon
-                "instruction" =? T<string>
+                "instruction" =? ItineraryInstruction
                 "maneuverPoint" =? PointResource
                 "sideOfStreet" =? T<string>
                 "signs" =? T<string>
@@ -1239,6 +1246,55 @@ module Bing =
                 "coordinates" =? Type.ArrayOf (Type.ArrayOf T<float>)
             ]
 
+    let RouteRequestClass =
+        Pattern.Config "Microsoft.Maps.RouteRequest" {
+            Required = []
+            Optional =
+                [
+                    "waypoints", Type.ArrayOf T<string>
+                    "avoid", Type.ArrayOf RouteAvoid
+                    "heading", T<int>
+                    "optimize", RouteOptimize
+                    "routePathOutput", RoutePathOutput
+                    "distanceUnit", DistanceUnit
+                    "dateTime", T<string>
+                    "timeType", TimeType
+                    "maxSolutions", T<int>
+                    "travelMode", TravelMode
+                ]
+        }
+
+    let RouteOptimizeClass =
+        Class "Microsoft.Maps.RouteOptimize"
+        |=> RouteOptimize
+        |+> ConstantStrings RouteOptimize ["distance"; "time"; "timeWithTraffic"]
+
+    let RouteAvoidClass =
+        Class "Microsoft.Maps.RouteAvoid"
+        |=> RouteAvoid
+        |+> ConstantStrings RouteAvoid ["highways"; "tolls"; "minimizeHighways"; "minimizeTolls"]
+
+    let RoutePathOutputClass =
+        Class "Microsoft.Maps.RoutePathOutput"
+        |=> RoutePathOutput
+        |+> ConstantStrings RoutePathOutput ["Points"; "None"]
+
+    let DistanceUnitClass =
+        Class "Microsoft.Maps.DistanceUnit"
+        |=> DistanceUnit
+        |+> ConstantStrings DistanceUnit ["Mile"; "Kilometer"]
+
+    let TimeTypeClass =
+        Class "Microsoft.Maps.TimeType"
+        |=> TimeType
+        |+> ConstantStrings TimeType ["Arrival"; "Departure"; "LastAvailable"]
+
+    let TravelModeClass =
+        Class "Microsoft.Maps.TravelMode"
+        |=> TravelMode
+        |+> ConstantStrings TimeType ["Driving"; "Walking"; "Transit"]
+
+
     let Assembly =
         Assembly [
             Namespace "IntelliFactory.WebSharper.Bing" [
@@ -1289,7 +1345,7 @@ module Bing =
                 PointResourceClass
 
                 // REST Routes
-                RouteClass
+                RouteResourceClass
                 RouteLegClass
                 ItineraryItemClass
                 ItineraryDetailClass
@@ -1298,6 +1354,13 @@ module Bing =
                 TransitLineClass
                 RoutePathClass
                 LineResourceClass
+                RouteRequestClass
+                RouteOptimizeClass
+                RouteAvoidClass
+                RoutePathOutputClass
+                DistanceUnitClass
+                TimeTypeClass
+                TravelModeClass
             ]
         ]
 
