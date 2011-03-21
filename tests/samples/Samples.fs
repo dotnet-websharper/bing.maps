@@ -162,15 +162,27 @@ module Main =
             map.SetMapType(MapTypeId.Road)
             let request (_:Element) (_:Events.MouseEvent) =
                 Bing.Rest.RequestRoute(credentials,
-                                       RouteRequest(Waypoints=[|origin.Value; destination.Value|],
+                                       RouteRequest(Waypoints=[|Bing.Waypoint origin.Value; Bing.Waypoint destination.Value|],
                                                     Avoid=[|Bing.RouteAvoid.Highways;|],
                                                     RoutePathOutput=RoutePathOutput.Points),
                                        RouteCallback map)
             button |>! OnClick request |> ignore
         )
-        Div [origin; destination; button; mapContainer; answer]
+        Div [mapContainer; origin; destination; button; answer]
 
-    
+    [<JavaScript>]
+    let StaticMap () =
+        let req1 = Bing.StaticMapRequest(CenterPoint=Bing.Point(47.2, 19.1),
+                                         imagerySet=Bing.ImagerySet.Road,
+                                         ZoomLevel=10)
+        let req2 = Bing.StaticMapRequest(Query="Washington DC",
+                                         imagerySet=Bing.ImagerySet.Aerial)
+        Div [
+            Bing.Rest.StaticMap(credentials, req1)
+            Bing.Rest.StaticMap(credentials, req2)
+        ]
+
+
 
     [<JavaScript>]
     let Samples () =
@@ -184,6 +196,8 @@ module Main =
             LatLonLocationRequest ()
             Br []
             RouteRequest ()
+            Br []
+            StaticMap ()
         ]
 
 

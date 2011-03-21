@@ -118,6 +118,7 @@ module Bing =
                 |> WithComment "Converts the LocationRect object to a string."
             ]
 
+    let Waypoint = Type.New()
     let Point = Type.New()
 
     let PointClass =
@@ -146,6 +147,9 @@ module Bing =
 
                 "toString" => T<unit -> string>
                 |> WithComment "Converts the Point object into a string."
+
+                "toUrlString" => T<unit -> string>
+                |> WithInline "($this.x+','+$this.y)"
             ]
 
     let LabelOverlay = Type.New()
@@ -194,7 +198,7 @@ module Bing =
             "labelOverlay", LabelOverlay
             "mapTypeId", MapTypeId
             "padding", T<int>
-            "zoom", T<float>
+            "zoom", T<int>
         ]
     
     let private MapOptionsFields =
@@ -674,7 +678,7 @@ module Bing =
                 "getTargetMetersPerPixel" => T<unit -> float>
                 |> WithComment "Returns the scale in meters per pixel of the center of the view to which the map is navigating."
 
-                "getTargetZoom" => T<unit -> float>
+                "getTargetZoom" => T<unit -> int>
                 |> WithComment "Returns the zoom level of the view to which the map is navigating."
 
                 "getUserLayer" => T<unit -> Node>
@@ -689,7 +693,7 @@ module Bing =
                 "getWidth" => T<unit -> int>
                 |> WithComment "Returns the width of the map control."
 
-                "getZoom" => T<unit -> float>
+                "getZoom" => T<unit -> int>
                 |> WithComment "Returns the zoom level of the current map view."
 
                 "getZoomRange" => T<unit> ^-> Range
@@ -716,10 +720,10 @@ module Bing =
                 "tryLocationToPixel" => Location ^-> Point
                 |> WithComment "Converts a specified Location to a Point on the map relative to PixelReference.Viewport. If the map is not able to convert the Location, null is returned."
 
-                "tryLocationToPixel" => Type.ArrayOf Location * PixelReference ^-> Point
+                "tryLocationToPixel" => Type.ArrayOf Location * PixelReference ^-> Type.ArrayOf Point
                 |> WithComment "Converts an array of Locations relative to the specified PixelReference and returns an array of Points if all locations were converted. If any of the conversions fail, null is returned."
 
-                "tryLocationToPixel" => Type.ArrayOf Location ^-> Point
+                "tryLocationToPixel" => Type.ArrayOf Location ^-> Type.ArrayOf Point
                 |> WithComment "Converts an array of Locations relative to PixelReference.Viewport and returns an array of Points if all locations were converted. If any of the conversions fail, null is returned."
 
                 "tryPixelToLocation" => Point * PixelReference ^-> Location
@@ -728,10 +732,10 @@ module Bing =
                 "tryPixelToLocation" => Point ^-> Location
                 |> WithComment "Converts a specified Point to a Location on the map relative to PixelReference.Viewport. If the map is not able to convert the Point, null is returned."
 
-                "tryPixelToLocation" => Type.ArrayOf Point * PixelReference ^-> Location
+                "tryPixelToLocation" => Type.ArrayOf Point * PixelReference ^-> Type.ArrayOf Location
                 |> WithComment "Converts an array of Points relative to the specified PixelReference and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
 
-                "tryPixelToLocation" => Type.ArrayOf Point ^-> Location
+                "tryPixelToLocation" => Type.ArrayOf Point ^-> Type.ArrayOf Location
                 |> WithComment "Converts an array of Points relative to PixelReference.Viewport and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
             ]
 
@@ -1128,6 +1132,17 @@ module Bing =
     let TimeType = Type.New()
     let TravelMode = Type.New()
 
+    let WaypointClass =
+        Class "Microsoft.Maps.Waypoint"
+        |=> Waypoint
+        |+> [
+                Constructor T<string>?s
+                |> WithInline "$s"
+
+                Constructor Point?p
+                |> WithInline "($p.x+','+$p.y)"
+            ]
+
     let RouteResourceClass =
         Class "Microsoft.Maps.RouteResource"
         |=> RouteResource
@@ -1251,7 +1266,7 @@ module Bing =
             Required = []
             Optional =
                 [
-                    "waypoints", Type.ArrayOf T<string>
+                    "waypoints", Type.ArrayOf Waypoint
                     "avoid", Type.ArrayOf RouteAvoid
                     "heading", T<int>
                     "optimize", RouteOptimize
@@ -1292,7 +1307,77 @@ module Bing =
     let TravelModeClass =
         Class "Microsoft.Maps.TravelMode"
         |=> TravelMode
-        |+> ConstantStrings TimeType ["Driving"; "Walking"; "Transit"]
+        |+> ConstantStrings TravelMode ["Driving"; "Walking"; "Transit"]
+
+    ///////////////////////////////////////////////////////////////////
+    // REST Imagery API
+
+    let StaticMapRequest = Type.New()
+    let ImagerySet = Type.New()
+    let MapLayer = Type.New()
+    let MapVersion = Type.New()
+    let PushpinResource = Type.New()
+
+    let StaticMapRequestClass =
+        Pattern.Config "Microsoft.Maps.StaticMapRequest" {
+            Required =
+                [
+                    "imagerySet", ImagerySet
+                ]
+            Optional =
+                [
+                    "avoid", Type.ArrayOf RouteAvoid
+                    "centerPoint", Point
+                    "dateTime", T<string>
+                    "mapArea", Point * Point
+                    "mapLayer", MapLayer
+                    "mapSize", T<int> * T<int>
+                    "mapVersion", MapVersion
+                    "maxSolutions", T<int>
+                    "optimize", RouteOptimize
+                    "pushpin", Type.ArrayOf PushpinResource
+                    "query", T<string>
+                    "timeType", TimeType
+                    "travelMode", TravelMode
+                    "waypoints", Type.ArrayOf Waypoint
+                    "zoomLevel", T<int>
+                ]
+        }
+        |=> StaticMapRequest
+
+    let ImagerySetClass =
+        Class "Microsoft.Maps.ImagerySet"
+        |=> ImagerySet
+        |+> ConstantStrings ImagerySet ["Aerial"; "AerialWithLabels"; "Road"]
+
+    let MapLayerClass =
+        Class "Microsoft.Maps.MapLayer"
+        |=> MapLayer
+        |+> ConstantStrings MapLayer ["TrafficFlow"]
+
+    let MapVersionClass =
+        Class "Microsoft.Maps.MapVersion"
+        |=> MapVersion
+        |+> ConstantStrings MapVersion ["v0"; "v1"]
+
+    let PushpinResourceClass =
+        Pattern.Config "Microsoft.Maps.PushpinResource" {
+            Required =
+                [
+                    "X", T<float>
+                    "Y", T<float>
+                    "IconStyle", T<int>
+                    "Label", T<string>
+                ]
+            Optional = []
+        }
+        |=> PushpinResource
+        |+> Protocol
+            [
+                "toUrlString" => T<unit -> string>
+                |> WithInline "$this.X+','+$this.Y+','+$this.IconStyle+','+$this.Label"
+            ]
+
 
 
     let Assembly =
@@ -1343,6 +1428,7 @@ module Bing =
                 ConfidenceClass
                 AddressClass
                 PointResourceClass
+                WaypointClass
 
                 // REST Routes
                 RouteResourceClass
@@ -1361,6 +1447,13 @@ module Bing =
                 DistanceUnitClass
                 TimeTypeClass
                 TravelModeClass
+
+                // REST Imagery
+                StaticMapRequestClass
+                ImagerySetClass
+                MapLayerClass
+                MapVersionClass
+                PushpinResourceClass
             ]
         ]
 

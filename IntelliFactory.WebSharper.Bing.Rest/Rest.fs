@@ -64,18 +64,69 @@ module Rest =
         SendRequest req
 
     [<JavaScript>]
+    let private OptionalFields request arr =
+        arr
+        |> Array.choose (fun name ->
+                            let value = JavaScript.Get name request
+                            if IsUndefined value then
+                                None
+                            else
+                                Some (name + "=" + string value))
+
+    [<JavaScript>]
+    let private StringifyWaypoints waypoints =
+        Array.mapi (fun i (w:Waypoint) -> "wp." + string i + "=" + string w) waypoints
+
+    [<JavaScript>]
     let RequestRoute(credentials, request : Bing.RouteRequest, callback : Bing.RestResponse -> unit) =
         JavaScript.Set JavaScript.Global RequestCallbackName callback
         let fields =
-            [| "avoid"; "heading"; "optimize"; "routePathOutput"; "distanceUnit"
-               "dateTime"; "timeType"; "maxSolutions"; "travelMode" |]
-            |> Array.choose (fun name ->
-                                let value = JavaScript.Get name request
-                                if IsUndefined value then
-                                    None
-                                else
-                                    Some (name + "=" + string value))
-            |> Array.append (Array.mapi (fun i w -> "wp." + string i + "=" + w) request.Waypoints)
+            OptionalFields request
+                [| "avoid"; "heading"; "optimize"; "routePathOutput"; "distanceUnit"
+                   "dateTime"; "timeType"; "maxSolutions"; "travelMode" |]
+            |> Array.append (StringifyWaypoints request.Waypoints)
         let req = String.concat "&" fields
         let fullReq = restApiUri + "/Routes?" + req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
+
+    [<JavaScript>]
+    let StaticMap(credentials, request : Bing.StaticMapRequest) =
+        let fields =
+            [
+                OptionalFields request
+                    [| "avoid"; "dateTime"; "mapLayer"; "mapVersion"
+                       "maxSolutions"; "optimize"; "timeType"; "travelMode"; "zoomLevel" |]
+                (if IsUndefined request.MapArea then
+                     [||]
+                 else
+                    [|(fst request.MapArea).ToUrlString() + "," + (snd request.MapArea).ToUrlString()|])
+                (if IsUndefined request.MapSize then
+                     [||]
+                 else
+                    [|string (fst request.MapSize) + "," + string (snd request.MapSize)|])
+                (if IsUndefined request.Pushpin then
+                     [||]
+                 else
+                    request.Pushpin |> Array.map (fun pin -> pin.ToUrlString()))
+                (if IsUndefined request.Waypoints then
+                     [||]
+                 else
+                    StringifyWaypoints request.Waypoints)
+            ]
+            |> Array.concat
+        let query =
+            if not (IsUndefined request.Query) then
+                request.Query
+            elif not (IsUndefined request.CenterPoint) then
+                request.CenterPoint.ToUrlString() + "/" + string request.ZoomLevel
+            else
+                ""
+        let hasRoute = not (IsUndefined request.Waypoints)
+        let req = String.concat "&" fields
+        let fullReq =
+            restApiUri + "Imagery/Map/" +
+            string request.ImagerySet + "/" +
+            (if hasRoute then "Route/" else "") + query + "?" +
+            req + "&key=" + credentials
+//        SendRequest fullReq
+        Img [Attr.Src fullReq]
