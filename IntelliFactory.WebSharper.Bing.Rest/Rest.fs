@@ -28,20 +28,21 @@ module Rest =
     let private RequestStringBoilerplate credentials = "output=json&jsonp=" + RequestCallbackName + "&key=" + credentials
 
     [<JavaScript>]
+    let private OptionalFields request arr =
+        arr
+        |> Array.choose (fun name ->
+                            let value = JavaScript.Get name request
+                            if IsUndefined value then
+                                None
+                            else
+                                Some (name + "=" + string value))
+
+    [<JavaScript>]
     let RequestLocationByAddress(credentials, address : Bing.Address, callback : Bing.RestResponse -> unit) =
         JavaScript.Set JavaScript.Global RequestCallbackName callback
-        let fields = seq {
-            if not (IsUndefined address.AdminDistrict) then
-                yield "adminDistrict=" + address.AdminDistrict
-            if not (IsUndefined address.Locality) then
-                yield "locality=" + address.Locality
-            if not (IsUndefined address.AddressLine) then
-                yield "addressLine=" + address.AddressLine
-            if not (IsUndefined address.CountryRegion) then
-                yield "countryRegion=" + address.CountryRegion
-            if not (IsUndefined address.PostalCode) then
-                yield "postalCode=" + address.PostalCode
-        }
+        let fields =
+            OptionalFields address
+                [|"adminDistrict"; "locality"; "addressLine"; "countryRegion"; "postalCode"|]
         let req = String.concat "&" fields
         let fullReq = restApiUri + "Locations?" + req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
@@ -62,16 +63,6 @@ module Rest =
                   "?" + RequestStringBoilerplate credentials +
                   retrieveEntities entities
         SendRequest req
-
-    [<JavaScript>]
-    let private OptionalFields request arr =
-        arr
-        |> Array.choose (fun name ->
-                            let value = JavaScript.Get name request
-                            if IsUndefined value then
-                                None
-                            else
-                                Some (name + "=" + string value))
 
     [<JavaScript>]
     let private StringifyWaypoints waypoints =
@@ -121,7 +112,12 @@ module Rest =
                 (if IsUndefined request.Pushpin then
                      [||]
                  else
-                    request.Pushpin |> Array.map (fun pin -> pin.ToUrlString()))
+                    let pushpinToUrlString (pin : PushpinResource) =
+                        let coords = string pin.X + "," + string pin.Y
+                        let icstyle = if IsUndefined pin.IconStyle then "" else string pin.IconStyle
+                        let label = if IsUndefined pin.Label then "" else pin.Label
+                        coords + ";" + icstyle + ";" + label
+                    request.Pushpin |> Array.map (fun pin -> "pp=" + pushpinToUrlString pin))
                 (if IsUndefined request.Waypoints then
                      [||]
                  else

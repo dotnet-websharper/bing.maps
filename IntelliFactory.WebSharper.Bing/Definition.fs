@@ -1364,19 +1364,16 @@ module Bing =
         Pattern.Config "Microsoft.Maps.PushpinResource" {
             Required =
                 [
-                    "X", T<float>
-                    "Y", T<float>
-                    "IconStyle", T<int>
-                    "Label", T<string>
+                    "x", T<float>
+                    "y", T<float>
                 ]
-            Optional = []
+            Optional =
+                [
+                    "iconStyle", T<int>
+                    "label", T<string>
+                ]
         }
         |=> PushpinResource
-        |+> Protocol
-            [
-                "toUrlString" => T<unit -> string>
-                |> WithInline "$this.X+','+$this.Y+';'+$this.IconStyle+';'+$this.Label"
-            ]
 
     let ImageryMetadataRequest = Type.New()
     let ImageryMetadataInclude = Type.New()

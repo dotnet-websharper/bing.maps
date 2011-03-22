@@ -29,10 +29,10 @@ module Main =
                     Credentials = credentials,
                     Width = 400,
                     Height = 400,
-                    MapTypeId = MapTypeId.Birdseye
+                    MapTypeId = Bing.MapTypeId.Birdseye
                 )
             let map = Bing.Map(el.Body, options)
-            map.SetMapType(MapTypeId.Birdseye)
+            map.SetMapType(Bing.MapTypeId.Birdseye)
         )
 
     [<JavaScript>]
@@ -183,7 +183,7 @@ module Main =
                 Bing.Rest.RequestRoute(credentials,
                                        RouteRequest(Waypoints=[|Bing.Waypoint origin.Value; Bing.Waypoint destination.Value|],
                                                     Avoid=avoid,
-                                                    RoutePathOutput=RoutePathOutput.Points),
+                                                    RoutePathOutput=Bing.RoutePathOutput.Points),
                                        RouteCallback map)
             button |>! OnClick request |> ignore
         )
@@ -197,7 +197,9 @@ module Main =
     let StaticMap () =
         let req1 = Bing.StaticMapRequest(CenterPoint=Bing.Point(47.2, 19.1),
                                          imagerySet=Bing.ImagerySet.Road,
-                                         ZoomLevel=10)
+                                         ZoomLevel=10,
+                                         Pushpin=[|Bing.PushpinResource(x=47.1, y=19.0, IconStyle=2, Label="P1")
+                                                   Bing.PushpinResource(x=47.13, y=19.17, IconStyle=10)|])
         let req2 = Bing.StaticMapRequest(Query="Washington DC",
                                          imagerySet=Bing.ImagerySet.Aerial)
         Div [
@@ -209,7 +211,7 @@ module Main =
     let ImageMetadata () =
         let req = Bing.ImageryMetadataRequest(imagerySet=Bing.ImagerySet.Road,
                                               MapVersion=Bing.MapVersion.V1,
-                                              CenterPoint=Point(47.2, 19.1))
+                                              CenterPoint=Bing.Point(47.2, 19.1))
         let callback (answer : Element) (result : Bing.RestResponse) =
             match CheckJsonResponse result with
             | Some error ->
