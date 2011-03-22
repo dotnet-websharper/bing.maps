@@ -1534,19 +1534,40 @@ module Bing =
         |=> ImageryMetadataResource
         |+> Protocol
             [
-                "__type" =? T<string>
                 "imageHeight" =? T<int>
+                |> WithComment "The height of the image tile."
+
                 "imageWidth" =? T<int>
+                |> WithComment "The width of the image tile."
+
                 "imageUrl" =? T<string>
+                |> WithComment "Either a URL template for an image tile if a specific point is specified, or a general URL template for the specified imagery set."
+
                 "imageUrlSubdomains" =? Type.ArrayOf T<string>
+                |> WithComment "One or more URL subdomains that may be used when constructing an image tile URL."
+
                 "imageryProviders" =? T<obj>
-                "vintageBegin" =? T<string>
+
+                "vintageStart" =? T<string>
+                |> WithComment "The earliest date found in an imagery set or for a specific imagery tile."
+
                 "vintageEnd" =? T<string>
+                |> WithComment "The latest date found in an imagery set or for a specific imagery tile."
+
                 "zoomMax" =? T<int>
+                |> WithComment "The maximum zoom level available for this imagery set."
+
                 "zoomMin" =? T<int>
+                |> WithComment "The minimum zoom level available for this imagery set."
+
                 "orientation" =? T<float>
+                |> WithComment "The orientation of the viewport for the imagery metadata in degrees where 0 = North [default], 90 = East, 180 = South, 270 = West."
+
                 "tilesX" =? T<int>
+                |> WithComment "The horizontal dimension of the imagery in number of tiles."
+
                 "tilesY" =? T<int>
+                |> WithComment "The vertical dimension of the imagery in number of tiles."
             ]
 
 

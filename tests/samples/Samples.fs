@@ -118,15 +118,21 @@ module Main =
                                       Width = 600,
                                       Height = 500)
         let map = Bing.Map(container.Body, opt)
+        let pin = Bing.Pushpin(map.GetCenter(), Bing.PushpinOptions(Draggable=true))
+        map.Entities.Push(pin)
         let displayLatLong (e:MouseEventArgs) =
             let center = (e.Target :?> Bing.Map).GetCenter()
-            let message = "center: " + string center.Latitude + ", " + string center.Longitude +
-                          "\nmouse: " + string (e.GetX()) + "," + string (e.GetY())
+            let pinLocation = pin.GetLocation()
+            let pinPoint = map.TryLocationToPixel(pinLocation)
+            let mousePoint = Bing.Point(float(e.GetX()), float(e.GetY()))
+            let mouseLocation = map.TryPixelToLocation(mousePoint)
+            let message = "pushpin (lat/lon): " + string pinLocation.Latitude + ", " + string pinLocation.Longitude +
+                          "\npushpin (screen x/y): " + string pinPoint.X + "," + string pinPoint.Y +
+                          "\nmouse (lat/lon): " + string mouseLocation.Latitude + ", " + string mouseLocation.Longitude +
+                          "\nmouse (screen x/y): " + string mousePoint.X + "," + string mousePoint.Y
             JavaScript.Alert message
             ()
         Bing.Events.AddHandler(map, Bing.MouseEvent.Click, displayLatLong) |> ignore
-        let pin = Bing.Pushpin(map.GetCenter())
-        map.Entities.Push(pin)
         container
 
     [<JavaScript>]
@@ -165,7 +171,6 @@ module Main =
                     |> Array.concat
                 answer.Clear()
                 answer.Append (Table messages)
-                answer.Append (highwayBox.GetAttribute "checked")
         let mapContainer =
             Div []
             |>! OnAfterRender (fun el ->
