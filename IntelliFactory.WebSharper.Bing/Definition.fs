@@ -5,6 +5,9 @@ open IntelliFactory.WebSharper.Dom
 module Bing =
     open IntelliFactory.WebSharper.InterfaceGenerator
 
+    let private ConstantStrings ty l =
+        List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
+
     ///////////////////////////////////////////////////////////////////
     // Ajax API
 
@@ -13,13 +16,8 @@ module Bing =
     let AltitudeReferenceClass =
         Class "Microsoft.Maps.AltitudeReference"
         |=> AltitudeReference
+        |+> ConstantStrings AltitudeReference ["ground"; "ellipsoid"]
         |+> [
-                "ground" =? AltitudeReference
-                |> WithComment "The altitude is measured from the ground level."
-
-                "ellipsoid" =? AltitudeReference
-                |> WithComment "The altitude is measured from the WGS 84 ellipsoid of the Earth."
-
                 "isValid" => AltitudeReference ^-> T<bool>
                 |> WithComment "Determines if the specified reference is a supported AltitudeReference."
             ]
@@ -180,12 +178,25 @@ module Bing =
         |=> MapTypeId
         |+> [
                 "mercator" =? MapTypeId
+                |> WithComment "The Mercator style is being used."
+
                 "aerial" =? MapTypeId
+                |> WithComment "The aerial map style is being used."
+
                 "auto" =? MapTypeId
+                |> WithComment "The map is set to choose the best imagery for the current view."
+
                 "birdseye" =? MapTypeId
+                |> WithComment "The bird’s eye map type is being used."
+
                 "collinsBart" =? MapTypeId
+                |> WithComment "Collin’s Bart (mkt=en-gb) map type is being used."
+
                 "ordnanceSurvey" =? MapTypeId
+                |> WithComment "Ordinance Survey (mkt=en-gb) map type is being used."
+
                 "road" =? MapTypeId
+                |> WithComment "The road map style is being used."
             ]
 
     let private ViewOptionsFields =
@@ -403,9 +414,6 @@ module Bing =
             ]
 
     let KeyEvent = Type.New()
-
-    let private ConstantStrings ty l =
-        List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
 
     let KeyEventClass =
         Class "Microsoft.Maps.KeyEvent"
@@ -882,6 +890,7 @@ module Bing =
     let TileLayerClass =
         Class "Microsoft.Maps.TileLayer"
         |=> TileLayer
+        |=> Implements [Entity]
         |+> [
                 Constructor TileLayerOptions
                 |> WithComment "Initializes a new instance of the TileLayer class."
@@ -1155,6 +1164,7 @@ module Bing =
     let RoutePath = Type.New()
     let LineResource = Type.New()
     let RouteRequest = Type.New()
+    let RouteFromMajorRoadsRequest = Type.New()
     let RouteOptimize = Type.New()
     let RouteAvoid = Type.New()
     let RoutePathOutput = Type.New()
@@ -1437,6 +1447,21 @@ module Bing =
         |=> TravelMode
         |+> ConstantStrings TravelMode ["Driving"; "Walking"; "Transit"]
 
+    let RouteFromMajorRoadsRequestClass =
+        Pattern.Config "Microsoft.Maps.RouteFromMajorRoadsRequest" {
+            Required =
+                [
+                    "destination", Waypoint
+                ]
+            Optional =
+                [
+                    "exclude", T<string>
+                    "routePathOutput", RoutePathOutput
+                    "distanceUnit", DistanceUnit
+                ]
+        }
+        |=> RouteFromMajorRoadsRequest
+
     ///////////////////////////////////////////////////////////////////
     // REST Imagery API
 
@@ -1648,6 +1673,7 @@ module Bing =
                 ImageryMetadataRequestClass
                 ImageryMetadataIncludeClass
                 ImageryMetadataResourceClass
+                RouteFromMajorRoadsRequestClass
             ]
         ]
 

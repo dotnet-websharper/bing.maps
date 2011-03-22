@@ -81,6 +81,17 @@ module Rest =
         SendRequest fullReq
 
     [<JavaScript>]
+    let RequestRouteFromMajorRoads(credentials, request : Bing.RouteFromMajorRoadsRequest, callback : Bing.RestResponse -> unit) =
+        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        let fields =
+            OptionalFields request
+                [| "destination"; "exclude"; "routePathOutput"; "distanceUnit" |]
+        let req = String.concat "&" fields
+        let fullReq = restApiUri + "/Routes/FromMajorRoads?" + req + "&" + RequestStringBoilerplate credentials
+        SendRequest fullReq
+
+
+    [<JavaScript>]
     let RequestImageryMetadata(credentials, request : Bing.ImageryMetadataRequest,
                                callback : Bing.RestResponse -> unit) =
         JavaScript.Set JavaScript.Global RequestCallbackName callback

@@ -36,6 +36,20 @@ module Main =
         )
 
     [<JavaScript>]
+    let MapWithTileLayer () =
+        Div []
+        |>! OnAfterRender (fun el ->
+            let options = Bing.MapViewOptions(Credentials = credentials,
+                                              Width = 400,
+                                              Height = 400,
+                                              MapTypeId = Bing.MapTypeId.Aerial)
+            let map = Bing.Map(el.Body, options)
+            let tileSource = Bing.TileSource(Bing.TileSourceOptions(UriConstructor="http://www.microsoft.com/maps/isdk/ajax/layers/lidar/{quadkey}.png"))
+            let tileLayer = Bing.TileLayer(Bing.TileLayerOptions(Mercator=tileSource, Opacity=0.7))
+            map.Entities.Push(tileLayer)
+        )
+
+    [<JavaScript>]
     let CheckJsonResponse (response : Bing.RestResponse) =
         if IsUndefined response ||
             IsUndefined response.ResourceSets ||
@@ -241,6 +255,8 @@ module Main =
         Div [
             H2 [Text "Basic map"]
             MapElement ()
+            H2 [Text "Tile layer"]
+            MapWithTileLayer ()
             H2 [Text "Map with event management (click me!)"]
             MouseEvent ()
             H2 [Text "Search for a location"]
