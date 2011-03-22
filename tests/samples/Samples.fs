@@ -36,17 +36,33 @@ module Main =
         )
 
     [<JavaScript>]
-    let GeocodeCallback (map : Bing.Map) (resultElt : Element) (result : Bing.RestResponse) =
-        let resource = result.ResourceSets.[0].Resources.[0] :?> LocationResource
-        if IsUndefined resource then
-            resultElt.Text <- "Location not found or no site around"
+    let CheckJsonResponse (response : Bing.RestResponse) =
+        if IsUndefined response ||
+            IsUndefined response.ResourceSets ||
+            response.ResourceSets.Length = 0 ||
+            IsUndefined response.ResourceSets.[0].Resources ||
+            response.ResourceSets.[0].Resources.Length = 0
+        then
+            Some(string response.StatusCode + ": " + String.concat " " response.ErrorDetails)
         else
-            let loc = Bing.Location(resource.Point.Coordinates.[0], resource.Point.Coordinates.[1])
-            let pin = Bing.Pushpin(loc, Bing.PushpinOptions())
-            map.Entities.Push(pin)
-            map.SetView(Bing.ViewOptions(Center=loc))
-            let foo = Bing.ViewOptions()
-            resultElt.Text <- resource.Name
+            None
+
+    [<JavaScript>]
+    let GeocodeCallback (map : Bing.Map) (resultElt : Element) (result : Bing.RestResponse) =
+        match CheckJsonResponse result with
+        | Some error ->
+            resultElt.Text <- "Bad location request: " + error
+        | None ->
+            let resource = result.ResourceSets.[0].Resources.[0] :?> LocationResource
+            if IsUndefined resource then
+                resultElt.Text <- "Location not found or no site around"
+            else
+                let loc = Bing.Location(resource.Point.Coordinates.[0], resource.Point.Coordinates.[1])
+                let pin = Bing.Pushpin(loc, Bing.PushpinOptions())
+                map.Entities.Push(pin)
+                map.SetView(Bing.ViewOptions(Center=loc))
+                let foo = Bing.ViewOptions()
+                resultElt.Text <- resource.Name
 
     [<JavaScript>]
     let LocationRequest () =
@@ -91,7 +107,7 @@ module Main =
             )
         Div [
             mapContainer
-            Div [inputLat; inputLon; button]
+            Div [Span[Text "Latitude:"]; inputLat; Span[Text "Longitude"]; inputLon; button]
             responseDiv
         ]
 
@@ -118,16 +134,13 @@ module Main =
         let origin = Input []
         let destination = Input []
         let button = Input [Attr.Type "button"; Attr.Value "Request route"]
+        let highwayBox = Input [Attr.Type "checkbox"]
         let answer = Div []
         let RouteCallback (map : Bing.Map) (result : Bing.RestResponse) =
-            if IsUndefined result ||
-               IsUndefined result.ResourceSets ||
-               result.ResourceSets.Length = 0 ||
-               IsUndefined result.ResourceSets.[0].Resources ||
-               result.ResourceSets.[0].Resources.Length = 0
-            then
-                answer.Text <- "Bad route"
-            else
+            match CheckJsonResponse result with
+            | Some error ->
+                answer.Text <- "Bad route: " + error
+            | None ->
                 let route = result.ResourceSets.[0].Resources.[0] :?> RouteResource
                 // Draw the route on the map
                 let corners = [|Bing.Location(route.Bbox.[0], route.Bbox.[1])
@@ -145,13 +158,14 @@ module Main =
                     |> Array.map (fun inst ->
                         TR [TD [Text inst.Instruction.Text]
                             TD [Text (string inst.TravelDistance + " " + string route.DistanceUnit)]])
-                let message =
+                let messages =
                     route.RouteLegs
                     |> Array.map (fun leg ->
                         getItems leg.ItineraryItems)
                     |> Array.concat
                 answer.Clear()
-                answer.Append (Table message)
+                answer.Append (Table messages)
+                answer.Append (highwayBox.GetAttribute "checked")
         let mapContainer =
             Div []
             |>! OnAfterRender (fun el ->
@@ -161,14 +175,23 @@ module Main =
             let map = Bing.Map(el.Body, opts)
             map.SetMapType(MapTypeId.Road)
             let request (_:Element) (_:Events.MouseEvent) =
+                let avoid =
+                    if string (highwayBox.GetAttribute("checked")) = "true" then
+                        [||]
+                    else
+                        [|Bing.RouteAvoid.Highways|]
                 Bing.Rest.RequestRoute(credentials,
                                        RouteRequest(Waypoints=[|Bing.Waypoint origin.Value; Bing.Waypoint destination.Value|],
-                                                    Avoid=[|Bing.RouteAvoid.Highways;|],
+                                                    Avoid=avoid,
                                                     RoutePathOutput=RoutePathOutput.Points),
                                        RouteCallback map)
             button |>! OnClick request |> ignore
         )
-        Div [mapContainer; origin; destination; button; answer]
+        Div [mapContainer
+             Span[Text "From:"]; origin
+             Span[Text "To:"]; destination
+             highwayBox; Span[Text "Accept highways"]; button
+             answer]
 
     [<JavaScript>]
     let StaticMap () =
@@ -181,6 +204,28 @@ module Main =
             Bing.Rest.StaticMap(credentials, req1)
             Bing.Rest.StaticMap(credentials, req2)
         ]
+
+    [<JavaScript>]
+    let ImageMetadata () =
+        let req = Bing.ImageryMetadataRequest(imagerySet=Bing.ImagerySet.Road,
+                                              MapVersion=Bing.MapVersion.V1,
+                                              CenterPoint=Point(47.2, 19.1))
+        let callback (answer : Element) (result : Bing.RestResponse) =
+            match CheckJsonResponse result with
+            | Some error ->
+                answer.Text <- "Bad metadata response: " + error
+            | None ->
+                let resource = result.ResourceSets.[0].Resources.[0] :?> Bing.ImageryMetadataResource
+                let txt : IPagelet list =
+                    [
+                        P [Text("Road map tile size: " + string resource.ImageHeight + "x" + string resource.ImageWidth)]
+                        P [Text("Road map tile URL: " + resource.ImageUrl)]
+                    ]
+                List.iter (answer.Append:IPagelet->unit) txt
+        Div []
+        |>! OnAfterRender (fun el ->
+            Bing.Rest.RequestImageryMetadata(credentials, req, callback el)
+        )
 
 
 
@@ -198,6 +243,8 @@ module Main =
             RouteRequest ()
             Br []
             StaticMap ()
+            Br []
+            ImageMetadata ()
         ]
 
 

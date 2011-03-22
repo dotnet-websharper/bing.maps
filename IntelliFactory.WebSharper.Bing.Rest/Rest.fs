@@ -53,7 +53,7 @@ module Rest =
         SendRequest req
 
     [<JavaScript>]
-    let RequestLocationByPoint(credentials, x, y, entities, callback : Bing.RestResponse -> unit) =
+    let RequestLocationByPoint(credentials, x:float, y:float, entities, callback : Bing.RestResponse -> unit) =
         JavaScript.Set JavaScript.Global RequestCallbackName callback
         let retrieveEntities = function
         | [] -> ""
@@ -87,6 +87,20 @@ module Rest =
             |> Array.append (StringifyWaypoints request.Waypoints)
         let req = String.concat "&" fields
         let fullReq = restApiUri + "/Routes?" + req + "&" + RequestStringBoilerplate credentials
+        SendRequest fullReq
+
+    [<JavaScript>]
+    let RequestImageryMetadata(credentials, request : Bing.ImageryMetadataRequest,
+                               callback : Bing.RestResponse -> unit) =
+        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        let fields =
+            OptionalFields request
+                [| "include"; "mapVersion"; "orientation"; "zoomLevel" |]
+        let req = String.concat "&" fields
+        let fullReq =
+            restApiUri + "Imagery/Metadata/" + string request.ImagerySet +
+            (if not(IsUndefined request.CenterPoint) then "/" + request.CenterPoint.ToUrlString() else "") + "?" +
+            req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
 
     [<JavaScript>]

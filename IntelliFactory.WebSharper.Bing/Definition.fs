@@ -1375,9 +1375,54 @@ module Bing =
         |+> Protocol
             [
                 "toUrlString" => T<unit -> string>
-                |> WithInline "$this.X+','+$this.Y+','+$this.IconStyle+','+$this.Label"
+                |> WithInline "$this.X+','+$this.Y+';'+$this.IconStyle+';'+$this.Label"
             ]
 
+    let ImageryMetadataRequest = Type.New()
+    let ImageryMetadataInclude = Type.New()
+    let ImageryMetadataResource = Type.New()
+
+    let ImageryMetadataRequestClass =
+        Pattern.Config "Microsoft.Maps.ImageryMetadataRequest" {
+            Required =
+                [
+                    "imagerySet", ImagerySet
+                ]
+            Optional =
+                [
+                    "centerPoint", Point
+                    "include", ImageryMetadataInclude
+                    "mapVersion", MapVersion
+                    "orientation", T<float>
+                    "zoomLevel", T<int>
+                ]
+        }
+        |=> ImageryMetadataRequest
+
+    let ImageryMetadataIncludeClass =
+        Class "Microsoft.Maps.ImageryMetadataInclude"
+        |=> ImageryMetadataInclude
+        |+> ConstantStrings ImageryMetadataInclude ["ImageryProviders"]
+
+    let ImageryMetadataResourceClass =
+        Class "Microsoft.Maps.ImageryMetadataResource"
+        |=> ImageryMetadataResource
+        |+> Protocol
+            [
+                "__type" =? T<string>
+                "imageHeight" =? T<int>
+                "imageWidth" =? T<int>
+                "imageUrl" =? T<string>
+                "imageUrlSubdomains" =? Type.ArrayOf T<string>
+                "imageryProviders" =? T<obj>
+                "vintageBegin" =? T<string>
+                "vintageEnd" =? T<string>
+                "zoomMax" =? T<int>
+                "zoomMin" =? T<int>
+                "orientation" =? T<float>
+                "tilesX" =? T<int>
+                "tilesY" =? T<int>
+            ]
 
 
     let Assembly =
@@ -1454,6 +1499,9 @@ module Bing =
                 MapLayerClass
                 MapVersionClass
                 PushpinResourceClass
+                ImageryMetadataRequestClass
+                ImageryMetadataIncludeClass
+                ImageryMetadataResourceClass
             ]
         ]
 
