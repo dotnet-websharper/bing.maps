@@ -112,7 +112,7 @@ module Rest =
                 (if IsUndefined request.Pushpin then
                      [||]
                  else
-                    let pushpinToUrlString (pin : PushpinResource) =
+                    let pushpinToUrlString (pin : PushpinRequest) =
                         let coords = string pin.X + "," + string pin.Y
                         let icstyle = if IsUndefined pin.IconStyle then "" else string pin.IconStyle
                         let label = if IsUndefined pin.Label then "" else pin.Label
@@ -138,5 +138,4 @@ module Rest =
             string request.ImagerySet + "/" +
             (if hasRoute then "Route/" else "") + query + "?" +
             req + "&key=" + credentials
-//        SendRequest fullReq
         Img [Attr.Src fullReq]

@@ -198,8 +198,8 @@ module Main =
         let req1 = Bing.StaticMapRequest(CenterPoint=Bing.Point(47.2, 19.1),
                                          imagerySet=Bing.ImagerySet.Road,
                                          ZoomLevel=10,
-                                         Pushpin=[|Bing.PushpinResource(x=47.1, y=19.0, IconStyle=2, Label="P1")
-                                                   Bing.PushpinResource(x=47.13, y=19.17, IconStyle=10)|])
+                                         Pushpin=[|Bing.PushpinRequest(x=47.1, y=19.0, IconStyle=2, Label="P1")
+                                                   Bing.PushpinRequest(x=47.13, y=19.17, IconStyle=10)|])
         let req2 = Bing.StaticMapRequest(Query="Washington DC",
                                          imagerySet=Bing.ImagerySet.Aerial)
         Div [
@@ -234,18 +234,19 @@ module Main =
     [<JavaScript>]
     let Samples () =
         Div [
+            H2 [Text "Basic map"]
             MapElement ()
-            Br []
+            H2 [Text "Map with event management (click me!)"]
             MouseEvent ()
-            Br []
+            H2 [Text "Search for a location"]
             LocationRequest ()
-            Br []
+            H2 [Text "Pin a latitude/longitude point"]
             LatLonLocationRequest ()
-            Br []
+            H2 [Text "Search for a route between two locations"]
             RouteRequest ()
-            Br []
+            H2 [Text "Static maps"]
             StaticMap ()
-            Br []
+            H2 [Text "Retrieve metadata about the images"]
             ImageMetadata ()
         ]
 

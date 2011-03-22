@@ -1048,13 +1048,28 @@ module Bing =
         |+> Protocol
             [
                 "statusCode" =? T<int>
+                |> WithComment "The HTTP Status code for the request."
+
                 "statusDescription" =? T<string>
+                |> WithComment "A description of the HTTP status code."
+
                 "authenticationResultCode" =? AuthenticationResultCode
+                |> WithComment "A status code that offers additional information about authentication success or failure."
+
                 "traceId" =? T<string>
+                |> WithComment "A unique identifier for the request."
+
                 "copyright" =? T<string>
+                |> WithComment "A copyright notice."
+
                 "brandLogoUri" =? T<string>
+                |> WithComment "A URL that references a brand image to support contractual branding requirements."
+
                 "resourceSets" =? Type.ArrayOf ResourceSet
+                |> WithComment "A collection of ResourceSet objects. A ResourceSet is a container of Resources returned by the request. For more information, see the ResourceSet section below."
+
                 "errorDetails" =? Type.ArrayOf T<string>
+                |> WithComment "A collection of error descriptions. For example, ErrorDetails can identify parameter values that are not valid or missing."
             ]
 
     let AuthenticationResultCodeClass =
@@ -1069,7 +1084,10 @@ module Bing =
         |+> Protocol
             [
                 "estimatedTotal" =? T<int>
+                |> WithComment "An estimate of the total number of resources in the ResourceSet."
+
                 "resources" =? Type.ArrayOf T<obj>
+                |> WithComment "A collection of one or more resources. The resources that are returned depend on the request. Information about resources is provided in the API reference for each Bing Maps REST Services API."
             ]
 
     let LocationResourceClass =
@@ -1077,13 +1095,23 @@ module Bing =
         |=> LocationResource
         |+> Protocol
             [
-                "__type" =? T<string>
                 "name" =? T<string>
+                |> WithComment "The name of the resource."
+
                 "point" =? PointResource
+                |> WithComment "The latitude and longitude coordinates of the location."
+
                 "bbox" =? Type.ArrayOf T<float>
+                |> WithComment "A geographic area that contains the location. A bounding box contains SouthLatitude, WestLongitude, NorthLatitude, and EastLongitude values in units of degrees."
+
                 "entityType" =? T<string>
+                |> WithComment "The classification of the geographic entity returned, such as Address."
+
                 "address" =? Address
+                |> WithComment "The postal address for the location. An address can contain AddressLine, AdminDistrict, AdminDistrict2, CountryRegion, FormattedAddress, Locality, and PostalCode fields."
+
                 "confidence" =? Confidence
+                |> WithComment "The confidence in the match."
             ]
 
     let PointResourceClass =
@@ -1101,16 +1129,18 @@ module Bing =
         |+> ConstantStrings Confidence ["High"; "Medium"; "Low"; "Unknown"]
 
     let AddressClass =
-        Class "Microsoft.Maps.Address"
+        Pattern.Config "Microsoft.Maps.Address" {
+            Required = []
+            Optional =
+                [
+                    "adminDistrict", T<string>
+                    "locality", T<string>
+                    "postalCode", T<string>
+                    "addressLine", T<string>
+                    "countryRegion", T<string>
+                ]
+        }
         |=> Address
-        |+> Protocol
-            [
-                "adminDistrict" =? T<string>
-                "locality" =? T<string>
-                "postalCode" =? T<string>
-                "addressLine" =? T<string>
-                "countryRegion" =? T<string>
-            ]
 
     ///////////////////////////////////////////////////////////////////
     // REST Routes API
@@ -1149,13 +1179,28 @@ module Bing =
         |+> Protocol
             [
                 "id" =? T<string>
+                |> WithComment "A unique ID for the resource."
+
                 "bbox" =? Type.ArrayOf T<float>
+                |> WithComment "Defines a rectangular area by using latitude and longitude boundaries that contain the corresponding route or location. A bounding box contains SouthLatitude, WestLongitude, NorthLatitude, and EastLongitude elements."
+
                 "distanceUnit" =? DistanceUnit
+                |> WithComment "The unit used for distance."
+
                 "durationUnit" =? T<string>
+                |> WithComment "The unit used for time of travel."
+
                 "travelDistance" =? T<float>
+                |> WithComment "The physical distance covered by the entire route. Note: This value is not supported for the Transit travel mode."
+
                 "travelDuration" =? T<float>
+                |> WithComment "The time in seconds that it takes to travel a corresponding TravelDistance."
+
                 "routeLegs" =? Type.ArrayOf RouteLeg
+                |> WithComment "Information about a section of a route between two waypoints. For more information about the fields contained ina routeLeg, see the Route Leg Fields section below."
+
                 "routePath" =? RoutePath
+                |> WithComment "A representation of the path of a route. A RoutePath is returned only if the routePathOutput parameter is set to Points. A RoutePath is defined by a Line element that contains of a collection of points. The path of the route is the line that connects these Points. For more information about the fields contained in a route Path, see the Route Path Fields section below."
             ]
 
     let RouteLegClass =
@@ -1164,12 +1209,25 @@ module Bing =
         |+> Protocol
             [
                 "travelDistance" =? T<float>
+                |> WithComment "The physical distance covered by a route leg."
+
                 "travelDuration" =? T<float>
+                |> WithComment "The time, in seconds, that it takes to travel a corresponding TravelDistance."
+
                 "actualStart" =? PointResource
+                |> WithComment "The Point (latitude and longitude) that was used as the actual starting location for the route leg. In most cases, the ActualStart is the same as the requested waypoint. However, if a waypoint is not close to a road, the Routes API chooses a location on the nearest road as the starting point of the route. This ActualStart element contains the latitude and longitude of this new location."
+
                 "actualEnd" =? PointResource
+                |> WithComment "The Point (latitude and longitude) that was used as the actual ending location for the route leg. In most cases, the ActualEnd is the same as the requested waypoint. However, if a waypoint is not close to a road, the Routes API chooses a location on the nearest road as the ending point of the route. This ActualEnd element contains the latitude and longitude of this new location."
+
                 "startLocation" =? Type.ArrayOf LocationResource
+                |> WithComment "Information about the location of the starting waypoint for a route. A StartLocation is provided only when the waypoint is specified as a landmark or an address. For more information about the fields contained in a Location collection, see the Location Fields table below."
+
                 "endLocation" =? Type.ArrayOf LocationResource
+                |> WithComment "Information about the location of the ending waypoint for a route. An EndLocation is provided only when the waypoint is specified as a landmark or an address. For more information about the fields contained in a Location collection, see the Locations Fields table below."
+
                 "itineraryItems" =? Type.ArrayOf ItineraryItem
+                |> WithComment "Information that defines a step in the route. For information about the fields that make up the ItineraryItem collection, see the Itinerary Item Fields table below."
             ]
 
     let ItineraryItemClass =
@@ -1178,25 +1236,64 @@ module Bing =
         |+> Protocol
             [
                 "childItineraryItems" =? Type.ArrayOf ItineraryItem
+                |> WithComment "A collection of ItineraryItems that divides an itinerary item into smaller steps. An itinerary item can have only one set of ChildItineraryItems."
+
                 "compassDirection" =? T<string>
+                |> WithComment "The direction of travel associated with a maneuver on a route, such as south or southwest. Note: This value is not supported for the Transit travel mode."
+
                 "details" =? Type.ArrayOf ItineraryDetail
+                |> WithComment "Information about one of the maneuvers that is part of the itinerary item. An ItineraryItem can contain more than one Detail collection. For information about the fields contained in a Detail collection, see the Detail Fields table below."
+
                 "exit" =? T<string>
+                |> WithComment "The name or number of the exit associated with this itinerary step."
+
                 "hints" =? T<string>
+                |> WithComment "Additional information that may be helpful in following a route. In addition to the hint text, this element has an attribute hintType that specifies what the hint refers to, such as “NextIntersection.” Hint is an optional element and a route step can contain more than one hint."
+
                 "iconType" =? ItineraryIcon
+                |> WithComment "The type of icon to display."
+
                 "instruction" =? ItineraryInstruction
+                |> WithComment "A description of a maneuver in a set of directions. In addition to the content of the instruction field, this field has an attribute maneuverType that is set to the type of maneuver, such as 'TurnLeft.'"
+
                 "maneuverPoint" =? PointResource
+                |> WithComment "The coordinates of a point on the Earth where a maneuver is required, such as a left turn. A ManeuverPoint contains Latitude and Longitude elements. Note: This value is not supported for ItineraryItems that are part of a ChildItineraryItems collection."
+
                 "sideOfStreet" =? T<string>
+                |> WithComment "The side of the street where the destination is found based on the arrival direction. This field applies to the last itinerary item only."
+
                 "signs" =? T<string>
+                |> WithComment "Signage text for the route. There may be more than one sign value for an itinerary item."
+
                 "time" =? T<string>
+                |> WithComment "The arrival or departure time for the transit step."
+
                 "tollZone" =? T<string>
+                |> WithComment "The name or number of the toll zone."
+
                 "towardsRoadName" =? T<string>
+                |> WithComment "The name of the street that the route goes towards in the first itinerary item."
+
                 "transitLine" =? Type.ArrayOf TransitLine
+                |> WithComment "Information about the transit line associated with the itinerary item. For more information about the fields contained in the TransitLine collection, see the Transit Line Fields table below."
+
                 "transitStopId" =? T<string>
+                |> WithComment "The ID assigned to the transit stop by the transit agency."
+
                 "transitTerminus" =? T<string>
+                |> WithComment "The end destination for the transit line in the direction you are traveling."
+
                 "travelDistance" =? T<float>
+                |> WithComment "The physical distance covered by this route step. Note: This value is not supported for the Transit travel mode."
+
                 "travelDuration" =? T<float>
+                |> WithComment "The time in seconds that it takes to travel a corresponding TravelDistance."
+
                 "travelMode" =? T<string>
+                |> WithComment "The mode of travel for a specific step in the route. Note: This value is not supported for ItineraryItems that are part of a ChildItineraryItems collection."
+
                 "warnings" =? T<string>
+                |> WithComment "Information about a condition that may affect a specific step in the route. Warning is an optional element and a route step can contain more than one warning."
             ]
 
     let ItineraryInstructionClass =
@@ -1220,11 +1317,22 @@ module Bing =
         |+> Protocol
             [
                 "compassDegrees" =? T<string>
+                |> WithComment "The direction in degrees. Note: This value is not supported for the Transit travel mode."
+
                 "maneuverType" =? T<string>
+                |> WithComment "The type of maneuver described by this detail collection. The ManeuverType in A detail collection can provide information for a portion of the maneuver described by the maneuverType attribute of the corresponding Instruction. For example the maneuverType attribute of an Instruction may specify TurnLeftThenTurnRight as the maneuver while the associated detail items may specify specifics about the TurnLeft and TurnRight maneuvers."
+
                 "names" =? T<string>
+                |> WithComment "A street, highway or intersection where the maneuver occurs. If the maneuver is complex, there may be more than one name field in the details collection. The name field may also have no value. This can occur if the name is not known or if a street, highway or intersection does not have a name. Note: This value is only supported for the transit travel mode."
+
                 "startPathIndices" =? Type.ArrayOf T<int>
+                |> WithComment "StartPathIndices and EndPathIndices specify index values for specific route path points that are returned in the response when the routePathOutput parameter is set to Points. Together, these two index values define a range of route path points that correspond to a maneuver. Route path index values are integers where the first route path point has an index value of 0."
+
                 "endPathIndices" =? Type.ArrayOf T<int>
+                |> WithComment "StartPathIndices and EndPathIndices specify index values for specific route path points that are returned in the response when the routePathOutput parameter is set to Points. Together, these two index values define a range of route path points that correspond to a maneuver. Route path index values are integers where the first route path point has an index value of 0."
+
                 "roadType" =? T<string>
+                |> WithComment "The type of road."
             ]
 
     let TransitLineClass =
@@ -1233,14 +1341,31 @@ module Bing =
         |+> Protocol
             [
                 "verboseName" =? T<string>
+                |> WithComment "The full name of the transit line."
+
                 "abbreviatedName" =? T<string>
+                |> WithComment "The abbreviated name of the transit line, such as the bus number."
+
                 "agencyId" =? T<string>
+                |> WithComment "The ID associated with the transit agency."
+
                 "agencyName" =? T<string>
+                |> WithComment "The name of the transit agency."
+
                 "lineColor" =? T<string>
+                |> WithComment "The color associated with the transit line. The color is provided as an RGB value."
+
                 "lineTextColor" =? T<string>
+                |> WithComment "The color to use for text associated with the transit line. The color is provided as an RGB value."
+
                 "uri" =? T<string>
+                |> WithComment "The URI for the transit agency."
+
                 "phoneNumber" =? T<string>
+                |> WithComment "The phone number of the transit agency."
+
                 "providerInfo" =? T<string>
+                |> WithComment "The contact information for the provider of the transit information."
             ]
 
     let RoutePathClass =
@@ -1249,7 +1374,10 @@ module Bing =
         |+> Protocol
             [
                 "line" =? LineResource
+                |> WithComment "When the points in the line are connected, they represent the path of the route."
+
                 "point" =? PointResource
+                |> WithComment "The coordinates of a point on the Earth."
             ]
 
     let LineResourceClass =
@@ -1316,7 +1444,7 @@ module Bing =
     let ImagerySet = Type.New()
     let MapLayer = Type.New()
     let MapVersion = Type.New()
-    let PushpinResource = Type.New()
+    let PushpinRequest = Type.New()
 
     let StaticMapRequestClass =
         Pattern.Config "Microsoft.Maps.StaticMapRequest" {
@@ -1335,7 +1463,7 @@ module Bing =
                     "mapVersion", MapVersion
                     "maxSolutions", T<int>
                     "optimize", RouteOptimize
-                    "pushpin", Type.ArrayOf PushpinResource
+                    "pushpin", Type.ArrayOf PushpinRequest
                     "query", T<string>
                     "timeType", TimeType
                     "travelMode", TravelMode
@@ -1360,8 +1488,8 @@ module Bing =
         |=> MapVersion
         |+> ConstantStrings MapVersion ["v0"; "v1"]
 
-    let PushpinResourceClass =
-        Pattern.Config "Microsoft.Maps.PushpinResource" {
+    let PushpinRequestClass =
+        Pattern.Config "Microsoft.Maps.PushpinRequest" {
             Required =
                 [
                     "x", T<float>
@@ -1373,7 +1501,7 @@ module Bing =
                     "label", T<string>
                 ]
         }
-        |=> PushpinResource
+        |=> PushpinRequest
 
     let ImageryMetadataRequest = Type.New()
     let ImageryMetadataInclude = Type.New()
@@ -1495,7 +1623,7 @@ module Bing =
                 ImagerySetClass
                 MapLayerClass
                 MapVersionClass
-                PushpinResourceClass
+                PushpinRequestClass
                 ImageryMetadataRequestClass
                 ImageryMetadataIncludeClass
                 ImageryMetadataResourceClass
