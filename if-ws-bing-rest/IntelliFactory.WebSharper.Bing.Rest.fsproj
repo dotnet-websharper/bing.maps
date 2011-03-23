@@ -54,7 +54,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj">
+    <ProjectReference Include="..\if-ws-bing\IntelliFactory.WebSharper.Bing.fsproj">
       <Name>IntelliFactory.WebSharper.Bing</Name>
       <Project>{730ae40a-001c-4137-972d-898dc7c2bf0a}</Project>
       <Private>True</Private>
