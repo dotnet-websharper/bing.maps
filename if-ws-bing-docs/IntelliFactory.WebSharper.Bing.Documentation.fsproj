@@ -13,6 +13,7 @@
     <Content Include="SimpleMap.txt" />
     <Content Include="Shapes.txt" />
     <Content Include="Events.txt" />
+    <Content Include="Rest.txt" />
     <None Include="Events.png" />
     <None Include="Shapes.png" />
     <None Include="SimpleMap1.png" />

@@ -8,4 +8,5 @@
   <xi:include href="SimpleMap.docbook" />
   <xi:include href="Shapes.docbook" />
   <xi:include href="Events.docbook" />
+  <xi:include href="Rest.docbook" />
 </book>
