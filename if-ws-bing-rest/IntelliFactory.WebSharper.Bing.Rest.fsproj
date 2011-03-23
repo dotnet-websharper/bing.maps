@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{c212114a-f849-4344-bfbd-2cbdd86da1e0}</ProjectGuid>
+    <ProjectGuid>{501ca443-9b83-45db-9693-f2f3677a44c4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Bing.Samples</Name>
+    <Name>IntelliFactory.WebSharper.Bing.Rest</Name>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>$(Name)</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
@@ -37,26 +37,26 @@
   </PropertyGroup>
   <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
   <ItemGroup>
-    <Compile Include="Samples.fs" />
+    <Compile Include="Rest.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.PowerPack" />
     <Reference Include="System" />
+    <Reference Include="mscorlib" />
     <Reference Include="IntelliFactory.Json" />
     <Reference Include="IntelliFactory.WebSharper" />
-    <Reference Include="IntelliFactory.Html" />
     <Reference Include="IntelliFactory.WebSharper.Html" />
-    <Reference Include="IntelliFactory.WebSharper.Web" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
-    <Reference Include="IntelliFactory.WebSharper.JQuery" />
+    <Reference Include="IntelliFactory.WebSharper.Ecma" />
+    <Reference Include="IntelliFactory.WebSharper.Json" />
     <Reference Include="IntelliFactory.WebSharper.Core" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj">
+    <ProjectReference Include="..\if-ws-bing\IntelliFactory.WebSharper.Bing.fsproj">
       <Name>IntelliFactory.WebSharper.Bing</Name>
-      <Project>{b3a24945-6c64-4d6a-9b3e-17674e9b006e}</Project>
+      <Project>{730ae40a-001c-4137-972d-898dc7c2bf0a}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

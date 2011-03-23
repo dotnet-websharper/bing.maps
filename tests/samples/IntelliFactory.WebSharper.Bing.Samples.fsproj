@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{730ae40a-001c-4137-972d-898dc7c2bf0a}</ProjectGuid>
+    <ProjectGuid>{bb42ad3f-9110-4d95-a23f-36b4f2f900fa}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Bing</Name>
+    <Name>IntelliFactory.WebSharper.Bing.Samples</Name>
     <RootNamespace>$(Name)</RootNamespace>
-    <AssemblyName>IntelliFactory.WebSharper.Bing</AssemblyName>
+    <AssemblyName>$(Name)</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -34,15 +34,10 @@
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
   <PropertyGroup>
     <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
-    <WEBSHARPER_IG_HOME>$(WEBSHARPER_HOME)</WEBSHARPER_IG_HOME>
   </PropertyGroup>
-  <Import Project="$(WEBSHARPER_IG_HOME)/IntelliFactory.WebSharper.InterfaceGenerator.targets" />
   <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
   <ItemGroup>
-    <Compile Include="Definition.fs" />
-    <Compile Include="Main.fs" />
-    <None Include="Resources.cs" />
-    <None Include="Marker.cs" />
+    <Compile Include="Samples.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core" />
@@ -51,8 +46,25 @@
     <Reference Include="mscorlib" />
     <Reference Include="IntelliFactory.Json" />
     <Reference Include="IntelliFactory.WebSharper" />
-    <Reference Include="IntelliFactory.WebSharper.InterfaceGenerator" />
+    <Reference Include="IntelliFactory.WebSharper.Html" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
+    <Reference Include="IntelliFactory.WebSharper.Ecma" />
+    <Reference Include="IntelliFactory.WebSharper.Web" />
+    <Reference Include="IntelliFactory.WebSharper.Json" />
+    <Reference Include="IntelliFactory.WebSharper.Core" />
+    <Reference Include="IntelliFactory.Html" />
     <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\if-ws-bing-rest\IntelliFactory.WebSharper.Bing.Rest.fsproj">
+      <Name>IntelliFactory.WebSharper.Bing.Rest</Name>
+      <Project>{501ca443-9b83-45db-9693-f2f3677a44c4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\if-ws-bing\IntelliFactory.WebSharper.Bing.fsproj">
+      <Name>IntelliFactory.WebSharper.Bing</Name>
+      <Project>{730ae40a-001c-4137-972d-898dc7c2bf0a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>
