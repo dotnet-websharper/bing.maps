@@ -79,7 +79,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj">
+    <ProjectReference Include="..\..\if-ws-bing\IntelliFactory.WebSharper.Bing.fsproj">
       <Project>{730AE40A-001C-4137-972D-898DC7C2BF0A}</Project>
       <Name>IntelliFactory.WebSharper.Bing</Name>
     </ProjectReference>

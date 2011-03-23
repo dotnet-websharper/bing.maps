@@ -56,12 +56,12 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\IntelliFactory.WebSharper.Bing.Rest\IntelliFactory.WebSharper.Bing.Rest.fsproj">
+    <ProjectReference Include="..\..\if-ws-bing-rest\IntelliFactory.WebSharper.Bing.Rest.fsproj">
       <Name>IntelliFactory.WebSharper.Bing.Rest</Name>
       <Project>{501ca443-9b83-45db-9693-f2f3677a44c4}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\IntelliFactory.WebSharper.Bing\IntelliFactory.WebSharper.Bing.fsproj">
+    <ProjectReference Include="..\..\if-ws-bing\IntelliFactory.WebSharper.Bing.fsproj">
       <Name>IntelliFactory.WebSharper.Bing</Name>
       <Project>{730ae40a-001c-4137-972d-898dc7c2bf0a}</Project>
       <Private>True</Private>
