@@ -72,10 +72,9 @@ module Main =
                 resultElt.Text <- "Location not found or no site around"
             else
                 let loc = Bing.Location(resource.Point.Coordinates.[0], resource.Point.Coordinates.[1])
-                let pin = Bing.Pushpin(loc, Bing.PushpinOptions())
+                let pin = Bing.Pushpin(loc)
                 map.Entities.Push(pin)
                 map.SetView(Bing.ViewOptions(Center=loc))
-                let foo = Bing.ViewOptions()
                 resultElt.Text <- resource.Name
 
     [<JavaScript>]
@@ -145,7 +144,6 @@ module Main =
                           "\nmouse (lat/lon): " + string mouseLocation.Latitude + ", " + string mouseLocation.Longitude +
                           "\nmouse (screen x/y): " + string mousePoint.X + "," + string mousePoint.Y
             JavaScript.Alert message
-            ()
         Bing.Events.AddHandler(map, Bing.MouseEvent.Click, displayLatLong) |> ignore
         container
 
@@ -183,8 +181,9 @@ module Main =
                     |> Array.map (fun leg ->
                         getItems leg.ItineraryItems)
                     |> Array.concat
+                    |> Table
                 answer.Clear()
-                answer.Append (Table messages)
+                answer.Append (messages)
         let mapContainer =
             Div []
             |>! OnAfterRender (fun el ->

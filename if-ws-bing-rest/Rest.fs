@@ -106,7 +106,7 @@ module Rest =
         SendRequest fullReq
 
     [<JavaScript>]
-    let StaticMap(credentials, request : Bing.StaticMapRequest) =
+    let StaticMapUrl(credentials, request : Bing.StaticMapRequest) =
         let fields =
             [
                 OptionalFields request
@@ -149,4 +149,8 @@ module Rest =
             string request.ImagerySet + "/" +
             (if hasRoute then "Route/" else "") + query + "?" +
             req + "&key=" + credentials
-        Img [Attr.Src fullReq]
+        fullReq
+
+    [<JavaScript>]
+    let StaticMap(credentials, request) =
+        Img [Attr.Src (StaticMapUrl(credentials, request))]

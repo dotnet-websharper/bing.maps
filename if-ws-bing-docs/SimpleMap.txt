@@ -20,7 +20,7 @@ The following example creates and initializes a simple map:
 	let MyCredentials = "Your Bing Maps Key"
 	
 	[<JavaScript>]
-    let MapElement () =
+    let Test (f) =
         Div []
         |>! OnAfterRender (fun el ->
             let options =
@@ -30,8 +30,15 @@ The following example creates and initializes a simple map:
                     Height = 400
                 )
             let map = Bing.Map(el.Body, options)
-            map.SetMapType(MapTypeId.Birdseye)
+			f map
         )
+
+	[<JavaScript>]
+	let MapElement () =
+        Test (fun map ->
+			map.SetMapType(MapTypeId.Birdseye)
+		)
+
 
 It is necessary to initialize the map using the `OnAfterRender` method since the
 Bing Maps API requires that the container element is attached to the DOM before
@@ -41,21 +48,22 @@ sure that this condition holds.
 
 ![SimpleMap1](SimpleMap1.png)\
 
-The method `LoadMap` is overloaded to support different configurations. You can change the
-default location of the map by specifying a different latitude and longitude. This is
-done through the `VELatLong` class.
+The method `SetView` allows you to change the view parameters for the map. For example,
+you can set the default location of the map by specifying a different latitude and
+longitude. This is done through the `Location` class.
 
     #fsharp 
     [<JavaScript>]
-    let LatLongProperties(n: int) =
-        Test (fun map ->
-            let location = new Maps.VELatLong(0.,0.)
-            location.Latitude <- 47.6
-            location.Longitude <- -122.33 
-            map.LoadMap(location, 10, Maps.VEMapStyle.Hybrid))
+    let SetLocationProperties(map) =
+        let location = Bing.Location(47.6, -122.33)
+		location.Latitude <- 46.83
+		let view = Bing.ViewOptions(Location = location,
+			                        Zoom = 10,
+									MapTypeId = Bing.MapTypeId.Birdseye)
+        map.SetView(view)
 
-This example shows how you can initialize the VELatLong components directly from the
-constructor or using mutation. This time we also used a 10x zoom and a `Hybrid` style
+This example shows how you can initialize the Location components directly from the
+constructor or using mutation. This time we also used a 10x zoom and a `Birdseye` style
 for the map.
 
 ![SimpleMap2](SimpleMap2.png)\

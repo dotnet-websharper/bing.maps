@@ -4,145 +4,49 @@ The AJAX Map control provides multiple events to enable various
 interactive behavior in the map. The WebSharper extension offers a
 low level interface to such events with almost no overhead.
 
-The following example draws a polyline and it is a straightforward adaptation from [this
-website][exampleSrc]. You can find the source code in the [samples section][sampleUrl] of the Bing
-Maps Extension. Some of the helper functions were ommited for the sake of brevity.
+The following code simply alerts with the mouse position in screen coordinates
+and in map coordinates whenever the user clicks on the map.
 
 Full Code:
 
     #fsharp
-    // Translation of the example found in
-    //    http://www.garzilla.net/vemaps/DrawPolyLine.aspx
     [<JavaScript>]
-    let DynamicPolyLine() =     
-        let output = Div [Attr.Id "output"; Text "Disabled"]
-        let btn = Button [Text "Click to begin drawing"]
-        let drawing = ref false 
-        let points  = ref [||]
-        let polyline = ref None
-        let m = TestElem (fun map elem ->
-            //--------------------------------------------------
-            // Initialization
-            //--------------------------------------------------
-            map.LoadMap()
-            let location = new Maps.VELatLong(41.8756,-87.9956)
-            map.SetMapStyle(Maps.VEMapStyle.Shaded)
-            map.SetMouseWheelZoomToCenter(false)
-            map.SetCenterAndZoom(location, 9)
-            let maskPoints =
-                [| new Maps.VELatLong(0., 0.); new Maps.VELatLong(0., 0.) |]
-            let polylineMask =
-                new Maps.VEShape(Maps.VEShapeType.Polyline, maskPoints)
-            polylineMask.HideIcon()
-            polylineMask.Hide()
-            polylineMask.SetLineColor(new Maps.VEColor(0, 0, 255, 0.5));
-            SetPolylineToDashed polylineMask
-            map.AddShape(polylineMask)
-            //--------------------------------------------------
-            // Callbacks declarations
-            //--------------------------------------------------
-            let mouseDownHandler (e: Maps.OnMouseDownEventArgs) = 
-                if !drawing then
-                    let currentLatLon =
-                        map.PixelToLatLong(new Maps.VEPixel(e.mapX, e.mapY))
-                    points := Array.append !points [|currentLatLon|]         
-                    maskPoints.[0] <- currentLatLon
-                    if (!points).Length > 1 then
-                        match !polyline with
-                        | None -> 
-                            let shape =
-                                 new Maps.VEShape(Maps.VEShapeType.Polyline, !points)
-                            shape.HideIcon();
-                            map.AddShape(shape)
-                            polyline := Some <| shape
-                            maskPoints.[1] <- currentLatLon
-                        | Some p -> p.SetPoints(!points) 
-                false
-            
-            let mouseMoveHandler (e: Maps.OnMouseMoveEventArgs) = 
-                if !drawing then
-                    let loc = map.PixelToLatLong(new Maps.VEPixel(e.mapX, e.mapY))
-                    if (!points).Length > 0 then polylineMask.Show()
-                    maskPoints.[1] <- loc
-                    polylineMask.SetPoints(maskPoints)
-                false
+    let RespondToClicks() =
+        Test(fun map ->
+            let displayLatLong (e : MouseEventArgs) =
+                let center = (e.Target :?> Bing.Map).GetCenter()
+                let pinLocation = pin.GetLocation()
+                let pinPoint = map.TryLocationToPixel(pinLocation)
+                let mousePoint = Bing.Point(float(e.GetX()), float(e.GetY()))
+                let mouseLocation = map.TryPixelToLocation(mousePoint)
+                let message = "pushpin (lat/lon): " + string pinLocation.Latitude + ", " + string pinLocation.Longitude +
+                              "\npushpin (screen x/y): " + string pinPoint.X + "," + string pinPoint.Y +
+                              "\nmouse (lat/lon): " + string mouseLocation.Latitude + ", " + string mouseLocation.Longitude +
+                              "\nmouse (screen x/y): " + string mousePoint.X + "," + string mousePoint.Y
+                JavaScript.Alert message
+            Bing.Events.AddHandler(map, Bing.MouseEvent.Click, displayLatLong)
+            |> ignore
+    )
 
-            let keyPressHandler (e: Maps.KeyboardEventArgs) = 
-                if !drawing && e.keyCode = 27 then
-                    drawing := false
-                    output.Text <- "Enabled"
-                    elem.JQuery.Css ("cursor", "") |> ignore
-                    btn.Text <- "Click to begin drawing"
-                    btn.JQuery.RemoveAttr "disabled" |> ignore
-                    polylineMask.Hide()
-                false
-            
-            let startDrawing(_: Element) (_: JQueryEvent) =
-                match !polyline, not !drawing with
-                | Some p, true -> 
-                    map.DeleteShape p
-                    polyline := None
-                    points := [||]
-                | _ -> ()
-                drawing := true
-                output.Text <- "Enabled"    
-                elem.JQuery.Css ("cursor", "crosshair") |> ignore
-                btn.Text <- "Press ESC to exit drawing mode"
-                btn.JQuery.Attr("disabled", "true") |> ignore
-            
-            btn |>! OnClick startDrawing |> ignore
-            //--------------------------------------------------
-            // Attach the event handlers to the map. 
-            //--------------------------------------------------
-            map.AttachEvent("onmousedown", mouseDownHandler)
-            map.AttachEvent("onmousemove", mouseMoveHandler)
-            map.AttachEvent("onkeypress", keyPressHandler))
-            
-        Div [m; output; btn]
+The way you can attach events to the map is by using the `AddHandler` static method
+of the `Events` class. This method receives the entity impacted by the event
+(either the map, a shape, or an entity collection like map.Entities), the name of
+the event you want to use and a callback function. The available events can be found
+in the `{EventType}Event` class, where `EventType` is one of:
 
-The way you can attach events to the map is by using the `AttachEvent` method. This method
-receives the name of the event you want to use and a callback function. The available
-events can be found in the [Map Control documentation page][mapRef]. In the case of
-the example above, it uses 3 different events:
+    * `Mouse`, for events related to clicking and mouse movement;
+    * `Key`, for events related to keyboard strokes;
+    * `EntityCollection`, for events related to an entity inside an entity collection.
+    * `Unit`, for events with no extra parameter (like `Maptypechanged` or `Targetviewchanged`).
 
-       #fsharp
-            map.AttachEvent("onmousedown", mouseDownHandler)
-            map.AttachEvent("onmousemove", mouseMoveHandler)
-            map.AttachEvent("onkeypress", keyPressHandler))
+The callback signature is `{EventType}EventArgs -> unit`, apart from `UnitEvent`s
+for which the callback signature is `unit -> unit`. Common properties for the
+`MouseEventArgs` and `KeyEventArgs` objects are:
 
+    * `event.eventName` which gives the exact event that was fired (like `MouseEvent.Click`).
+    * `event.originalEvent` which return the native browser event.
+    * `event.handled` which is a mutable boolean. Set it to false if you don't
+      want the default behavior to be fired after running the callback.
 
-The callback signature is `#EventArg -> bool`. The WebSharper interface provides
-classes for each of the events described in the documentation. The names of the
-interfaces of each `EventArg` class are based on the following mnemonic:
-`<EventClass>EventArgs`. In the case of the keyboard events they all receive a
-`KeyboardEventArgs` instances. Mouse `EventArg` classes start with the name of the event
-(i.e, `"onmousedown"` uses the `OnMouseDownEventArgs` class).
-
-The return type of each callback is `bool`. This indicates whether the
-default behavior should (or should not) be executed. 
-
-The simplest callback is the one handling key strokes:
-
-    #fsharp
-            let keyPressHandler (e: Maps.KeyboardEventArgs) = 
-                if !drawing && e.keyCode = 27 then
-                    drawing := false
-                    output.Text <- "Enabled"
-                    elem.JQuery.Css ("cursor", "") |> ignore
-                    btn.Text <- "Click to begin drawing"
-                    btn.JQuery.RemoveAttr "disabled" |> ignore
-                    polylineMask.Hide()
-                false
-
-It basically changes the current drawing state if the ESC key is pressed. The
-callback also uses the jQuery object to change the button's label and enable it
-again.
-
-The end result is something like the following:
-
-![Events](Events.png)\
-
-[exampleSrc]: http://www.garzilla.net/vemaps/DrawPolyLine.aspx
-[mapRef]: http://msdn.microsoft.com/en-us/library/bb429586.aspx
-[sampleUrl]: http://www.intellifactory.com/products/wsp/samples/Bing.aspx
-
+This example also shows how to translate between screen coordinates and latitude / longitude,
+using the `TryLocationToPixel` and `TryPixelToLocation` methods of a `Map` object.

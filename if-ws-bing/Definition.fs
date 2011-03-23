@@ -337,6 +337,12 @@ module Bing =
                 |> WithComment "Converts the EntityCollection object to a string."
             ]
 
+    let Event = Type.New()
+
+    let EventClass =
+        Interface "Microsoft.Maps.Event"
+
+    let KeyEvent = Type.New()
     let KeyEventArgs = Type.New()
 
     let KeyEventArgsClass =
@@ -350,7 +356,7 @@ module Bing =
                 "ctrlKey" =? T<bool>
                 |> WithComment "A boolean indicating if the CTRL key was pressed."
 
-                "eventName" =? T<string>
+                "eventName" =? KeyEvent
                 |> WithComment "The event that occurred."
 
                 "handled" =% T<bool>
@@ -366,6 +372,13 @@ module Bing =
                 |> WithComment "A boolean indicating if the SHIFT key was pressed."
             ]
 
+    let KeyEventClass =
+        Class "Microsoft.Maps.KeyEvent"
+        |=> KeyEvent
+        |=> Implements [Event]
+        |+> ConstantStrings KeyEvent ["keydown"; "keyup"; "keypress"]
+
+    let MouseEvent = Type.New()
     let MouseEventArgs = Type.New()
 
     let MouseEventArgsClass =
@@ -373,7 +386,7 @@ module Bing =
         |=> MouseEventArgs
         |+> Protocol
             [
-                "eventName" =? T<string>
+                "eventName" =? MouseEvent
                 |> WithComment "The event that occurred."
 
                 "handled" =% T<bool>
@@ -413,22 +426,33 @@ module Bing =
                 |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
             ]
 
-    let KeyEvent = Type.New()
-
-    let KeyEventClass =
-        Class "Microsoft.Maps.KeyEvent"
-        |=> KeyEvent
-        |+> ConstantStrings KeyEvent ["keydown"; "keyup"; "keypress"]
-
-    let MouseEvent = Type.New()
-
     let MouseEventClass =
         Class "Microsoft.Maps.MouseEvent"
         |=> MouseEvent
+        |=> Implements [Event]
         |+> ConstantStrings MouseEvent
             [
                 "click"; "dblclick"; "rightclick"
                 "mousedown"; "mouseup"; "mousemove"; "mouseover"; "mouseleave"; "mouseout"; "mousewheel"
+            ]
+
+    let EntityCollectionEvent = Type.New()
+    let EntityCollectionEventArgs = Type.New()
+
+    let EntityCollectionEventClass =
+        Class "Microsoft.Maps.EntityCollectionEvent"
+        |=> EntityCollectionEvent
+        |=> Implements [Event]
+        |+> ConstantStrings EntityCollectionEvent
+            [ "entityadded"; "entitychanged"; "entityremoved" ]
+
+    let EntityCollectionEventArgsClass =
+        Class "Microsoft.Maps.EntityCollectionEventArgs"
+        |=> EntityCollectionEventArgs
+        |+> Protocol
+            [
+                "collection" =? EntityCollection
+                "entity" =? Entity
             ]
 
     let UnitEvent = Type.New()
@@ -436,11 +460,11 @@ module Bing =
     let UnitEventClass =
         Class "Microsoft.Maps.UnitEvent"
         |=> UnitEvent
+        |=> Implements [Event]
         |+> ConstantStrings UnitEvent
             [
                 "copyrightchanged"; "imagerychanged"; "maptypechanged"; "targetviewchanged"; "tiledownloadcomplete"
                 "viewchange"; "viewchangeend"; "viewchangestart"
-                "entityadded"; "entitychanged"; "entityremoved"
             ]
 
     let EventHandler = Type.New()
@@ -464,13 +488,19 @@ module Bing =
                 "addHandler" => Entity * UnitEvent * T<unit -> unit> ^-> EventHandler
                 |> WithComment "Attaches the handler for the event that is thrown by the target."
 
-                "addThrottledHandler" => Entity * T<string> * T<obj -> unit> * T<float> ^-> EventHandler
+                "addThrottledHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) * T<float> ^-> EventHandler
                 |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
 
-                "hasHandler" => Entity * T<string> ^-> T<bool>
+                "addThrottledHandler" => Entity * MouseEvent * (MouseEventArgs ^-> T<unit>) * T<float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
+
+                "addThrottledHandler" => Entity * UnitEvent * T<unit -> unit> * T<float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
+
+                "hasHandler" => Entity * Event ^-> T<bool>
                 |> WithComment "Checks if the target has any attached event handler."
 
-                "invoke" => Entity * T<string> ^-> T<unit>
+                "invoke" => Entity * Event ^-> T<unit>
                 |> WithComment "Invokes an event on the target. This causes all handlers for the specified eventName to be called."
 
                 "removeHandler" => EventHandler ^-> T<unit>
@@ -1607,8 +1637,11 @@ module Bing =
                 EventsClass
                 KeyEventArgsClass
                 MouseEventArgsClass
+                EntityCollectionEventArgsClass
+                EventClass
                 KeyEventClass
                 MouseEventClass
+                EntityCollectionEventClass
                 UnitEventClass
                 LabelOverlayClass
                 MapOptionsClass
