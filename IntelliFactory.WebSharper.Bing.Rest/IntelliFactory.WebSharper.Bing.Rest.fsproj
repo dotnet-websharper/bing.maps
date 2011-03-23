@@ -49,10 +49,8 @@
     <Reference Include="IntelliFactory.WebSharper.Html" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
     <Reference Include="IntelliFactory.WebSharper.Ecma" />
-    <Reference Include="IntelliFactory.WebSharper.Web" />
     <Reference Include="IntelliFactory.WebSharper.Json" />
     <Reference Include="IntelliFactory.WebSharper.Core" />
-    <Reference Include="IntelliFactory.Html" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
