@@ -66,5 +66,9 @@ This example shows how you can initialize the Location components directly from 
 constructor or using mutation. This time we also used a 10x zoom and a `Birdseye` style
 for the map.
 
+Alternatively, you can also set view options when creating the map by passing a
+`MapViewOptions` object to the map constructor. This object combines the properties of
+`MapOptions` and `ViewOptions` for convenience.
+
 ![SimpleMap2](SimpleMap2.png)\
 

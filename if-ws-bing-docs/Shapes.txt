@@ -16,13 +16,13 @@ polygons. The following example demonstrates how to add shapes to the map.
             let pushpin = Bing.Pushpin(location)
             map.Entities.Push pushpin
             
-            let fromPoints (x,y) = Bing.Location(x + location.Latitude, y + location.Longitude)
+            let fromPoints (x,y) = Bing.Location(x + location.Latitude,
+                                                 y + location.Longitude)
 
             // Line
             let linePoints = 
                 [|(0.2,0.2); (0.2,-0.2); (-0.2,-0.2); (-0.2,0.2); (0.2,0.2)|]
                 |> Array.map fromPoints
-
             let line = Bing.PolyLine(linePoints)
             map.Entities.Push(line)
             

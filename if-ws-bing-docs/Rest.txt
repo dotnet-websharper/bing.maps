@@ -2,11 +2,11 @@
 
 Bing Maps provides a REST API which can be used for a number of requests:
 
-    * Search for a location by name, address or coordinates;
-    * Ask for directions between two locations, or into a location;
-    * Request a static map, ie. a simple image (as opposed to interactive
-      AJAX maps)
-    * Ask for metadata about the maps, such as information about the tiles.
+  * Search for a location by name, address or coordinates;
+  * Ask for directions between two locations, or into a location;
+  * Request a static map, ie. a simple image (as opposed to interactive
+    AJAX maps)
+  * Ask for metadata about the maps, such as information about the tiles.
 
 This WebSharper™ Extension provides functions to build a request for this
 REST API, and classes to process the results. These functions can be found
@@ -35,10 +35,10 @@ displays it on the map. It skips most error checking for the sake of clarity.
 Most functions in the `Rest` module are called in the same way. They take
 three arguments:
 
-    * A string containing your Bing Maps credentials;
-    * An object describing your request;
-    * A callback function of type `RestResponse -> unit` which will be called
-      with the data returned by Bing.
+  * A string containing your Bing Maps credentials;
+  * An object describing your request;
+  * A callback function of type `RestResponse -> unit` which will be called
+    with the data returned by Bing.
 
 The RestResponse object contains some metadata about the information it returns.
 The actual data is in the `ResourceSets` array field. This will generally contain
