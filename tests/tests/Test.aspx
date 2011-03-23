@@ -4,15 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+   <title></title>
+   <WebSharper:ScriptManager runat="server" ></WebSharper:ScriptManager>
   
-  <WebSharper:ScriptManager runat="server" ></WebSharper:ScriptManager>
-  
-
-</head>
+ </head>
 <body>
     <form id="form1" runat="server">
-
     <div>
     <h1>Test</h1>
     <Samples:Samples runat="server" ></Samples:Samples>
