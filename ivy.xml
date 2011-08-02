@@ -1,20 +1,17 @@
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://doiop.com/ivy-2.1.0.xsd">
-  <info organisation="IntelliFactory" module="if-ws-bing" revision="2.1" />
+  <info organisation="IntelliFactory" module="if-ws-bing" revision="2.3" />
   <configurations>
     <conf name="build" />
     <conf name="default" />
   </configurations>
   <publications>
     <artifact name="IntelliFactory.WebSharper.Bing" ext="dll" type="bin" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Bing" ext="dll.dep" type="bin" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing" ext="xml" type="doc" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing" ext="pdb" type="debug" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing.Rest" ext="dll" type="bin" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Bing.Rest" ext="dll.dep" type="bin" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing.Rest" ext="xml" type="doc" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Bing.Rest" ext="pdb" type="debug" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Bing.Rest" ext="dll.js" type="bin" conf="default" />
     <artifact name="if-ws-bing-docs" ext="zip" type="doc" conf="default" />
   </publications>
   <dependencies>
