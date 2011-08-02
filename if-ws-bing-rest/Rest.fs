@@ -109,32 +109,27 @@ module Rest =
     let StaticMapUrl(credentials, request : Bing.StaticMapRequest) =
         let fields =
             [
-                OptionalFields request
+                yield! OptionalFields request
                     [| "avoid"; "dateTime"; "mapLayer"; "mapVersion"
                        "maxSolutions"; "optimize"; "timeType"; "travelMode"; "zoomLevel" |]
-                (if IsUndefined request.MapArea then
-                     [||]
-                 else
-                    [|(fst request.MapArea).ToUrlString() + "," + (snd request.MapArea).ToUrlString()|])
-                (if IsUndefined request.MapSize then
-                     [||]
-                 else
-                    [|string (fst request.MapSize) + "," + string (snd request.MapSize)|])
-                (if IsUndefined request.Pushpin then
-                     [||]
-                 else
+                if not (IsUndefined request.MapArea) then
+                    yield (fst request.MapArea).ToUrlString() + "," + (snd request.MapArea).ToUrlString()
+                if not (IsUndefined request.MapSize) then
+                    yield string (fst request.MapSize) + "," + string (snd request.MapSize)
+                if not (IsUndefined request.Pushpin) then
                     let pushpinToUrlString (pin : PushpinRequest) =
                         let coords = string pin.X + "," + string pin.Y
                         let icstyle = if IsUndefined pin.IconStyle then "" else string pin.IconStyle
                         let label = if IsUndefined pin.Label then "" else pin.Label
                         coords + ";" + icstyle + ";" + label
-                    request.Pushpin |> Array.map (fun pin -> "pp=" + pushpinToUrlString pin))
-                (if IsUndefined request.Waypoints then
-                     [||]
-                 else
-                    StringifyWaypoints request.Waypoints)
+                    yield! request.Pushpin |> Array.map (fun pin -> "pp=" + pushpinToUrlString pin)
+                if not (IsUndefined request.Waypoints) then
+                    yield! StringifyWaypoints request.Waypoints
+                if not (IsUndefined request.DeclutterPins) then
+                    yield "dcl=" + if request.DeclutterPins then "1" else "0"
+                if not (IsUndefined request.DistanceBeforeFirstTurn) then
+                    yield "dbft=" + string request.DistanceBeforeFirstTurn
             ]
-            |> Array.concat
         let query =
             if not (IsUndefined request.Query) then
                 request.Query

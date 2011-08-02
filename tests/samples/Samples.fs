@@ -3,6 +3,7 @@
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Html
 open IntelliFactory.WebSharper.Bing
+
 module Main =
 
     [<JavaScript>]

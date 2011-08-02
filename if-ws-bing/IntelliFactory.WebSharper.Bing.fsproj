@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -47,6 +47,9 @@
   <ItemGroup>
     <Reference Include="FSharp.Core" />
     <Reference Include="FSharp.PowerPack" />
+    <Reference Include="IntelliFactory.WebSharper.Ecma">
+      <HintPath>..\.build\lib\IntelliFactory.WebSharper.Ecma.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="mscorlib" />
     <Reference Include="IntelliFactory.Json" />

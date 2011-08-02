@@ -1,12 +1,16 @@
 ﻿namespace IntelliFactory.WebSharper.BingExtension
 
 open IntelliFactory.WebSharper.Dom
+open IntelliFactory.WebSharper.EcmaScript
 
 module Bing =
     open IntelliFactory.WebSharper.InterfaceGenerator
 
     let private ConstantStrings ty l =
         List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
+
+    let private Constants ty l =
+        List.map (fun s -> s =? ty :> CodeModel.IClassMember) l
 
     ///////////////////////////////////////////////////////////////////
     // Ajax API
@@ -22,8 +26,15 @@ module Bing =
                 |> WithComment "Determines if the specified reference is a supported AltitudeReference."
             ]
 
+    let AnimationVisibility = Type.New()
+
+    let AnimationVisibilityClass =
+        Class "Microsoft.Maps.AnimationVisibility"
+        |=> AnimationVisibility
+        |+> ConstantStrings AnimationVisibility ["auto"; "hide"; "show"]
+
     let Location = Type.New()
-    
+
     let LocationClass =
         Class "Microsoft.Maps.Location"
         |=> Location
@@ -170,16 +181,56 @@ module Bing =
     let MapOptions = Type.New()
     let MapViewOptions = Type.New()
 
-    
+
+    let Color = Type.New()
+
+    let ColorClass =
+        Class "Microsoft.Maps.Color"
+        |=> Color
+        |+> [
+                Constructor (T<int> * T<int> * T<int> * T<int>)
+                |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
+
+                "cloneColor" => Color ^-> Color
+                |> WithInline "clone"
+                |> WithComment "Creates a copy of the Color object."
+
+                "fromHex" => T<string> ^-> Color
+                |> WithComment "Converts the specified hex string to a Color."
+            ]
+        |+> Protocol
+            [
+                "a" =? T<int>
+                |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
+
+                "r" =? T<int>
+                |> WithComment "The red value of the color. The range of valid values is 0 to 255."
+
+                "g" =? T<int>
+                |> WithComment "The green value of the color. The range of valid values is 0 to 255."
+
+                "b" =? T<int>
+                |> WithComment "The blue value of the color. The range of valid values is 0 to 255."
+
+                "clone" => T<unit> ^-> Color
+                |> WithComment "Returns a copy of the Color object."
+
+                "getOpacity" => T<unit -> float>
+                |> WithComment "Returns the opacity of the Color as a value between 0 (a=0) and 1 (a=255)."
+
+                "toHex" => T<unit -> string>
+                |> WithComment "Converts the Color into a 6-digit hex string. Opacity is ignored. For example, a Color with values (255,0,0,0) is returned as hex string #000000."
+
+                "toString" => T<unit -> string>
+                |> WithComment "Converts the Color object to a string."
+            ]
+
     let MapTypeId = Type.New()
 
     let MapTypeIdClass =
         Class "Microsoft.Maps.MapTypeId"
         |=> MapTypeId
         |+> [
-                "mercator" =? MapTypeId
-                |> WithComment "The Mercator style is being used."
-
                 "aerial" =? MapTypeId
                 |> WithComment "The aerial map style is being used."
 
@@ -191,6 +242,9 @@ module Bing =
 
                 "collinsBart" =? MapTypeId
                 |> WithComment "Collin’s Bart (mkt=en-gb) map type is being used."
+
+                "mercator" =? MapTypeId
+                |> WithComment "The Mercator style is being used."
 
                 "ordnanceSurvey" =? MapTypeId
                 |> WithComment "Ordinance Survey (mkt=en-gb) map type is being used."
@@ -211,21 +265,30 @@ module Bing =
             "padding", T<int>
             "zoom", T<int>
         ]
-    
+
     let private MapOptionsFields =
         [
+            "backgroundColor", Color
             "credentials", T<string>
+            "disableBirdseye", T<bool>
             "disableKeyboardInput", T<bool>
             "disableMouseInput", T<bool>
+            "disablePanning", T<bool>
             "disableTouchInput", T<bool>
             "disableUserInput", T<bool>
+            "disableZooming", T<bool>
             "enableClickableLogo", T<bool>
             "enableSearchLogo", T<bool>
+            "fixedMapPosition", T<bool>
             "height", T<int>
+            "inertialIntensity", T<float>
+            "showBreadcrumb", T<bool>
             "showCopyright", T<bool>
             "showDashboard", T<bool>
             "showMapTypeSelector", T<bool>
             "showScalebar", T<bool>
+            "tileBuffer", T<int>
+            "useInertia", T<bool>
             "width", T<int>
         ]
 
@@ -475,38 +538,6 @@ module Bing =
 
     let Events = Type.New()
 
-    let EventsClass =
-        Class "Microsoft.Maps.Events"
-        |=> Events
-        |+> [
-                "addHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target."
-
-                "addHandler" => Entity * MouseEvent * (MouseEventArgs ^-> T<unit>) ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target."
-
-                "addHandler" => Entity * UnitEvent * T<unit -> unit> ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target."
-
-                "addThrottledHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) * T<float> ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
-
-                "addThrottledHandler" => Entity * MouseEvent * (MouseEventArgs ^-> T<unit>) * T<float> ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
-
-                "addThrottledHandler" => Entity * UnitEvent * T<unit -> unit> * T<float> ^-> EventHandler
-                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
-
-                "hasHandler" => Entity * Event ^-> T<bool>
-                |> WithComment "Checks if the target has any attached event handler."
-
-                "invoke" => Entity * Event ^-> T<unit>
-                |> WithComment "Invokes an event on the target. This causes all handlers for the specified eventName to be called."
-
-                "removeHandler" => EventHandler ^-> T<unit>
-                |> WithComment "Detaches the specified handler from the event."
-            ]
-
     let InfoboxAction = Type.New()
 
     let InfoboxActionClass =
@@ -609,7 +640,7 @@ module Bing =
                 "setLocation" => Location ^-> T<unit>
                 |> WithComment "Sets the location on the map where the anchor of the infobox is attached."
 
-                "setOption" => InfoboxOptions ^-> T<unit>
+                "setOptions" => InfoboxOptions ^-> T<unit>
                 |> WithComment "Sets options for the infobox."
 
                 "toString" => T<unit -> string>
@@ -635,6 +666,11 @@ module Bing =
     let PixelReferenceClass =
         Class "Microsoft.Maps.PixelReference"
         |=> PixelReference
+        |+> Constants PixelReference ["control"; "page"; "viewport"]
+        |+> [
+                "isValid" => PixelReference ^-> T<bool>
+                |> WithComment "Determines whether the specified reference is a supported PixelReference."
+            ]
 
     let Map = Type.New()
 
@@ -777,47 +813,136 @@ module Bing =
                 |> WithComment "Converts an array of Points relative to PixelReference.Viewport and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
             ]
 
-    let Color = Type.New()
+    let Coordinates = Type.New()
 
-    let ColorClass =
-        Class "Microsoft.Maps.Color"
-        |=> Color
+    let CoordinatesClass =
+        Class "Microsoft.Maps.Coordinates"
+        |=> Coordinates
+        |+> Protocol
+            [
+                "accuracy" =? T<float>
+                "altitude" =? T<float>
+                "altitudeAccuracy" =? T<float>
+                "heading" =? T<float>
+                "latitude" =? T<float>
+                "longitude" =? T<float>
+                "speed" =? T<float>
+            ]
+
+    let Position = Type.New()
+
+    let PositionClass =
+        Class "Microsoft.Maps.Position"
+        |=> Position
+        |+> Protocol
+            [
+                "coords" =? Coordinates
+                "timestamp" =? T<string>
+            ]
+
+    let PositionError = Type.New()
+
+    let PositionErrorClass =
+        Class "Microsoft.Maps.PositionError"
+        |=> PositionError
+        |+> Protocol
+            [
+                "code" =? T<int>
+                "message" =? T<string>
+            ]
+
+    let PositionErrorCallbackArgs = Type.New()
+
+    let PositionErrorCallbackArgsClass =
+        Class "Microsoft.Maps.PositionErrorCallbackArgs"
+        |=> PositionErrorCallbackArgs
+        |+> Protocol
+            [
+                "internalError" =? PositionError
+                "errorCode" =? T<int>
+            ]
+
+    let PositionSuccessCallbackArgs = Type.New()
+
+    let PositionSuccessCallbackArgsClass =
+        Class "Microsoft.Maps.PositionSuccessCallbackArgs"
+        |=> PositionSuccessCallbackArgs
+        |+> Protocol
+            [
+                "center" =? Location
+                "position" =? Position
+            ]
+
+    let PositionOptions = Type.New()
+
+    let PositionOptionsClass =
+        Pattern.Config "Microsoft.Maps.PositionOptions" {
+            Required = []
+            Optional =
+                [
+                    "enableHighAccuracy", T<bool>
+                    "errorCallback", PositionErrorCallbackArgs ^-> T<unit>
+                    "maximumAge", T<int>
+                    "showAccuracyCircle", T<bool>
+                    "successCallback", PositionSuccessCallbackArgs ^-> T<unit>
+                    "timeout", T<int>
+                    "updateMapView", T<bool>
+                ]
+        }
+
+    let PolygonOptions = Type.New()
+
+    let PolygonOptionsClass =
+        Pattern.Config "Microsoft.Maps.PolygonOptions" {
+            Required = []
+            Optional =
+                [
+                    "fillColor", Color
+                    "strokeColor", Color
+                    "strokeThickness", T<float>
+                    "visible", T<bool>
+                ]
+        }
+        |+> Protocol
+            [
+                "strokeDashArray" =@ Type.ArrayOf T<int>
+                |> WithSetterInline "$this.strokeDashArray = $1.join(',')"
+                |> WithGetterInline "$this.strokeDashArray.split(',')"
+            ]
+
+    let PositionCircleOptions = Type.New()
+
+    let PositionCircleOptionsClass =
+        Pattern.Config "Microsoft.Maps.PositionCircleOptions" {
+            Required = []
+            Optional =
+                [
+                    "polygonOptions", PolygonOptions
+                    "showOnMap", T<bool>
+                ]
+        }
+
+    let GeoLocationProvider = Type.New()
+
+    let GeoLocationProviderClass =
+        Class "Microsoft.Maps.GeoLocationProvider"
+        |=> GeoLocationProvider
         |+> [
-                Constructor (T<int> * T<int> * T<int> * T<int>)
-                |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
-
-                "cloneColor" => Color ^-> Color
-                |> WithInline "clone"
-                |> WithComment "Creates a copy of the Color object."
-
-                "fromHex" => T<string> ^-> Color
-                |> WithComment "Converts the specified hex string to a Color."
+                Constructor Map
             ]
         |+> Protocol
             [
-                "a" =? T<int>
-                |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
+                "addAccuracyCircle" => Location * T<float> * T<int> * PositionCircleOptions ^-> T<unit>
+                |> WithComment "Renders a geo location accuracy circle on the map. The accuracy circle is created with the center at the specified location, using the given radiusInMeters, and with the specified number of segments for the accuracy circle polygon. Additional options are also available to adjust the style of the polygon."
 
-                "r" =? T<int>
-                |> WithComment "The red value of the color. The range of valid values is 0 to 255."
+                "cancelRequest" => T<unit> ^-> T<unit>
+                |> WithComment "Cancels the processing of the current getCurrentPosition request. This method prevents the response from being processed."
 
-                "g" =? T<int>
-                |> WithComment "The green value of the color. The range of valid values is 0 to 255."
+                "getCurrentPosition" => PositionOptions ^-> T<unit>
+                |> WithComment "Obtains the user’s current location and displays it on the map. Important: The accuracy of the user location obtained using this method varies widely depending on the desktop browser or mobile device of the requesting client. Desktop users may experience low user location accuracy (accuracy circles with large radiuses), while mobile user location accuracy may be much greater (a few meters)."
 
-                "b" =? T<int>
-                |> WithComment "The blue value of the color. The range of valid values is 0 to 255."
-
-                "clone" => T<unit> ^-> Color
-                |> WithComment "Returns a copy of the Color object."
-
-                "getOpacity" => T<unit -> float>
-                |> WithComment "Returns the opacity of the Color as a value between 0 (a=0) and 1 (a=255)."
-
-                "toHex" => T<unit -> string>
-                |> WithComment "Converts the Color into a 6-digit hex string. Opacity is ignored. For example, a Color with values (255,0,0,0) is returned as hex string #000000."
-
-                "toString" => T<unit -> string>
-                |> WithComment "Converts the Color object to a string."
+                "removeAccuracyCircle" => T<unit> ^-> T<unit>
+                |> WithComment "Removes the current geo location accuracy circle."
             ]
 
     let PolylineOptions = Type.New()
@@ -832,6 +957,12 @@ module Bing =
                     "visible", T<bool>
                 ]
         }
+        |+> Protocol
+            [
+                "strokeDashArray" =@ Type.ArrayOf T<int>
+                |> WithSetterInline "$this.strokeDashArray = $1.join(',')"
+                |> WithGetterInline "$this.strokeDashArray.split(',')"
+            ]
 
     let Polyline = Type.New()
 
@@ -850,6 +981,10 @@ module Bing =
 
                 "getStrokeColor" => T<unit> ^-> Color
                 |> WithComment "Returns the color of the polyline."
+
+                "getStrokeDashArray" => T<unit> ^-> Type.ArrayOf T<int>
+                |> WithInline "$this.getStrokeDashArray().split(',')"
+                |> WithComment "Returns the string that represents the stroke/gap sequence used to draw the the polyline."
 
                 "getStrokeThickness" => T<unit -> float>
                 |> WithComment "Returns the thickness of the polyline."
@@ -877,6 +1012,7 @@ module Bing =
             Required = []
             Optional =
                 [
+                    "animationDisplay", AnimationVisibility
                     "mercator", TileSource
                     "opacity", T<float>
                     "visible", T<bool>
@@ -903,7 +1039,9 @@ module Bing =
         |+> [
                 Constructor TileSourceOptions
                 |> WithComment "Initializes a new instance of the TileSource  class."
-                
+            ]
+        |+> Protocol
+            [
                 "getHeight" => T<unit -> float>
                 |> WithComment "Returns the pixel height of each tile in the tile source."
 
@@ -915,7 +1053,7 @@ module Bing =
 
                 "toString" => T<unit -> string>
                 |> WithComment "Converts the Color object to a string."
-        ]
+            ]
 
     let TileLayerClass =
         Class "Microsoft.Maps.TileLayer"
@@ -924,6 +1062,11 @@ module Bing =
         |+> [
                 Constructor TileLayerOptions
                 |> WithComment "Initializes a new instance of the TileLayer class."
+            ]
+        |+> Protocol
+            [
+                "a" =? T<int>
+                |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
 
                 "getOpacity" => T<unit -> float>
                 |> WithComment "Returns the opacity of the tile layer, defined as a double between 0 (not visible) and 1."
@@ -940,26 +1083,6 @@ module Bing =
                 "toString" => T<unit -> string>
                 |> WithComment "Converts the TileLayer object to a string."
             ]
-        |+> Protocol
-            [
-                "a" =? T<int>
-                |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
-            ]
-
-
-    let PolygonOptions = Type.New()
-
-    let PolygonOptionsClass =
-        Pattern.Config "Microsoft.Maps.PolygonOptions" {
-            Required = []
-            Optional =
-                [
-                    "fillColor", Color
-                    "strokeColor", Color
-                    "strokeThickness", T<float>
-                    "visible", T<bool>
-                ]
-        }
 
     let Polygon = Type.New()
 
@@ -981,6 +1104,10 @@ module Bing =
 
                 "getStrokeColor" => T<unit> ^-> Color
                 |> WithComment "Returns the color of the polygon."
+
+                "getStrokeDashArray" => T<unit> ^-> Type.ArrayOf T<int>
+                |> WithInline "$this.getStrokeDashArray().split(',')"
+                |> WithComment "Returns the string that represents the stroke/gap sequence used to draw the outline of the polygon."
 
                 "getStrokeThickness" => T<unit -> float>
                 |> WithComment "Returns the thickness of the polygon."
@@ -1068,6 +1195,600 @@ module Bing =
 
                 "toString" => T<unit -> string>
                 |> WithComment "Converts the Pushpin object to a string."
+            ]
+
+    module Directions =
+
+        let BusinessDetails = Type.New()
+        let BusinessDetailsClass =
+            Class "Microsoft.Maps.Directions.BusinessDetails"
+            |=> BusinessDetails
+            |+> Protocol
+                [
+                    "businessName" =? T<string>
+                    "entityId" =? T<string>
+                    "phoneNumber" =? T<string>
+                    "website" =? T<string>
+                ]
+
+        let BusinessDisambiguationSuggestion = Type.New()
+        let BusinessDisambiguationSuggestionClass =
+            Class "Microsoft.Maps.Directions.BusinessDisambiguationSuggestion"
+            |=> BusinessDisambiguationSuggestion
+            |+> Protocol
+                [
+                    "address" =? T<string>
+                    "distance" =? T<float>
+                    "entityId" =? T<string>
+                    "index" =? T<int>
+                    "isApproximate" =? T<bool>
+                    "location" =? Location
+                    "name" =? T<string>
+                    "phoneNumber" =? T<string>
+                    "photoUrl" =? T<string>
+                    "rooftopLocation" =? Location
+                    "website" =? T<string>
+                ]
+
+        let RouteResponseCode = Type.New()
+        let RouteResponseCodeClass =
+            Class "Microsoft.Maps.Directions.RouteResponseCode"
+            |=> RouteResponseCode
+            |+> Constants RouteResponseCode ["success"; "unknownError"; "cannotFindNearbyRoad"; "tooFar"
+                                             "noSolution"; "dataSourceNotFound"; "noAvailableTransitTrip"
+                                             "transitStopsTooClose"; "walkingBestAlternative"; "outOfTransitBounds"
+                                             "timeout"; "waypointDisambiguation"; "hasEmptyWaypoint"
+                                             "exceedMaxWaypointLimit"; "atleastTwoWaypointRequired"
+                                             "firstOrLastStoppointIsVia"; "searchServiceFailed"]
+
+        let RouteSummary = Type.New()
+        let RouteSummaryClass =
+            Class "Microsoft.Maps.Directions.RouteSummary"
+            |=> RouteSummary
+            |+> Protocol
+                [
+                    "distance" =? T<float>
+                    "monetaryCost" =? T<float>
+                    "northEast" =? Location
+                    "southWest" =? Location
+                    "time" =? T<int>
+                    "timeWithTraffic" =? T<int>
+                ]
+
+        let RouteIconType = Type.New()
+        let RouteIconTypeClass =
+            Class "Microsoft.Maps.Directions.RouteIconType"
+            |=> RouteIconType
+            |+> Constants RouteIconType ["none"; "other"; "auto"; "ferry"
+                                         "walk"; "bus"; "train"; "airline"]
+
+        let ManeuverType = Type.New()
+        let ManeuverTypeClass =
+            Class "Microsoft.Maps.Directions.ManeuverType"
+            |=> ManeuverType
+            |+> Constants ManeuverType ["none"; "unknown"; "transfer"; "wait"
+                                        "takeTransit"; "walk"; "transitDepart"
+                                        "transitArrive"]
+
+        let TransitLine = Type.New()
+        let TransitLineClass =
+            Class "Microsoft.Maps.Directions.TransitLine"
+            |=> TransitLine
+            |+> Protocol
+                [
+                    "abbreviatedName" =? T<string>
+                    "agencyId" =? T<int>
+                    "agencyName" =? T<string>
+                    "agencyUrl" =? T<string>
+                    "lineColor" =? Color
+                    "lineTextColor" =? Color
+                    "providerInfo" =? T<string>
+                    "verboseName" =? T<string>
+                ]
+
+        let DirectionsStepWarningType = Type.New()
+        let DirectionsStepWarningTypeClass =
+            Class "Microsoft.Maps.Directions.DirectionsStepWarningType"
+            |=> DirectionsStepWarningType
+            |+> Constants DirectionsStepWarningType
+                    ["info"; "minor"; "moderate"; "major"; "ccZoneEnter"; "ccZoneExit"]
+
+        let DirectionsStepWarning = Type.New()
+        let DirectionsStepWarningClass =
+            Class "Microsoft.Maps.Directions.DirectionsStepWarning"
+            |=> DirectionsStepWarning
+            |+> Protocol
+                [
+                    "style" =? DirectionsStepWarningType
+                    "text" =? T<string>
+                ]
+
+        let RoutePath = Type.New()
+        let RoutePathClass =
+            Class "Microsoft.Maps.Directions.RoutePath"
+            |=> RoutePath
+            |+> Protocol
+                [
+                    "decodedLatitudes" =? Type.ArrayOf T<float>
+                    "decodedLongitudes" =? Type.ArrayOf T<float>
+                    "decodedRegions" =? Type.ArrayOf T<obj>
+                ]
+
+        let RouteSubLeg = Type.New()
+        let RouteSubLegClass =
+            Class "Microsoft.Maps.Directions.RouteSubLeg"
+            |=> RouteSubLeg
+            |+> Protocol
+                [
+                    "actualEnd" =? Location
+                    "actualStart" =? Location
+                    "endDescription" =? T<string>
+                    "routePath" =? RoutePath
+                    "startDescription" =? T<string>
+                    "summary" =? RouteSummary
+                ]
+
+        let DirectionsStep = Type.New()
+        let DirectionsStepClass =
+            Class "Microsoft.Maps.Directions.DirectionsStep"
+            |=> DirectionsStep
+            |+> Protocol
+                [
+                    "childItineraryItems" =? Type.ArrayOf DirectionsStep
+                    "coordinate" =? Location
+                    "distance" =? T<string>
+                    "durationInSeconds" =? T<int>
+                    "formattedText" =? T<string>
+                    "iconType" =? RouteIconType
+                    "isImageRoadShield" =? T<bool>
+                    "maneuver" =? ManeuverType
+                    "maneuverImageName" =? T<string>
+                    "monetaryCost" =? T<float>
+                    "postIntersectionHints" =? Type.ArrayOf T<string>
+                    "preIntersectionHints" =? Type.ArrayOf T<string>
+                    "startStopName" =? T<string>
+                    "transitLine" =? TransitLine
+                    "transitStopId" =? T<string>
+                    "transitTerminus" =? T<string>
+                    "warnings" =? DirectionsStepWarning
+                ]
+
+        let RouteLeg = Type.New()
+        let RouteLegClass =
+            Class "Microsoft.Maps.Directions.RouteLeg"
+            |=> RouteLeg
+            |+> Protocol
+                [
+                    "endTime" =? T<int> //TODO: DateTime
+                    "endWaypointLocation" =? Location
+                    "itineraryItems" =? Type.ArrayOf DirectionsStep
+                    "originalRouteIndex" =? T<int>
+                    "startTime" =? T<int>
+                    "startWaypointLocation" =? Location
+                    "subLegs" =? Type.ArrayOf RouteSubLeg
+                    "summary" =? RouteSummary
+                ]
+
+        let Route = Type.New()
+        let RouteClass =
+            Class "Microsoft.Maps.Directions.Route"
+            |=> Route
+            |+> Protocol
+                [
+                    "routeLegs" =? Type.ArrayOf RouteLeg
+                ]
+
+        let DirectionsEventArgs = Type.New()
+        let DirectionsEventArgsClass =
+            Class "Microsoft.Maps.Directions.DirectionsEventArgs"
+            |=> DirectionsEventArgs
+            |+> Protocol
+                [
+                    "routeSummary" =? Type.ArrayOf RouteSummary
+                    "route" =? Type.ArrayOf Route
+                ]
+
+        let WaypointOptions = Type.New()
+        let WaypointOptionsClass =
+            Pattern.Config "Microsoft.Maps.Directions.WaypointOptions" {
+                Required = []
+                Optional =
+                    [
+                        "address", T<string>
+                        "businessDetails", BusinessDetails
+                        "exactLocation", T<bool>
+                        "isViapoint", T<bool>
+                        "location", Location
+                        "shortAddress", T<string>
+                    ]
+            }
+
+        let LocationDisambiguationSuggestion = Type.New()
+        let LocationDisambiguationSuggestionClass =
+            Class "Microsoft.Maps.Directions.LocationDisambiguationSuggestion"
+            |=> LocationDisambiguationSuggestion
+            |+> Protocol
+                [
+                    "formattedSuggestion" =? T<string>
+                    "location" =? Location
+                    "rooftopLocation" =? Location
+                    "suggestion" =? T<string>
+                ]
+
+        let Disambiguation = Type.New()
+        let DisambiguationClass =
+            Class "Microsoft.Maps.Directions.Disambiguation"
+            |=> Disambiguation
+            |+> Protocol
+                [
+                    "businessSuggestions" =? Type.ArrayOf BusinessDisambiguationSuggestion
+                    "hasMoreSuggestions" =? T<bool>
+                    "headerText" =? T<string>
+                    "locationSuggestions" =? Type.ArrayOf LocationDisambiguationSuggestion
+                ]
+
+        let Waypoint = Type.New()
+        let WaypointClass =
+            Class "Microsoft.Maps.Directions.Waypoint"
+            |=> Waypoint
+            |+> [
+                    Constructor WaypointOptions
+                ]
+            |+> Protocol
+                [
+                    "clear" => T<unit> ^-> T<unit>
+                    "dispose" => T<unit> ^-> T<unit>
+                    "getAddress" => T<unit> ^-> T<string>
+                    "getBusinessDetails" => T<unit> ^-> BusinessDetails
+                    "getDisambiguationResult" => T<unit> ^-> Disambiguation
+                    "getLocation" => T<unit> ^-> Location
+                    "getShortAddress" => T<unit> ^-> T<string>
+                    "isExactLocation" => T<unit> ^-> T<bool>
+                    "isViapoint" => T<unit> ^-> T<bool>
+                    "setOptions" => WaypointOptions ^-> T<unit>
+                ]
+
+        let DirectionsRenderOptions = Type.New()
+        let DirectionsRenderOptionsClass =
+            Pattern.Config "Microsoft.Maps.Directions.DirectionsRenderOptions" {
+                Required = []
+                Optional =
+                    [
+                        "displayDisclaimer", T<bool>
+                        "displayManeuverIcons", T<bool>
+                        "displayPostItineraryItemHints", T<bool>
+                        "displayPreItineraryItemHints", T<bool>
+                        "displayRouteSelector", T<bool>
+                        "displayStepWarnings", T<bool>
+                        "displayTrafficAvoidanceOption", T<bool>
+                        "displayWalkingWarning", T<bool>
+                        "drivingPolylineOptions", PolylineOptions
+                        "itineraryContainer", T<Element>
+                        "lastWaypointIcon", T<string>
+                        "stepPushpinOptions", PushpinOptions
+                        "transitPolylineOptions", PolylineOptions
+                        "viapointPushpinsOptions", PushpinOptions
+                        "walkingPolylineOptions", PolylineOptions
+                        "waypointPushpinOptions", PushpinOptions
+                    ]
+            }
+
+        let DistanceUnit = Type.New()
+        let DistanceUnitClass =
+            Class "Microsoft.Maps.Directions.DistanceUnit"
+            |=> DistanceUnit
+            |+> Constants DistanceUnit ["kilometers"; "miles"]
+
+        let RouteAvoidance = Type.New()
+        let RouteAvoidanceClass =
+            Class "Microsoft.Maps.Directions.RouteAvoidance"
+            |=> RouteAvoidance
+            |+> Constants RouteAvoidance ["none"; "minimizeLimitedAccessHighway"; "minimizeToll"
+                                          "avoidLimitedAccesHighway"; "avoidToll"; "avoidExpressTrain"
+                                          "avoidAirline"; "avoidBulletTrain"]
+
+        let RouteMode = Type.New()
+        let RouteModeClass =
+            Class "Microsoft.Maps.Directions.RouteMode"
+            |=> RouteMode
+            |+> Constants RouteMode ["driving"; "transit"; "walking"]
+
+        let RouteOptimization = Type.New()
+        let RouteOptimizationClass =
+            Class "Microsoft.Maps.Directions.RouteOptimization"
+            |=> RouteOptimization
+            |+> Constants RouteOptimization ["shortestTime"; "shortestDistance"
+                                             "minimizeMoney"; "minimizeTransfers"; "minimizeWalking"]
+
+        let TimeType = Type.New()
+        let TimeTypeClass =
+            Class "Microsoft.Maps.Directions.TimeType"
+            |=> TimeType
+            |+> Constants TimeType ["arrival"; "departure"; "lastAvailable"]
+
+        let TransitOptions = Type.New()
+        let TransitOptionsClass =
+            Pattern.Config "Microsoft.Maps.Directions.TransitOptions" {
+                Required = []
+                Optional =
+                    [
+                        "timeType", TimeType
+                        "transitTime", T<Date>
+                    ]
+            }
+
+        let DirectionsRequestOptions = Type.New()
+        let DirectionsRequestOptionsClass =
+            Pattern.Config "Microsoft.Maps.Directions.DirectionsRequestOptions" {
+                Required = []
+                Optional =
+                    [
+                        "avoidTraffic", T<bool>
+                        "distanceUnit", DistanceUnit
+                        "maxRoutes", T<int>
+                        "routeAvoidance", Type.ArrayOf RouteAvoidance
+                        "routeDraggable", T<bool>
+                        "routeIndex", T<int>
+                        "routeMode", RouteMode
+                        "routeOptimization", RouteOptimization
+                        "transitOptions", TransitOptions
+                    ]
+            }
+
+        let ResetDirectionsOptions = Type.New()
+        let ResetDirectionsOptionsClass =
+            Pattern.Config "Microsoft.Maps.Directions.ResetDirectionsOptions" {
+                Required = []
+                Optional =
+                    [
+                        "removeAllWaypoints", T<bool>
+                        "resetRenderOptions", T<bool>
+                        "resetRequestOptions", T<bool>
+                    ]
+            }
+
+        let DirectionsManager = Type.New()
+        let DirectionsManagerClass =
+            Class "Microsoft.Maps.Directions.DirectionsManager"
+            |=> DirectionsManager
+            |+> [
+                    Constructor Map
+                ]
+            |+> Protocol
+                [
+                    "addWaypoint" => Waypoint ^-> T<unit>
+                    "calculateDirections" => T<unit> ^-> T<unit>
+                    "clearDisplay" => T<unit> ^-> T<unit>
+                    "dispose" => T<unit> ^-> T<unit>
+                    "getAllWaypoints" => T<unit> ^-> Type.ArrayOf Waypoint
+                    "getMap" => T<unit> ^-> Map
+                    "getNearbyMajorRoads" => Location * T<obj -> unit> * T<obj -> unit> * T<obj> ^-> T<unit>
+                    "getRenderOptions" => T<unit> ^-> DirectionsRenderOptions
+                    "getRequestOptions" => T<unit> ^-> DirectionsRequestOptions
+                    "getRouteResult" => T<unit> ^-> Type.ArrayOf Route
+                    "removeWaypoint" => Waypoint ^-> T<unit>
+                    "removeWaypoint" => T<int> ^-> T<unit>
+                    "resetDirections" => ResetDirectionsOptions ^-> T<unit>
+                    "reverseGeocode" => Location * T<obj -> unit> * T<obj -> unit> * T<obj> ^-> T<unit>
+                    "setMapView" => T<unit> ^-> T<unit>
+                    "setRenderOptions" => DirectionsRenderOptions ^-> T<unit>
+                    "setRequestOptions" => DirectionsRequestOptions ^-> T<unit>
+                ]
+
+        let DirectionsErrorEventArgs = Type.New()
+        let DirectionsErrorEventArgsClass =
+            Class "Microsoft.Maps.Directionss.DirectionsErrorEventArgs"
+            |=> DirectionsErrorEventArgs
+            |+> Protocol
+                [
+                    "responseCode" =? RouteResponseCode
+                    "message" =? T<string>
+                ]
+
+        let DirectionsStepEventArgs = Type.New()
+        let DirectionsStepEventArgsClass =
+            Class "Microsoft.Maps.Directions.DirectionsStepEventArgs"
+            |=> DirectionsStepEventArgs
+            |+> Protocol
+                [
+                    "handled" =@ T<bool>
+                    "location" =? Location
+                    "routeIndex" =? T<int>
+                    "routeLegIndex" =? T<int>
+                    "step" => DirectionsStep
+                    "stepIndex" =? T<int>
+                    "stepNumber" =? T<int>
+                ]
+
+        let DirectionsStepRenderEventArgs = Type.New()
+        let DirectionsStepRenderEventArgsClass =
+            Class "Microsoft.Maps.Directions.DirectionsStepRenderEventArgs"
+            |=> DirectionsStepRenderEventArgs
+            |+> Protocol
+                [
+                    "containerElement" =@ T<Element>
+                    "handled" =@ T<bool>
+                    "lastStep" =? T<bool>
+                    "routeIndex" =? T<int>
+                    "routeLegIndex" =? T<int>
+                    "step" =? DirectionsStep
+                    "stepIndex" =? T<int>
+                ]
+
+        let RouteSelectorEventArgs = Type.New()
+        let RouteSelectorEventArgsClass =
+            Class "Microsoft.Maps.Directions.RouteSelectorEventArgs"
+            |=> RouteSelectorEventArgs
+            |+> Protocol
+                [
+                    "handled" =@ T<bool>
+                    "routeIndex" =? T<int>
+                ]
+
+        let RouteSelectorRenderEventArgs = Type.New()
+        let RouteSelectorRenderEventArgsClass =
+            Class "Microsoft.Maps.Directions.RouteSelectorRenderEventArgs"
+            |=> RouteSelectorRenderEventArgs
+            |+> Protocol
+                [
+                    "containerElement" =@ T<Element>
+                    "handled" =? T<bool>
+                    "routeIndex" =? T<int>
+                    "routeLeg" =? RouteLeg
+                ]
+
+        let RouteSummaryRenderEventArgs = Type.New()
+        let RouteSummaryRenderEventArgsClass =
+            Class "Microsoft.Maps.Directions.RouteSummaryRenderEventArgs"
+            |=> RouteSummaryRenderEventArgs
+            |+> Protocol
+                [
+                    "containerElements" =@ T<Element>
+                    "handled" =@ T<bool>
+                    "routeLegIndex" =? T<int>
+                    "summary" =? RouteSummary
+                ]
+
+        let WaypointEventArgs = Type.New()
+        let WaypointEventArgsClass =
+            Class "Microsoft.Maps.Directions.WaypointEventArgs"
+            |=> WaypointEventArgs
+            |+> Protocol
+                [
+                    "waypoint" =? Waypoint
+                ]
+
+        let WaypointRenderEventArgs = Type.New()
+        let WaypointRenderEventArgsClass =
+            Class "Microsoft.Maps.Directions.WaypointRenderEventArgs"
+            |=> WaypointRenderEventArgs
+            |+> Protocol
+                [
+                    "containerElement" =@ T<Element>
+                    "handled" =@ T<bool>
+                    "waypoint" =? Waypoint
+                ]
+
+        let RouteSelectorRenderEvent = Type.New()
+        let RouteSelectorRenderEventClass =
+            Class "Microsoft.Maps.Directions.RouteSelectorRenderEvent"
+            |=> RouteSelectorRenderEvent
+            |+> ConstantStrings RouteSelectorRenderEvent
+                    ["afterRouteSelectorRender"; "beforeRouteSelectorRender"]
+
+        let DirectionsStepRenderEvent = Type.New()
+        let DirectionsStepRenderEventClass =
+            Class "Microsoft.Maps.Directions.DirectionsStepRenderEvent"
+            |=> DirectionsStepRenderEvent
+            |+> ConstantStrings DirectionsStepRenderEvent
+                    ["afterStepRender"; "beforeStepRender"]
+
+        let RouteSummaryRenderEvent = Type.New()
+        let RouteSummaryRenderEventClass =
+            Class "Microsoft.Maps.Directions.RouteSummaryRenderEvent"
+            |=> RouteSummaryRenderEvent
+            |+> ConstantStrings RouteSummaryRenderEvent
+                    ["afterSummaryRender"; "beforeSummaryRender"]
+
+        let WaypointRenderEvent = Type.New()
+        let WaypointRenderEventClass =
+            Class "Microsoft.Maps.Directions.WaypointRenderEvent"
+            |=> WaypointRenderEvent
+            |+> ConstantStrings WaypointRenderEvent
+                    ["afterWaypointRender"; "beforeWaypointRender"]
+
+        let DirectionsErrorEvent = Type.New()
+        let DirectionsErrorEventClass =
+            Class "Microsoft.Maps.Directions.DirectionsErrorEvent"
+            |=> DirectionsErrorEvent
+            |+> ConstantStrings DirectionsErrorEvent
+                    ["directionsError"]
+
+        let DirectionsEvent = Type.New()
+        let DirectionsEventClass =
+            Class "Microsoft.Maps.Directions.DirectionsEvent"
+            |=> DirectionsEvent
+            |+> ConstantStrings DirectionsEvent
+                    ["directionsUpdated"]
+
+        let RouteSelectorEvent = Type.New()
+        let RouteSelectorEventClass =
+            Class "Microsoft.Maps.Directions.RouteSelectorEvent"
+            |=> RouteSelectorEvent
+            |+> ConstantStrings RouteSelectorEvent
+                    ["mouseEnterRouteSelector"; "mouseLeaveRouteSelector"; "routeSelectorClicked"]
+
+        let DirectionsStepEvent = Type.New()
+        let DirectionsStepEventClass =
+            Class "Microsoft.Maps.Directions.DirectionsStepEvent"
+            |=> DirectionsStepEvent
+            |+> ConstantStrings DirectionsStepEvent
+                    ["itineraryStepClicked"; "mouseEnterStep"; "mouseLeaveStep"]
+
+        let WaypointEvent = Type.New()
+        let WaypointEventClass =
+            Class "Microsoft.Maps.Directions.WaypointEvent"
+            |=> WaypointEvent
+            |+> ConstantStrings WaypointEvent
+                    ["waypointAdded"; "waypointRemoved"; "changed"; "geocoded"; "reverseGeocoded"]
+
+    let EventsClass =
+        Class "Microsoft.Maps.Events"
+        |=> Events
+        |+> [
+                "addHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * MouseEvent * (MouseEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.RouteSelectorRenderEvent * (Directions.RouteSelectorRenderEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.DirectionsStepRenderEvent * (Directions.DirectionsStepRenderEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.RouteSummaryRenderEvent * (Directions.RouteSummaryRenderEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.WaypointRenderEvent * (Directions.WaypointRenderEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.DirectionsErrorEvent * (Directions.DirectionsErrorEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.DirectionsEvent * (Directions.DirectionsEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.RouteSelectorEvent * (Directions.RouteSelectorEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.DirectionsStepEvent * (Directions.DirectionsStepEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * Directions.WaypointEvent * (Directions.WaypointEventArgs ^-> T<unit>) ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addHandler" => Entity * UnitEvent * T<unit -> unit> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target."
+
+                "addThrottledHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) * T<float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
+
+                "addThrottledHandler" => Entity * MouseEvent * (MouseEventArgs ^-> T<unit>) * T<float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
+
+                "addThrottledHandler" => Entity * UnitEvent * T<unit -> unit> * T<float> ^-> EventHandler
+                |> WithComment "Attaches the handler for the event that is thrown by the target, where the minimum interval between events (in milliseconds) is specified in the ThrottleInterval parameter. The last occurrence of the event is called after the specified ThrottleInterval."
+
+                "hasHandler" => Entity * Event ^-> T<bool>
+                |> WithComment "Checks if the target has any attached event handler."
+
+                "invoke" => Entity * Event ^-> T<unit>
+                |> WithComment "Invokes an event on the target. This causes all handlers for the specified eventName to be called."
+
+                "removeHandler" => EventHandler ^-> T<unit>
+                |> WithComment "Detaches the specified handler from the event."
             ]
 
     ///////////////////////////////////////////////////////////////////
@@ -1512,6 +2233,8 @@ module Bing =
                     "avoid", Type.ArrayOf RouteAvoid
                     "centerPoint", Point
                     "dateTime", T<string>
+                    "declutterPins", T<bool>
+                    "distanceBeforeFirstTurn", T<int>
                     "mapArea", Point * Point
                     "mapLayer", MapLayer
                     "mapSize", T<int> * T<int>
@@ -1625,88 +2348,156 @@ module Bing =
                 |> WithComment "The vertical dimension of the imagery in number of tiles."
             ]
 
+    let MapsStatics =
+        Class "Microsoft.Maps"
+        |+> [
+                "loadModule" => T<string> ^-> T<unit>
+                |> WithComment "Loads the specified registered module, making its functionality available."
+
+                "loadModule" => T<string> * T<unit -> unit> ^-> T<unit>
+                |> WithComment "Loads the specified registered module, making its functionality available. A function is specified that is called when the module is loaded."
+
+                "moduleLoaded" => T<string> ^-> T<unit>
+                |> WithComment "Signals that the specified module has been loaded and if specified, calls the callback function in loadModule. Call this method at the end of your module script."
+
+                "registerModule" => T<string> * T<string> ^-> T<unit>
+                |> WithComment "Registers a module with the map control. The name of the module is specified in moduleKey, the module script is defined in scriptUrl."
+
+                "registerModule" => T<string> * T<string> * T<string> ^-> T<unit>
+                |> WithComment "Registers a module with the map control. The name of the module is specified in moduleKey, the module script is defined in scriptUrl, and the options provides the location of a *.css file to load with the module."
+            ]
 
     let Assembly =
         Assembly [
             Namespace "IntelliFactory.WebSharper.Bing" [
                 AltitudeReferenceClass
-                LocationClass
-                LocationRectClass
-                PointClass
+                ColorClass
+                CoordinatesClass
+                EntityCollectionClass
+                EntityCollectionEventArgsClass
+                EntityCollectionEventClass
+                EntityCollectionOptionsClass
+                EntityInterface
+                EventClass
                 EventHandlerClass
                 EventsClass
-                KeyEventArgsClass
-                MouseEventArgsClass
-                EntityCollectionEventArgsClass
-                EventClass
-                KeyEventClass
-                MouseEventClass
-                EntityCollectionEventClass
-                UnitEventClass
-                LabelOverlayClass
-                MapOptionsClass
-                ViewOptionsClass
-                MapViewOptionsClass
-                EntityInterface
-                EntityCollectionOptionsClass
-                EntityCollectionClass
-                RangeClass
-                MapTypeIdClass
-                SizeClass
-                MapClass
-                ColorClass
+                GeoLocationProviderClass
                 InfoboxActionClass
-                InfoboxOptionsClass
                 InfoboxClass
+                InfoboxOptionsClass
+                KeyEventArgsClass
+                KeyEventClass
+                LabelOverlayClass
+                LocationClass
+                LocationRectClass
+                MapClass
+                MapOptionsClass
+                MapTypeIdClass
+                MapViewOptionsClass
+                MouseEventArgsClass
+                MouseEventClass
+                PointClass
+                PolygonClass
+                PolygonOptionsClass
+                PolylineClass
+                PolylineOptionsClass
+                PushpinClass
+                PushpinOptionsClass
+                RangeClass
+                SizeClass
                 TileLayerClass
                 TileLayerOptionsClass
                 TileSourceClass
                 TileSourceOptionsClass
-                PolylineOptionsClass
-                PolylineClass
-                PolygonOptionsClass
-                PolygonClass
-                PushpinOptionsClass
-                PushpinClass
+                UnitEventClass
+                ViewOptionsClass
 
                 // REST locations
-                AuthenticationResultCodeClass
-                RestResponseClass
-                ResourceSetClass
-                LocationResourceClass
-                ConfidenceClass
                 AddressClass
+                AuthenticationResultCodeClass
+                ConfidenceClass
+                LocationResourceClass
                 PointResourceClass
+                ResourceSetClass
+                RestResponseClass
                 WaypointClass
 
                 // REST Routes
-                RouteResourceClass
-                RouteLegClass
-                ItineraryItemClass
+                DistanceUnitClass
                 ItineraryDetailClass
                 ItineraryIconClass
                 ItineraryInstructionClass
-                TransitLineClass
-                RoutePathClass
+                ItineraryItemClass
                 LineResourceClass
-                RouteRequestClass
-                RouteOptimizeClass
                 RouteAvoidClass
+                RouteLegClass
+                RouteOptimizeClass
+                RoutePathClass
                 RoutePathOutputClass
-                DistanceUnitClass
+                RouteRequestClass
+                RouteResourceClass
                 TimeTypeClass
+                TransitLineClass
                 TravelModeClass
 
                 // REST Imagery
-                StaticMapRequestClass
+                ImageryMetadataIncludeClass
+                ImageryMetadataRequestClass
+                ImageryMetadataResourceClass
                 ImagerySetClass
                 MapLayerClass
                 MapVersionClass
                 PushpinRequestClass
-                ImageryMetadataRequestClass
-                ImageryMetadataIncludeClass
-                ImageryMetadataResourceClass
                 RouteFromMajorRoadsRequestClass
+                StaticMapRequestClass
+            ]
+
+            Namespace "IntelliFactory.WebSharper.Bing.Directions" [
+                Directions.BusinessDetailsClass
+                Directions.BusinessDisambiguationSuggestionClass
+                Directions.RouteResponseCodeClass
+                Directions.RouteSummaryClass
+                Directions.RouteIconTypeClass
+                Directions.ManeuverTypeClass
+                Directions.TransitLineClass
+                Directions.DirectionsStepWarningTypeClass
+                Directions.DirectionsStepWarningClass
+                Directions.RoutePathClass
+                Directions.RouteSubLegClass
+                Directions.DirectionsStepClass
+                Directions.RouteLegClass
+                Directions.RouteClass
+                Directions.DirectionsEventArgsClass
+                Directions.WaypointOptionsClass
+                Directions.LocationDisambiguationSuggestionClass
+                Directions.DisambiguationClass
+                Directions.WaypointClass
+                Directions.DirectionsRenderOptionsClass
+                Directions.DistanceUnitClass
+                Directions.RouteAvoidanceClass
+                Directions.RouteModeClass
+                Directions.RouteOptimizationClass
+                Directions.TimeTypeClass
+                Directions.TransitOptionsClass
+                Directions.DirectionsRequestOptionsClass
+                Directions.ResetDirectionsOptionsClass
+                Directions.DirectionsManagerClass
+                Directions.DirectionsErrorEventArgsClass
+                Directions.DirectionsStepEventArgsClass
+                Directions.DirectionsStepRenderEventArgsClass
+                Directions.RouteSelectorEventArgsClass
+                Directions.RouteSelectorRenderEventArgsClass
+                Directions.RouteSummaryRenderEventArgsClass
+                Directions.WaypointEventArgsClass
+                Directions.WaypointRenderEventArgsClass
+                Directions.DirectionsErrorEventClass
+                Directions.DirectionsStepEventClass
+                Directions.DirectionsStepRenderEventClass
+                Directions.RouteSelectorEventClass
+                Directions.RouteSelectorRenderEventClass
+                Directions.RouteSummaryRenderEventClass
+                Directions.WaypointEventClass
+                Directions.WaypointRenderEventClass
             ]
         ]
 
