@@ -906,8 +906,8 @@ module Bing =
         |+> Protocol
             [
                 "strokeDashArray" =@ Type.ArrayOf T<int>
-                |> WithSetterInline "$this.strokeDashArray = $1.join(',')"
-                |> WithGetterInline "$this.strokeDashArray.split(',')"
+                |> WithSetterInline "$this.strokeDashArray = $1.join(' ')"
+                |> WithGetterInline "$this.strokeDashArray.split(' ')"
             ]
 
     let PositionCircleOptions = Type.New()
@@ -960,8 +960,8 @@ module Bing =
         |+> Protocol
             [
                 "strokeDashArray" =@ Type.ArrayOf T<int>
-                |> WithSetterInline "$this.strokeDashArray = $1.join(',')"
-                |> WithGetterInline "$this.strokeDashArray.split(',')"
+                |> WithSetterInline "$this.strokeDashArray = $1.join(' ')"
+                |> WithGetterInline "$this.strokeDashArray.split(' ')"
             ]
 
     let Polyline = Type.New()
@@ -983,7 +983,7 @@ module Bing =
                 |> WithComment "Returns the color of the polyline."
 
                 "getStrokeDashArray" => T<unit> ^-> Type.ArrayOf T<int>
-                |> WithInline "$this.getStrokeDashArray().split(',')"
+                |> WithInline "$this.getStrokeDashArray().split(' ')"
                 |> WithComment "Returns the string that represents the stroke/gap sequence used to draw the the polyline."
 
                 "getStrokeThickness" => T<unit -> float>
@@ -1106,7 +1106,7 @@ module Bing =
                 |> WithComment "Returns the color of the polygon."
 
                 "getStrokeDashArray" => T<unit> ^-> Type.ArrayOf T<int>
-                |> WithInline "$this.getStrokeDashArray().split(',')"
+                |> WithInline "$this.getStrokeDashArray().split(' ')"
                 |> WithComment "Returns the string that represents the stroke/gap sequence used to draw the outline of the polygon."
 
                 "getStrokeThickness" => T<unit -> float>
@@ -1569,6 +1569,7 @@ module Bing =
                     "removeWaypoint" => Waypoint ^-> T<unit>
                     "removeWaypoint" => T<int> ^-> T<unit>
                     "resetDirections" => ResetDirectionsOptions ^-> T<unit>
+                    "resetDirections" => T<unit> ^-> T<unit>
                     "reverseGeocode" => Location * T<obj -> unit> * T<obj -> unit> * T<obj> ^-> T<unit>
                     "setMapView" => T<unit> ^-> T<unit>
                     "setRenderOptions" => DirectionsRenderOptions ^-> T<unit>
@@ -1731,6 +1732,169 @@ module Bing =
             |=> WaypointEvent
             |+> ConstantStrings WaypointEvent
                     ["waypointAdded"; "waypointRemoved"; "changed"; "geocoded"; "reverseGeocoded"]
+
+    module Traffic =
+
+        let TrafficLayer = Type.New()
+        let TrafficLayerClass =
+            Class "Microsoft.Maps.Traffic.TrafficLayer"
+            |=> TrafficLayer
+            |+> [
+                    Constructor Map
+                ]
+            |+> Protocol
+                [
+                    "getTileLayer" => T<unit> ^-> TileLayer
+                    "hide" => T<unit> ^-> T<unit>
+                    "show" => T<unit> ^-> T<unit>
+                ]
+
+
+    module VenueMaps =
+
+        let Primitive = Type.New()
+
+        let Floor = Type.New()
+        let FloorClass =
+            Class "Microsoft.Maps.VenueMaps.Floor"
+            |=> Floor
+            |+> Protocol
+                [
+                    "name" =? T<string>
+                    "primitives" =? Type.ArrayOf Primitive
+                    "zoomRange" =? Type.ArrayOf T<float>
+                ]
+
+        let PrimitiveClass =
+            Class "Microsoft.Maps.VenueMaps.Primitive"
+            |=> Primitive
+            |+> Protocol
+                [
+                    "bounds" =? LocationRect
+                    "businessId" =? T<string>
+                    "categoryId" =? T<string>
+                    "categoryName" =? T<string>
+                    "center" =? Location
+                    "floor" =? Floor
+                    "id" =? T<string>
+                    "locations" =? Type.ArrayOf Location
+                    "name" =? T<string>
+                    "highlight" => T<unit> ^-> T<unit>
+                    "unhighlight" => T<unit> ^-> T<unit>
+                ]
+
+        let Polygon = Type.New()
+        let PolygonClass =
+            Class "Microsoft.Maps.VenueMaps.Polygon"
+            |=> Polygon
+            |+> Protocol
+                [
+                    "bounds" =? LocationRect
+                    "center" =? Location
+                    "locations" =? Type.ArrayOf Location
+                ]
+
+        let Footprint = Type.New()
+        let FootprintClass =
+            Class "Microsoft.Maps.VenueMaps.Footprint"
+            |=> Footprint
+            |+> Protocol
+                [
+                    "polygons" =? Type.ArrayOf Polygon
+                    "zoomRange" =? Type.ArrayOf T<float>
+                ]
+
+        let Metadata = Type.New()
+        let MetadataClass =
+            Class "Microsoft.Maps.VenueMaps.Metadata"
+            |=> Metadata
+            |+> Protocol
+                [
+                    "CenterLat" =? T<float>
+                    "CenterLong" =? T<float>
+                    "DefaultFloor" =? T<string>
+                    "FloorHeader" =? T<string>
+                    "Floors" =? Type.ArrayOf Floor
+                    "Footprint" =? Footprint
+                    "MapId" =? T<string>
+                    "MapType" =? T<string>
+                    "Name" =? T<string>
+                    "YpId" =? T<string>
+                ]
+
+        let NearbyVenue = Type.New()
+        let NearbyVenueClass =
+            Class "Microsoft.Maps.VenueMaps.NearbyVenue"
+            |=> NearbyVenue
+            |+> Protocol
+                [
+                    "distance" =? T<float>
+                    "metadata" =? Metadata
+                ]
+
+        let VenueMap = Type.New()
+        let VenueMapClass =
+            Class "Microsoft.Maps.VenueMaps.VenueMap"
+            |=> VenueMap
+            |+> Protocol
+                [
+                    "address" =? T<string>
+                    "bestMapView" =? ViewOptions
+                    "businessId" =? T<string>
+                    "center" =? Location
+                    "defaultFloor" =? T<string>
+                    "floorHeader" =? T<string>
+                    "floors" =? Type.ArrayOf Floor
+                    "footprint" =? Footprint
+                    "id" =? T<string>
+                    "name" =? T<string>
+                    "phoneNumber" =? T<string>
+                    "type" =? T<string>
+                    "dispose" => T<unit> ^-> T<unit>
+                    "getActiveFloor" => T<unit> ^-> T<string>
+                    "hide" => T<unit> ^-> T<unit>
+                    "setActiveFloor" => T<string> * T<string> ^-> T<unit>
+                    "show" => T<unit> ^-> T<unit>
+                ]
+
+        let NearbyVenueMapOptions = Type.New()
+        let NearbyVenueMapOptionsClass =
+            Pattern.Config "Microsoft.Maps.VenueMaps.NearbyVenueMapOptions" {
+                Required = []
+                Optional =
+                    [
+                        "callback", Type.ArrayOf NearbyVenue ^-> T<unit>
+                        "location", Location
+                        "map", Map
+                        "radius", T<float>
+                    ]
+            }
+
+        let VenueMapCreationOptions = Type.New()
+        let VenueMapCreationOptionsClass =
+            Pattern.Config "Microsoft.Maps.VenueMaps.VenueMapCreationOptions" {
+                Required = []
+                Optional =
+                    [
+                        "error", T<int> * VenueMapCreationOptions ^-> T<unit>
+                        "success", VenueMap * VenueMapCreationOptions ^-> T<unit>
+                        "venueMapId", T<string>
+                    ]
+            }
+
+        let VenueMapFactory = Type.New()
+        let VenueMapFactoryClass =
+            Class "Microsoft.Maps.VenueMaps.VenueMapFactory"
+            |=> VenueMapFactory
+            |+> [
+                    Constructor Map
+                ]
+            |+> Protocol
+                [
+                    "create" => VenueMapCreationOptions ^-> T<unit>
+                    "getNearbyVenues" => NearbyVenueMapOptions ^-> T<unit>
+                ]
+
 
     let EventsClass =
         Class "Microsoft.Maps.Events"
@@ -2348,13 +2512,25 @@ module Bing =
                 |> WithComment "The vertical dimension of the imagery in number of tiles."
             ]
 
+    let LoadModuleArgs = Type.New()
+
+    let LoadModuleArgsClass =
+        Pattern.Config "Microsoft.Maps.LoadModuleArgs" {
+                Required =
+                    [
+                        "callback", T<unit -> unit>
+                    ]
+                Optional = []
+            }
+        |=> LoadModuleArgs
+
     let MapsStatics =
         Class "Microsoft.Maps"
         |+> [
                 "loadModule" => T<string> ^-> T<unit>
                 |> WithComment "Loads the specified registered module, making its functionality available."
 
-                "loadModule" => T<string> * T<unit -> unit> ^-> T<unit>
+                "loadModule" => T<string> * LoadModuleArgs ^-> T<unit>
                 |> WithComment "Loads the specified registered module, making its functionality available. A function is specified that is called when the module is loaded."
 
                 "moduleLoaded" => T<string> ^-> T<unit>
@@ -2411,6 +2587,8 @@ module Bing =
                 TileSourceOptionsClass
                 UnitEventClass
                 ViewOptionsClass
+                LoadModuleArgsClass
+                MapsStatics
 
                 // REST locations
                 AddressClass
@@ -2498,6 +2676,10 @@ module Bing =
                 Directions.RouteSummaryRenderEventClass
                 Directions.WaypointEventClass
                 Directions.WaypointRenderEventClass
+            ]
+
+            Namespace "IntelliFactory.WebSharper.Bing.Traffic" [
+                Traffic.TrafficLayerClass
             ]
         ]
 

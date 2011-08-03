@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -69,16 +69,16 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
-  <PropertyGroup>
-    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
-  </PropertyGroup>
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets" />
+  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.WebSharper.Web-2.3.targets"/>
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\if-ws-bing-rest\IntelliFactory.WebSharper.Bing.Rest.fsproj">
+      <Project>{501CA443-9B83-45DB-9693-F2F3677A44C4}</Project>
+      <Name>IntelliFactory.WebSharper.Bing.Rest</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\if-ws-bing\IntelliFactory.WebSharper.Bing.fsproj">
       <Project>{730AE40A-001C-4137-972D-898DC7C2BF0A}</Project>
       <Name>IntelliFactory.WebSharper.Bing</Name>

@@ -149,7 +149,7 @@ module Main =
         container
 
     [<JavaScript>]
-    let RouteRequest () =
+    let OldRouteRequest () =
         let origin = Input []
         let destination = Input []
         let button = Input [Attr.Type "button"; Attr.Value "Request route"]
@@ -195,7 +195,7 @@ module Main =
             map.SetMapType(MapTypeId.Road)
             let request (_:Element) (_:Events.MouseEvent) =
                 let avoid =
-                    if string (highwayBox.GetAttribute("checked")) = "true" then
+                    if string (JavaScript.Get "checked" highwayBox.Body) = "true" then
                         [||]
                     else
                         [|Bing.RouteAvoid.Highways|]
@@ -206,6 +206,41 @@ module Main =
                                        RouteCallback map)
             button |>! OnClick request |> ignore
         )
+        Div [mapContainer
+             Span[Text "From:"]; origin
+             Span[Text "To:"]; destination
+             highwayBox; Span[Text "Accept highways"]; button
+             answer]
+
+    open IntelliFactory.WebSharper.Bing.Directions
+
+    [<JavaScript>]
+    let RouteRequest () =
+        let origin = Input []
+        let destination = Input []
+        let button = Input [Attr.Type "button"; Attr.Value "Request route"]
+        let highwayBox = Input [Attr.Type "checkbox"]
+        let answer = Div [Id "answer"]
+        let mapContainer =
+            Div []
+            |>! OnAfterRender (fun el ->
+                let opts = MapOptions(Credentials = credentials,
+                                        Width = 600,
+                                        Height = 500)
+                let map = Map(el.Body, opts)
+                map.SetMapType(MapTypeId.Road)
+                let onDirsLoaded() =
+                    let dirman = DirectionsManager(map)
+                    let request (_:Element) (_:Events.MouseEvent) =
+                        dirman.ResetDirections()
+                        dirman.AddWaypoint <| Waypoint(WaypointOptions(Address = origin.Value))
+                        dirman.AddWaypoint <| Waypoint(WaypointOptions(Address = destination.Value))
+                        dirman.SetRenderOptions <| DirectionsRenderOptions(ItineraryContainer = answer.Body)
+                        dirman.SetRequestOptions <| DirectionsRequestOptions(DistanceUnit = DistanceUnit.Kilometers)
+                        dirman.CalculateDirections()
+                    button |>! OnClick request |> ignore
+                Maps.LoadModule("Microsoft.Maps.Directions", LoadModuleArgs(onDirsLoaded))
+            )
         Div [mapContainer
              Span[Text "From:"]; origin
              Span[Text "To:"]; destination

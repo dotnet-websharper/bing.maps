@@ -1,4 +1,10 @@
+bin/
+obj/
 tests/bin
 tests/Scripts
+.*\.dll\.js
+.build
+.*\.suo
+.*\.csproj\.user
 
 
