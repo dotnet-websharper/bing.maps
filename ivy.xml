@@ -1,6 +1,6 @@
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://doiop.com/ivy-2.1.0.xsd">
-  <info organisation="IntelliFactory" module="if-ws-bing" revision="2.4" />
+  <info organisation="IntelliFactory" module="if-ws-bing-2.4" revision="2.4" />
   <publications>
     <artifact name="IntelliFactory.WebSharper.Bing" ext="dll" type="bin" />
     <artifact name="IntelliFactory.WebSharper.Bing" ext="pdb" type="debug" />
