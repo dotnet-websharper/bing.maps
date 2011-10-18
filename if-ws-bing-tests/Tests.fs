@@ -1,4 +1,4 @@
-﻿namespace IntelliFactory.WebSharper.Bing.Samples
+﻿namespace IntelliFactory.WebSharper.Bing.Tests
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Html
@@ -195,7 +195,7 @@ module Main =
             map.SetMapType(MapTypeId.Road)
             let request (_:Element) (_:Events.MouseEvent) =
                 let avoid =
-                    if string (JavaScript.Get "checked" highwayBox.Body) = "true" then
+                    if string ((?) highwayBox.Body "checked") = "true" then
                         [||]
                     else
                         [|Bing.RouteAvoid.Highways|]
@@ -306,9 +306,7 @@ module Main =
             ImageMetadata ()
         ]
 
-
-[<JavaScriptType>]
-type Samples() = 
+type Samples() =
     inherit Web.Control()
 
     [<JavaScript>]
