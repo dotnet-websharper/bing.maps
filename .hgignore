@@ -1,7 +1,7 @@
 bin/
 obj/
-tests/bin
-tests/Scripts
+web/bin
+web/Scripts
 .*\.dll\.js
 .build
 .*\.suo

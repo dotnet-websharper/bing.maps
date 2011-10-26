@@ -31,15 +31,13 @@ module Rest =
     let private OptionalFields request arr =
         arr
         |> Array.choose (fun name ->
-                            let value = JavaScript.Get name request
-                            if IsUndefined value then
-                                None
-                            else
-                                Some (name + "=" + string value))
+            let value = (?) request name
+            if IsUndefined value then None else
+                Some (name + "=" + string value))
 
     [<JavaScript>]
     let RequestLocationByAddress(credentials, address : Bing.Address, callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields address
                 [|"adminDistrict"; "locality"; "addressLine"; "countryRegion"; "postalCode"|]
@@ -49,19 +47,20 @@ module Rest =
 
     [<JavaScript>]
     let RequestLocationByQuery(credentials, query : string, callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        (?<-) JavaScript.Global RequestCallbackName callback
         let req = restApiUri + "Locations?query=" + query + "&" + RequestStringBoilerplate credentials
         SendRequest req
 
     [<JavaScript>]
     let RequestLocationByPoint(credentials, x:float, y:float, entities, callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        (?<-) JavaScript.Global RequestCallbackName callback
         let retrieveEntities = function
         | [] -> ""
         | l -> "&includeEntityTypes=" + String.concat "," l
-        let req = restApiUri + "Locations/" + string x + "," + string y +
-                  "?" + RequestStringBoilerplate credentials +
-                  retrieveEntities entities
+        let req =
+            restApiUri + "Locations/" + string x + "," + string y +
+                "?" + RequestStringBoilerplate credentials +
+                retrieveEntities entities
         SendRequest req
 
     [<JavaScript>]
@@ -70,7 +69,7 @@ module Rest =
 
     [<JavaScript>]
     let RequestRoute(credentials, request : Bing.RouteRequest, callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields request
                 [| "avoid"; "heading"; "optimize"; "routePathOutput"; "distanceUnit"
@@ -82,7 +81,7 @@ module Rest =
 
     [<JavaScript>]
     let RequestRouteFromMajorRoads(credentials, request : Bing.RouteFromMajorRoadsRequest, callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields request
                 [| "destination"; "exclude"; "routePathOutput"; "distanceUnit" |]
@@ -94,7 +93,7 @@ module Rest =
     [<JavaScript>]
     let RequestImageryMetadata(credentials, request : Bing.ImageryMetadataRequest,
                                callback : Bing.RestResponse -> unit) =
-        JavaScript.Set JavaScript.Global RequestCallbackName callback
+        (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields request
                 [| "include"; "mapVersion"; "orientation"; "zoomLevel" |]
