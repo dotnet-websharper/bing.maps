@@ -482,10 +482,18 @@ module Bing =
                 "wheelData" =? T<int>
                 |> WithComment "The number of units that the mouse wheel has changed."
 
-                "getX" =? T<unit -> int>
+                "getX" => T<unit> ^-> T<int>
                 |> WithComment "Returns the x-value of the pixel coordinate, relative to the map, of the mouse."
 
-                "getY" =? T<unit -> int>
+                "getY" => T<unit> ^-> T<int>
+                |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
+
+                "x" =? T<int>
+                |> WithGetterInline "$this.getX()"
+                |> WithComment "Returns the x-value of the pixel coordinate, relative to the map, of the mouse."
+
+                "y" =? T<int>
+                |> WithGetterInline "$this.getY()"
                 |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
             ]
 
