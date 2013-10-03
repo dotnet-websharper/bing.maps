@@ -325,7 +325,7 @@ module Site =
     let HomePage =
         Content.PageContent <| fun ctx ->
             { Page.Default with
-                Title = Some "WebSharper glMatrix Tests"
+                Title = Some "WebSharper Bing Maps Tests"
                 Body = [Div [new Samples()]] }
 
     let Main = Sitelet.Content "/" Index HomePage
