@@ -1,4 +1,4 @@
-% Using events
+# Using events
 
 The AJAX Map control provides multiple events to enable various
 interactive behavior in the map. The WebSharper extension offers a
@@ -9,29 +9,30 @@ and in map coordinates whenever the user clicks on the map.
 
 Full Code:
 
-    #fsharp
-    [<JavaScript>]
-    let RespondToClicks() =
-        Test(fun map ->
-            let displayLatLong (e : MouseEventArgs) =
-                let center = (e.Target :?> Bing.Map).GetCenter()
-                let pinLocation = pin.GetLocation()
-                let pinPoint = map.TryLocationToPixel(pinLocation)
-                let mousePoint = Bing.Point(float(e.GetX()), float(e.GetY()))
-                let mouseLocation = map.TryPixelToLocation(mousePoint)
-                let message =
-                    "pushpin (lat/lon): " + string pinLocation.Latitude +
-                    ", " + string pinLocation.Longitude +
-                    "\npushpin (screen x/y): " + string pinPoint.X +
-                    "," + string pinPoint.Y +
-                    "\nmouse (lat/lon): " + string mouseLocation.Latitude +
-                    ", " + string mouseLocation.Longitude +
-                    "\nmouse (screen x/y): " + string mousePoint.X +
-                    "," + string mousePoint.Y
-                JavaScript.Alert message
-            Bing.Events.AddHandler(map, Bing.MouseEvent.Click, displayLatLong)
-            |> ignore
-    )
+```fsharp
+[<JavaScript>]
+let RespondToClicks() =
+    Test(fun map ->
+        let displayLatLong (e : MouseEventArgs) =
+            let center = (e.Target :?> Map).GetCenter()
+            let pinLocation = pin.GetLocation()
+            let pinPoint = map.TryLocationToPixel(pinLocation)
+            let mousePoint = Point(float(e.GetX()), float(e.GetY()))
+            let mouseLocation = map.TryPixelToLocation(mousePoint)
+            let message =
+                "pushpin (lat/lon): " + string pinLocation.Latitude +
+                ", " + string pinLocation.Longitude +
+                "\npushpin (screen x/y): " + string pinPoint.X +
+                "," + string pinPoint.Y +
+                "\nmouse (lat/lon): " + string mouseLocation.Latitude +
+                ", " + string mouseLocation.Longitude +
+                "\nmouse (screen x/y): " + string mousePoint.X +
+                "," + string mousePoint.Y
+            JavaScript.Alert message
+        Events.AddHandler(map, MouseEvent.Click, displayLatLong)
+        |> ignore
+)
+```
 
 The way you can attach events to the map is by using the `AddHandler` static method
 of the `Events` class. This method receives the entity impacted by the event
