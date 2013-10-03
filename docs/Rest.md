@@ -100,7 +100,7 @@ let GetStaticMap() =
     Div [ StaticMap(credentials, req) ]
 ```
 
-[rest-response-ref] http://msdn.microsoft.com/en-us/library/ff701707.aspx
-[loc-ref] http://msdn.microsoft.com/en-us/library/ff701725.aspx
-[route-ref] http://msdn.microsoft.com/en-us/library/ff701718.aspx
-[metadata-ref] http://msdn.microsoft.com/en-us/library/ff701712.aspx
+[rest-response-ref]: http://msdn.microsoft.com/en-us/library/ff701707.aspx
+[loc-ref]: http://msdn.microsoft.com/en-us/library/ff701725.aspx
+[route-ref]: http://msdn.microsoft.com/en-us/library/ff701718.aspx
+[metadata-ref]: http://msdn.microsoft.com/en-us/library/ff701712.aspx
