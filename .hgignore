@@ -6,5 +6,6 @@ web/Scripts
 .build
 .*\.suo
 .*\.csproj\.user
-
-
+^build/
+^packages/
+^tools/packages/

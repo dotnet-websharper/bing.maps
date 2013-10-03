@@ -1,8 +1,7 @@
-﻿namespace IntelliFactory.WebSharper.Bing
+﻿namespace IntelliFactory.WebSharper.Bing.Maps
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Html
-open IntelliFactory.WebSharper.Bing
 
 module Rest =
 
@@ -36,7 +35,7 @@ module Rest =
                 Some (name + "=" + string value))
 
     [<JavaScript>]
-    let RequestLocationByAddress(credentials, address : Bing.Address, callback : Bing.RestResponse -> unit) =
+    let RequestLocationByAddress(credentials, address : Address, callback : RestResponse -> unit) =
         (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields address
@@ -46,13 +45,13 @@ module Rest =
         SendRequest fullReq
 
     [<JavaScript>]
-    let RequestLocationByQuery(credentials, query : string, callback : Bing.RestResponse -> unit) =
+    let RequestLocationByQuery(credentials, query : string, callback : RestResponse -> unit) =
         (?<-) JavaScript.Global RequestCallbackName callback
         let req = restApiUri + "Locations?query=" + query + "&" + RequestStringBoilerplate credentials
         SendRequest req
 
     [<JavaScript>]
-    let RequestLocationByPoint(credentials, x:float, y:float, entities, callback : Bing.RestResponse -> unit) =
+    let RequestLocationByPoint(credentials, x:float, y:float, entities, callback : RestResponse -> unit) =
         (?<-) JavaScript.Global RequestCallbackName callback
         let retrieveEntities = function
         | [] -> ""
@@ -68,7 +67,7 @@ module Rest =
         Array.mapi (fun i (w:Waypoint) -> "wp." + string i + "=" + string w) waypoints
 
     [<JavaScript>]
-    let RequestRoute(credentials, request : Bing.RouteRequest, callback : Bing.RestResponse -> unit) =
+    let RequestRoute(credentials, request : RouteRequest, callback : RestResponse -> unit) =
         (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields request
@@ -80,7 +79,7 @@ module Rest =
         SendRequest fullReq
 
     [<JavaScript>]
-    let RequestRouteFromMajorRoads(credentials, request : Bing.RouteFromMajorRoadsRequest, callback : Bing.RestResponse -> unit) =
+    let RequestRouteFromMajorRoads(credentials, request : RouteFromMajorRoadsRequest, callback : RestResponse -> unit) =
         (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields request
@@ -91,8 +90,8 @@ module Rest =
 
 
     [<JavaScript>]
-    let RequestImageryMetadata(credentials, request : Bing.ImageryMetadataRequest,
-                               callback : Bing.RestResponse -> unit) =
+    let RequestImageryMetadata(credentials, request : ImageryMetadataRequest,
+                               callback : RestResponse -> unit) =
         (?<-) JavaScript.Global RequestCallbackName callback
         let fields =
             OptionalFields request
@@ -105,7 +104,7 @@ module Rest =
         SendRequest fullReq
 
     [<JavaScript>]
-    let StaticMapUrl(credentials, request : Bing.StaticMapRequest) =
+    let StaticMapUrl(credentials, request : StaticMapRequest) =
         let fields =
             [
                 yield! OptionalFields request

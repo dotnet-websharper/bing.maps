@@ -2,9 +2,9 @@
 
 open IntelliFactory.WebSharper.Dom
 open IntelliFactory.WebSharper.EcmaScript
+open IntelliFactory.WebSharper.InterfaceGenerator
 
 module Bing =
-    open IntelliFactory.WebSharper.InterfaceGenerator
 
     let private ConstantStrings ty l =
         List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
@@ -1039,7 +1039,7 @@ module Bing =
                     "width", T<float>
                 ]
         }
-        |=> TileLayerOptions
+        |=> TileSourceOptions
 
     let TileSourceClass =
         Class "Microsoft.Maps.TileSource"
@@ -2553,7 +2553,11 @@ module Bing =
 
     let Assembly =
         Assembly [
-            Namespace "IntelliFactory.WebSharper.Bing" [
+            Namespace "IntelliFactory.WebSharper.Bing.Maps.Resources" [
+                (Resource "Js" "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0")
+                    .AssemblyWide()
+            ]
+            Namespace "IntelliFactory.WebSharper.Bing.Maps" [
                 AltitudeReferenceClass
                 ColorClass
                 CoordinatesClass
@@ -2638,7 +2642,7 @@ module Bing =
                 StaticMapRequestClass
             ]
 
-            Namespace "IntelliFactory.WebSharper.Bing.Directions" [
+            Namespace "IntelliFactory.WebSharper.Bing.Maps.Directions" [
                 Directions.BusinessDetailsClass
                 Directions.BusinessDisambiguationSuggestionClass
                 Directions.RouteResponseCodeClass
@@ -2686,8 +2690,17 @@ module Bing =
                 Directions.WaypointRenderEventClass
             ]
 
-            Namespace "IntelliFactory.WebSharper.Bing.Traffic" [
+            Namespace "IntelliFactory.WebSharper.Bing.Maps.Traffic" [
                 Traffic.TrafficLayerClass
             ]
         ]
 
+
+
+[<Sealed>]
+type BingMapsExtension() =
+    interface IExtension with
+        member x.Assembly = Bing.Assembly
+
+[<assembly: Extension(typeof<BingMapsExtension>)>]
+do ()
