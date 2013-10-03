@@ -28,6 +28,7 @@ bt.Solution [
         .Description("WebSharper Extensions for Bing Maps AJAX v7 and REST services")
         .ProjectUrl("https://github.com/intellifactory/websharper.bing.maps")
         .Add(main)
+        .Add(rest)
 
 ]
 |> bt.Dispatch
