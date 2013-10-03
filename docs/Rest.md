@@ -78,7 +78,7 @@ let GetRouteInfo(origin, destination) =
         |]
     let request =
         RouteRequest(Waypoints = waypoints,
-                     Avoid = [| Bing.Avoid.Tolls |])
+                     Avoid = [| Avoid.Tolls |])
     RequestRoute(credentials, request, callback)
 ```
 
@@ -94,8 +94,8 @@ let GetStaticMap() =
             PushpinRequest(x = 47.1, y = 19.0, Label = "P1")
             PushpinRequest(x = 47.13, y = 19.17, IconStyle = 2)
         |]
-    let req = StaticMapRequest(imagerySet = Bing.ImagerySet.Road,
-                               CenterPoint = Bing.Point(47.2, 19.1),
+    let req = StaticMapRequest(imagerySet = ImagerySet.Road,
+                               CenterPoint = Point(47.2, 19.1),
                                Pushpin = pushpins)
     Div [ StaticMap(credentials, req) ]
 ```
