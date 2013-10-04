@@ -239,7 +239,7 @@ Bing Maps provides a REST API which can be used for a number of requests:
     AJAX maps)
   * Ask for metadata about the maps, such as information about the tiles.
 
-This WebSharper™ Extension provides functions to build a request for this
+This WebSharper Extension provides functions to build a request for this
 REST API, and classes to process the results. These functions can be found
 in the `IntelliFactory.WebSharper.Bing.Rest` module.
 
