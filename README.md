@@ -229,6 +229,8 @@ for which the callback signature is `unit -> unit`. Common properties for the
 This example also shows how to translate between screen coordinates and latitude / longitude,
 using the `TryLocationToPixel` and `TryPixelToLocation` methods of a `Map` object.
 
+![Shapes](docs/Events.png)
+
 # The REST API
 
 Bing Maps provides a REST API which can be used for a number of requests:
