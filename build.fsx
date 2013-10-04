@@ -25,8 +25,13 @@ bt.Solution [
     test
 
     bt.NuGet.CreatePackage()
-        .Description("WebSharper Extensions for Bing Maps AJAX v7 and REST services")
-        .ProjectUrl("https://github.com/intellifactory/websharper.bing.maps")
+        .Configure(fun c ->
+            { c with
+                Title = Some "WebSharper.Bing.Maps-v7"
+                LicenseUrl = Some "http://websharper.com/licensing"
+                ProjectUrl = Some "https://github.com/intellifactory/websharper.bing.maps"
+                Description = "WebSharper Extensions for Bing Maps AJAX v7 and REST services"
+                RequiresLicenseAcceptance = true })
         .Add(main)
         .Add(rest)
 
