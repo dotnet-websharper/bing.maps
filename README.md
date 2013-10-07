@@ -1,9 +1,3 @@
-# WebSharper.Bing.Maps
-
-[Bing Maps AJAX and REST](http://www.microsoft.com/maps/choose-your-bing-maps-API.aspx)
-development support for
-[WebSharper](http://bitbucket.org/IntelliFactory/websharper).
-
 # Overview
 
 This WebSharper Extension provides a set of classes almost identical
