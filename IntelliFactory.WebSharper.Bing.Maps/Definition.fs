@@ -115,9 +115,9 @@ module Bing =
                 "getSouth" => T<unit -> float>
                 |> WithComment "Returns the latitude that defines the southern edge of the LocationRect."
 
-                "getSouthEast" => T<unit> ^-> Location
+                "getSoutheast" => T<unit> ^-> Location
                 |> WithComment "Returns the Location that defines the southeast corner of the LocationRect."
-                "getNorthWest" => T<unit> ^-> Location
+                "getNorthwest" => T<unit> ^-> Location
                 |> WithComment "Returns the Location that defines the northwest corner of the LocationRect."
 
                 "intersects" => LocationRect ^-> T<bool>
