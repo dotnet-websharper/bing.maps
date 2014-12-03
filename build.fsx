@@ -2,7 +2,7 @@
 open IntelliFactory.Build
 
 let bt =
-    let bt = BuildTool().PackageId("WebSharper.Bing.Maps", "2.5").References(fun r -> [r.Assembly "System.Web"])
+    let bt = BuildTool().PackageId("WebSharper.Bing.Maps", "3.0-alpha").References(fun r -> [r.Assembly "System.Web"])
     bt.WithFramework(bt.Framework.Net40)
 
 let main =
