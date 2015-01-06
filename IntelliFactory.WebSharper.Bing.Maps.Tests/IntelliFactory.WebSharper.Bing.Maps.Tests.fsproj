@@ -7,29 +7,29 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bb42ad3f-9110-4d95-a23f-36b4f2f900fa}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Bing.Tests</Name>
+    <Name>IntelliFactory.WebSharper.Bing.Maps.Tests</Name>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>$(Name)</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>../build/net40</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\$(Name).XML</DocumentationFile>
+    <DocumentationFile>$(OutputPath)\$(Name).XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>../build/net40</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\$(Name).XML</DocumentationFile>
+    <DocumentationFile>$(OutputPath)\$(Name).XML</DocumentationFile>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
@@ -44,20 +44,8 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <Import Project="../build/net45/$(Name).proj" />
+  <Import Project="../build/net40/$(Name).proj" />
   <ItemGroup>
     <Compile Include="Tests.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Bing.Maps.Rest\IntelliFactory.WebSharper.Bing.Maps.Rest.fsproj">
-      <Name>IntelliFactory.WebSharper.Bing.Maps.Rest</Name>
-      <Project>{501ca443-9b83-45db-9693-f2f3677a44c4}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Bing.Maps\IntelliFactory.WebSharper.Bing.Maps.fsproj">
-      <Name>IntelliFactory.WebSharper.Bing.Maps</Name>
-      <Project>{730ae40a-001c-4137-972d-898dc7c2bf0a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -7,29 +7,29 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{730ae40a-001c-4137-972d-898dc7c2bf0a}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Bing</Name>
+    <Name>IntelliFactory.WebSharper.Bing.Maps</Name>
     <RootNamespace>$(Name)</RootNamespace>
-    <AssemblyName>IntelliFactory.WebSharper.Bing</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AssemblyName>$(Name)</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>../build/net40</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\$(Name).XML</DocumentationFile>
+    <DocumentationFile>$(OutputPath)\$(Name).XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>../build/net40</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\$(Name).XML</DocumentationFile>
+    <DocumentationFile>$(OutputPath)\$(Name).XML</DocumentationFile>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
@@ -44,7 +44,7 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <Import Project="../build/net45/$(Name).proj" />
+  <Import Project="../build/net40/$(Name).proj" />
   <ItemGroup>
     <Compile Include="Definition.fs" />
   </ItemGroup>

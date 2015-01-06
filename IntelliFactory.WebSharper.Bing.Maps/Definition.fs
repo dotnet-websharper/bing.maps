@@ -1,7 +1,7 @@
 ﻿namespace IntelliFactory.WebSharper.BingExtension
 
-open IntelliFactory.WebSharper.Dom
-open IntelliFactory.WebSharper.EcmaScript
+open IntelliFactory.WebSharper
+open IntelliFactory.WebSharper.JavaScript.Dom
 open IntelliFactory.WebSharper.InterfaceGenerator
 
 module Bing =
@@ -1521,7 +1521,7 @@ module Bing =
                 Optional =
                     [
                         "timeType", TimeType
-                        "transitTime", T<Date>
+                        "transitTime", T<JavaScript.Date>
                     ]
             }
 
