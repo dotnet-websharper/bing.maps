@@ -3,7 +3,7 @@
 open IntelliFactory.WebSharper
 
 module Main =
-    open IntelliFactory.WebSharper.Html
+    open IntelliFactory.WebSharper.Html.Client
     open IntelliFactory.WebSharper.Bing.Maps
 
     [<JavaScript>]
@@ -11,7 +11,7 @@ module Main =
 
     [<JavaScript>]
     let IsUndefined x =
-        JavaScript.TypeOf x = JavaScript.Kind.Undefined
+        JavaScript.JS.TypeOf x = JavaScript.JS.Kind.Undefined
 
     (*
       var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"), 
@@ -20,6 +20,8 @@ module Main =
                                 mapTypeId: Microsoft.Maps.MapTypeId.road,
                                 zoom: 7});
     *)
+
+    open IntelliFactory.WebSharper.JavaScript
 
     [<JavaScript>]
     let MapElement () =
@@ -144,7 +146,7 @@ module Main =
                           "\npushpin (screen x/y): " + string pinPoint.X + "," + string pinPoint.Y +
                           "\nmouse (lat/lon): " + string mouseLocation.Latitude + ", " + string mouseLocation.Longitude +
                           "\nmouse (screen x/y): " + string mousePoint.X + "," + string mousePoint.Y
-            JavaScript.Alert message
+            JavaScript.JS.Alert message
         Events.AddHandler(map, MouseEvent.Click, displayLatLong) |> ignore
         container
 
@@ -235,7 +237,7 @@ module Main =
                         dirman.ResetDirections()
                         dirman.AddWaypoint <| Waypoint(WaypointOptions(Address = origin.Value))
                         dirman.AddWaypoint <| Waypoint(WaypointOptions(Address = destination.Value))
-                        dirman.SetRenderOptions <| DirectionsRenderOptions(ItineraryContainer = answer.Body)
+                        dirman.SetRenderOptions <| DirectionsRenderOptions(ItineraryContainer = answer.Dom)
                         dirman.SetRequestOptions <| DirectionsRequestOptions(DistanceUnit = DistanceUnit.Kilometers)
                         dirman.CalculateDirections()
                     button |>! OnClick request |> ignore
@@ -272,12 +274,12 @@ module Main =
                 answer.Text <- "Bad metadata response: " + error
             | None ->
                 let resource = result.ResourceSets.[0].Resources.[0] :?> ImageryMetadataResource
-                let txt : IPagelet list =
+                let txt : Pagelet list =
                     [
                         P [Text("Road map tile size: " + string resource.ImageHeight + "x" + string resource.ImageWidth)]
                         P [Text("Road map tile URL: " + resource.ImageUrl)]
                     ]
-                List.iter (answer.Append:IPagelet->unit) txt
+                List.iter (answer.Append:Pagelet->unit) txt
         Div []
         |>! OnAfterRender (fun el ->
             Rest.RequestImageryMetadata(credentials, req, callback el)
@@ -320,7 +322,7 @@ type Action = | Index
 
 module Site =
 
-    open IntelliFactory.Html
+    open IntelliFactory.WebSharper.Html.Server
 
     let HomePage =
         Content.PageContent <| fun ctx ->

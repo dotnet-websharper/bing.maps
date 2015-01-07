@@ -1,7 +1,8 @@
 ﻿namespace IntelliFactory.WebSharper.Bing.Maps
 
 open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html
+open IntelliFactory.WebSharper.JavaScript
+open IntelliFactory.WebSharper.Html.Client
 
 module Rest =
 
@@ -13,12 +14,12 @@ module Rest =
 
     [<JavaScript>]
     let private IsUndefined x =
-        JavaScript.TypeOf x = JavaScript.Kind.Undefined
+        JS.TypeOf x = JS.Kind.Undefined
 
     [<JavaScript>]
     let private SendRequest req =
         let script = Script [Attr.Type "text/javascript"; Attr.Src req]
-        Dom.Document.Current.DocumentElement.AppendChild script.Dom |> ignore
+        JS.Document.DocumentElement.AppendChild script.Dom |> ignore
 
     [<JavaScript>]
     let private RequestCallbackName = "BingOnReceive"
@@ -36,7 +37,7 @@ module Rest =
 
     [<JavaScript>]
     let RequestLocationByAddress(credentials, address : Address, callback : RestResponse -> unit) =
-        (?<-) JavaScript.Global RequestCallbackName callback
+        (?<-) JS.Global RequestCallbackName callback
         let fields =
             OptionalFields address
                 [|"adminDistrict"; "locality"; "addressLine"; "countryRegion"; "postalCode"|]
@@ -46,13 +47,13 @@ module Rest =
 
     [<JavaScript>]
     let RequestLocationByQuery(credentials, query : string, callback : RestResponse -> unit) =
-        (?<-) JavaScript.Global RequestCallbackName callback
+        (?<-) JS.Global RequestCallbackName callback
         let req = restApiUri + "Locations?query=" + query + "&" + RequestStringBoilerplate credentials
         SendRequest req
 
     [<JavaScript>]
     let RequestLocationByPoint(credentials, x:float, y:float, entities, callback : RestResponse -> unit) =
-        (?<-) JavaScript.Global RequestCallbackName callback
+        (?<-) JS.Global RequestCallbackName callback
         let retrieveEntities = function
         | [] -> ""
         | l -> "&includeEntityTypes=" + String.concat "," l
@@ -68,7 +69,7 @@ module Rest =
 
     [<JavaScript>]
     let RequestRoute(credentials, request : RouteRequest, callback : RestResponse -> unit) =
-        (?<-) JavaScript.Global RequestCallbackName callback
+        (?<-) JS.Global RequestCallbackName callback
         let fields =
             OptionalFields request
                 [| "avoid"; "heading"; "optimize"; "routePathOutput"; "distanceUnit"
@@ -80,7 +81,7 @@ module Rest =
 
     [<JavaScript>]
     let RequestRouteFromMajorRoads(credentials, request : RouteFromMajorRoadsRequest, callback : RestResponse -> unit) =
-        (?<-) JavaScript.Global RequestCallbackName callback
+        (?<-) JS.Global RequestCallbackName callback
         let fields =
             OptionalFields request
                 [| "destination"; "exclude"; "routePathOutput"; "distanceUnit" |]
@@ -92,7 +93,7 @@ module Rest =
     [<JavaScript>]
     let RequestImageryMetadata(credentials, request : ImageryMetadataRequest,
                                callback : RestResponse -> unit) =
-        (?<-) JavaScript.Global RequestCallbackName callback
+        (?<-) JS.Global RequestCallbackName callback
         let fields =
             OptionalFields request
                 [| "include"; "mapVersion"; "orientation"; "zoomLevel" |]
