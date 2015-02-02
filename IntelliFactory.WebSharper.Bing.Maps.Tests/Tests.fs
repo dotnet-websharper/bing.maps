@@ -22,6 +22,8 @@ module Main =
                                 zoom: 7});
     *)
 
+    open IntelliFactory.WebSharper.JavaScript
+
     [<JavaScript>]
     let MapElement () =
         Div []
