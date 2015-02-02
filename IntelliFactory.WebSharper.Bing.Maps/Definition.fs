@@ -8,9 +8,11 @@ module Bing =
 
     let private ConstantStrings ty l =
         List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
+        |> Static
 
     let private Constants ty l =
         List.map (fun s -> s =? ty :> CodeModel.IClassMember) l
+        |> Static
 
     ///////////////////////////////////////////////////////////////////
     // Ajax API
@@ -21,7 +23,7 @@ module Bing =
         Class "Microsoft.Maps.AltitudeReference"
         |=> AltitudeReference
         |+> ConstantStrings AltitudeReference ["ground"; "ellipsoid"]
-        |+> [
+        |+> Static [
                 "isValid" => AltitudeReference ^-> T<bool>
                 |> WithComment "Determines if the specified reference is a supported AltitudeReference."
             ]
@@ -38,7 +40,7 @@ module Bing =
     let LocationClass =
         Class "Microsoft.Maps.Location"
         |=> Location
-        |+> [
+        |+> Static [
                 Constructor (T<float> * T<float> * T<float> * AltitudeReference)
                 Constructor (T<float> * T<float> * T<float>)
                 Constructor (T<float> * T<float>)
@@ -49,7 +51,7 @@ module Bing =
                 "normalizeLongitude" => T<float -> float>
                 |> WithComment "Normalizes the specified longitude so that it is between -180 and 180."
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "altitude" =? T<float>
                 |> WithComment "The altitude of the location."
@@ -75,7 +77,7 @@ module Bing =
     let LocationRectClass =
         Class "Microsoft.Maps.LocationRect"
         |=> LocationRect
-        |+> [
+        |+> Static [
                 Constructor (Location * T<float> * T<float>)
 
                 "fromCorners" => Location * Location ^-> LocationRect
@@ -90,7 +92,7 @@ module Bing =
                 "fromString" => T<string> ^-> LocationRect
                 |> WithComment "Creates a LocationRect from a string with the following format: \"north,west,south,east\". North, west, south and east specify the coordinate number values."
             ]
-        |+> Protocol [
+        |+> Instance [
                 "center" =? Location
                 |> WithComment "The location that defines the center of the rectangle."
 
@@ -133,7 +135,7 @@ module Bing =
     let PointClass =
         Class "Microsoft.Maps.Point"
         |=> Point
-        |+> [
+        |+> Static [
                 Constructor (T<float> * T<float>)
 
                 "areEqual" => Point * Point ^-> T<bool>
@@ -143,7 +145,7 @@ module Bing =
                 |> WithSourceName "clone"
                 |> WithComment "Returns a copy of the Point object."
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "x" =? T<float>
                 |> WithComment "The x value of the coordinate."
@@ -166,7 +168,7 @@ module Bing =
     let LabelOverlayClass =
         Class "Microsoft.Maps.LabelOverlay"
         |=> LabelOverlay
-        |+> [
+        |+> Static [
                 "hidden" =? LabelOverlay
                 |> WithComment "Map labels are not shown on top of imagery."
 
@@ -187,7 +189,7 @@ module Bing =
     let ColorClass =
         Class "Microsoft.Maps.Color"
         |=> Color
-        |+> [
+        |+> Static [
                 Constructor (T<int> * T<int> * T<int> * T<int>)
                 |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
 
@@ -198,7 +200,7 @@ module Bing =
                 "fromHex" => T<string> ^-> Color
                 |> WithComment "Converts the specified hex string to a Color."
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "a" =? T<int>
                 |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
@@ -230,7 +232,7 @@ module Bing =
     let MapTypeIdClass =
         Class "Microsoft.Maps.MapTypeId"
         |=> MapTypeId
-        |+> [
+        |+> Static [
                 "aerial" =? MapTypeId
                 |> WithComment "The aerial map style is being used."
 
@@ -354,11 +356,11 @@ module Bing =
         Class "Microsoft.Maps.EntityCollection"
         |=> EntityCollection
         |=> Implements [EntityInterface]
-        |+> [
+        |+> Static [
                 Constructor T<unit>
                 Constructor EntityCollectionOptions
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "clear" => T<unit -> unit>
                 |> WithComment "Removes all entities from the collection."
@@ -411,7 +413,7 @@ module Bing =
     let KeyEventArgsClass =
         Class "Microsoft.Maps.KeyEventArgs"
         |=> KeyEventArgs
-        |+> Protocol
+        |+> Instance
             [
                 "altKey" =? T<bool>
                 |> WithComment "A boolean indicating if the ALT key was pressed."
@@ -422,7 +424,7 @@ module Bing =
                 "eventName" =? KeyEvent
                 |> WithComment "The event that occurred."
 
-                "handled" =% T<bool>
+                "handled" =@ T<bool>
                 |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
 
                 "keyCode" =? T<string>
@@ -447,12 +449,12 @@ module Bing =
     let MouseEventArgsClass =
         Class "Microsoft.Maps.MouseEventArgs"
         |=> MouseEventArgs
-        |+> Protocol
+        |+> Instance
             [
                 "eventName" =? MouseEvent
                 |> WithComment "The event that occurred."
 
-                "handled" =% T<bool>
+                "handled" =@ T<bool>
                 |> WithComment "A boolean indicating whether the event is handled. If this property is set to true, the default map control behavior for the event is cancelled."
 
                 "isPrimary" =? T<bool>
@@ -520,7 +522,7 @@ module Bing =
     let EntityCollectionEventArgsClass =
         Class "Microsoft.Maps.EntityCollectionEventArgs"
         |=> EntityCollectionEventArgs
-        |+> Protocol
+        |+> Instance
             [
                 "collection" =? EntityCollection
                 "entity" =? Entity
@@ -588,11 +590,11 @@ module Bing =
         Class "Microsoft.Maps.Infobox"
         |=> Infobox
         |=> Implements [EntityInterface]
-        |+> [
+        |+> Static [
                 Constructor Location
                 Constructor (Location * InfoboxOptions)
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "getActions" => T<unit> ^-> Type.ArrayOf InfoboxAction
                 |> WithComment "Returns a list of actions, where each item is a name-value pair indicating an action link name and the event name for the action that corresponds to that action link."
@@ -660,7 +662,7 @@ module Bing =
     let RangeClass =
         Class "Range"
         |=> Range
-        |+> Protocol
+        |+> Instance
             [
                 "min" =? T<float>
                 |> WithComment "The minimum value in the range."
@@ -675,7 +677,7 @@ module Bing =
         Class "Microsoft.Maps.PixelReference"
         |=> PixelReference
         |+> Constants PixelReference ["control"; "page"; "viewport"]
-        |+> [
+        |+> Static [
                 "isValid" => PixelReference ^-> T<bool>
                 |> WithComment "Determines whether the specified reference is a supported PixelReference."
             ]
@@ -686,13 +688,13 @@ module Bing =
         Class "Microsoft.Maps.Map"
         |=> Map
         |=> Implements [EntityInterface]
-        |+> [
+        |+> Static [
                 Constructor (T<Node> * MapViewOptions)
                 Constructor (T<Node> * MapOptions)
                 Constructor (T<Node> * ViewOptions)
                 Constructor (T<Node>)
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "entities" =? EntityCollection
                 |> WithComment "The map’s entities. Use this property to add or remove entities from the map."
@@ -826,7 +828,7 @@ module Bing =
     let CoordinatesClass =
         Class "Microsoft.Maps.Coordinates"
         |=> Coordinates
-        |+> Protocol
+        |+> Instance
             [
                 "accuracy" =? T<float>
                 "altitude" =? T<float>
@@ -842,7 +844,7 @@ module Bing =
     let PositionClass =
         Class "Microsoft.Maps.Position"
         |=> Position
-        |+> Protocol
+        |+> Instance
             [
                 "coords" =? Coordinates
                 "timestamp" =? T<string>
@@ -853,7 +855,7 @@ module Bing =
     let PositionErrorClass =
         Class "Microsoft.Maps.PositionError"
         |=> PositionError
-        |+> Protocol
+        |+> Instance
             [
                 "code" =? T<int>
                 "message" =? T<string>
@@ -864,7 +866,7 @@ module Bing =
     let PositionErrorCallbackArgsClass =
         Class "Microsoft.Maps.PositionErrorCallbackArgs"
         |=> PositionErrorCallbackArgs
-        |+> Protocol
+        |+> Instance
             [
                 "internalError" =? PositionError
                 "errorCode" =? T<int>
@@ -875,7 +877,7 @@ module Bing =
     let PositionSuccessCallbackArgsClass =
         Class "Microsoft.Maps.PositionSuccessCallbackArgs"
         |=> PositionSuccessCallbackArgs
-        |+> Protocol
+        |+> Instance
             [
                 "center" =? Location
                 "position" =? Position
@@ -911,7 +913,7 @@ module Bing =
                     "visible", T<bool>
                 ]
         }
-        |+> Protocol
+        |+> Instance
             [
                 "strokeDashArray" =@ Type.ArrayOf T<int>
                 |> WithSetterInline "$this.strokeDashArray = $1.join(' ')"
@@ -935,10 +937,10 @@ module Bing =
     let GeoLocationProviderClass =
         Class "Microsoft.Maps.GeoLocationProvider"
         |=> GeoLocationProvider
-        |+> [
+        |+> Static [
                 Constructor Map
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "addAccuracyCircle" => Location * T<float> * T<int> * PositionCircleOptions ^-> T<unit>
                 |> WithComment "Renders a geo location accuracy circle on the map. The accuracy circle is created with the center at the specified location, using the given radiusInMeters, and with the specified number of segments for the accuracy circle polygon. Additional options are also available to adjust the style of the polygon."
@@ -965,7 +967,7 @@ module Bing =
                     "visible", T<bool>
                 ]
         }
-        |+> Protocol
+        |+> Instance
             [
                 "strokeDashArray" =@ Type.ArrayOf T<int>
                 |> WithSetterInline "$this.strokeDashArray = $1.join(' ')"
@@ -978,11 +980,11 @@ module Bing =
         Class "Microsoft.Maps.Polyline"
         |=> Polyline
         |=> Implements [EntityInterface]
-        |+> [
+        |+> Static [
                 Constructor (Type.ArrayOf Location)
                 Constructor (Type.ArrayOf Location * PolylineOptions)
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "getLocations" => T<unit> ^-> Type.ArrayOf Location
                 |> WithComment "Returns the locations that define the polyline."
@@ -1044,11 +1046,11 @@ module Bing =
     let TileSourceClass =
         Class "Microsoft.Maps.TileSource"
         |=> TileSource
-        |+> [
+        |+> Static [
                 Constructor TileSourceOptions
                 |> WithComment "Initializes a new instance of the TileSource  class."
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "getHeight" => T<unit -> float>
                 |> WithComment "Returns the pixel height of each tile in the tile source."
@@ -1067,11 +1069,11 @@ module Bing =
         Class "Microsoft.Maps.TileLayer"
         |=> TileLayer
         |=> Implements [Entity]
-        |+> [
+        |+> Static [
                 Constructor TileLayerOptions
                 |> WithComment "Initializes a new instance of the TileLayer class."
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "a" =? T<int>
                 |> WithComment "The opacity of the color. The range of valid values is 0 to 255."
@@ -1098,11 +1100,11 @@ module Bing =
         Class "Microsoft.Maps.Polygon"
         |=> Polygon
         |=> Implements [EntityInterface]
-        |+> [
+        |+> Static [
                 Constructor (Type.ArrayOf Location)
                 Constructor (Type.ArrayOf Location * PolygonOptions)
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "getFillColor" => T<unit> ^-> Color
                 |> WithComment "Returns the color of the inside of the polygon."
@@ -1159,11 +1161,11 @@ module Bing =
         Class "Microsoft.Maps.Pushpin"
         |=> Pushpin
         |=> Implements [EntityInterface]
-        |+> [
+        |+> Static [
                 Constructor Location
                 Constructor (Location * PushpinOptions)
             ]
-        |+> Protocol
+        |+> Instance
             [
                 "getAnchor" => T<unit> ^-> Point
                 |> WithComment "Returns the point on the pushpin icon which is anchored to the pushpin location. An anchor of (0,0) is the top left corner of the icon."
@@ -1211,7 +1213,7 @@ module Bing =
         let BusinessDetailsClass =
             Class "Microsoft.Maps.Directions.BusinessDetails"
             |=> BusinessDetails
-            |+> Protocol
+            |+> Instance
                 [
                     "businessName" =? T<string>
                     "entityId" =? T<string>
@@ -1223,7 +1225,7 @@ module Bing =
         let BusinessDisambiguationSuggestionClass =
             Class "Microsoft.Maps.Directions.BusinessDisambiguationSuggestion"
             |=> BusinessDisambiguationSuggestion
-            |+> Protocol
+            |+> Instance
                 [
                     "address" =? T<string>
                     "distance" =? T<float>
@@ -1253,7 +1255,7 @@ module Bing =
         let RouteSummaryClass =
             Class "Microsoft.Maps.Directions.RouteSummary"
             |=> RouteSummary
-            |+> Protocol
+            |+> Instance
                 [
                     "distance" =? T<float>
                     "monetaryCost" =? T<float>
@@ -1282,7 +1284,7 @@ module Bing =
         let TransitLineClass =
             Class "Microsoft.Maps.Directions.TransitLine"
             |=> TransitLine
-            |+> Protocol
+            |+> Instance
                 [
                     "abbreviatedName" =? T<string>
                     "agencyId" =? T<int>
@@ -1305,7 +1307,7 @@ module Bing =
         let DirectionsStepWarningClass =
             Class "Microsoft.Maps.Directions.DirectionsStepWarning"
             |=> DirectionsStepWarning
-            |+> Protocol
+            |+> Instance
                 [
                     "style" =? DirectionsStepWarningType
                     "text" =? T<string>
@@ -1315,7 +1317,7 @@ module Bing =
         let RoutePathClass =
             Class "Microsoft.Maps.Directions.RoutePath"
             |=> RoutePath
-            |+> Protocol
+            |+> Instance
                 [
                     "decodedLatitudes" =? Type.ArrayOf T<float>
                     "decodedLongitudes" =? Type.ArrayOf T<float>
@@ -1326,7 +1328,7 @@ module Bing =
         let RouteSubLegClass =
             Class "Microsoft.Maps.Directions.RouteSubLeg"
             |=> RouteSubLeg
-            |+> Protocol
+            |+> Instance
                 [
                     "actualEnd" =? Location
                     "actualStart" =? Location
@@ -1340,7 +1342,7 @@ module Bing =
         let DirectionsStepClass =
             Class "Microsoft.Maps.Directions.DirectionsStep"
             |=> DirectionsStep
-            |+> Protocol
+            |+> Instance
                 [
                     "childItineraryItems" =? Type.ArrayOf DirectionsStep
                     "coordinate" =? Location
@@ -1365,7 +1367,7 @@ module Bing =
         let RouteLegClass =
             Class "Microsoft.Maps.Directions.RouteLeg"
             |=> RouteLeg
-            |+> Protocol
+            |+> Instance
                 [
                     "endTime" =? T<int> //TODO: DateTime
                     "endWaypointLocation" =? Location
@@ -1381,7 +1383,7 @@ module Bing =
         let RouteClass =
             Class "Microsoft.Maps.Directions.Route"
             |=> Route
-            |+> Protocol
+            |+> Instance
                 [
                     "routeLegs" =? Type.ArrayOf RouteLeg
                 ]
@@ -1390,7 +1392,7 @@ module Bing =
         let DirectionsEventArgsClass =
             Class "Microsoft.Maps.Directions.DirectionsEventArgs"
             |=> DirectionsEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "routeSummary" =? Type.ArrayOf RouteSummary
                     "route" =? Type.ArrayOf Route
@@ -1415,7 +1417,7 @@ module Bing =
         let LocationDisambiguationSuggestionClass =
             Class "Microsoft.Maps.Directions.LocationDisambiguationSuggestion"
             |=> LocationDisambiguationSuggestion
-            |+> Protocol
+            |+> Instance
                 [
                     "formattedSuggestion" =? T<string>
                     "location" =? Location
@@ -1427,7 +1429,7 @@ module Bing =
         let DisambiguationClass =
             Class "Microsoft.Maps.Directions.Disambiguation"
             |=> Disambiguation
-            |+> Protocol
+            |+> Instance
                 [
                     "businessSuggestions" =? Type.ArrayOf BusinessDisambiguationSuggestion
                     "hasMoreSuggestions" =? T<bool>
@@ -1439,10 +1441,10 @@ module Bing =
         let WaypointClass =
             Class "Microsoft.Maps.Directions.Waypoint"
             |=> Waypoint
-            |+> [
+            |+> Static [
                     Constructor WaypointOptions
                 ]
-            |+> Protocol
+            |+> Instance
                 [
                     "clear" => T<unit> ^-> T<unit>
                     "dispose" => T<unit> ^-> T<unit>
@@ -1559,10 +1561,10 @@ module Bing =
         let DirectionsManagerClass =
             Class "Microsoft.Maps.Directions.DirectionsManager"
             |=> DirectionsManager
-            |+> [
+            |+> Static [
                     Constructor Map
                 ]
-            |+> Protocol
+            |+> Instance
                 [
                     "addWaypoint" => Waypoint ^-> T<unit>
                     "calculateDirections" => T<unit> ^-> T<unit>
@@ -1588,7 +1590,7 @@ module Bing =
         let DirectionsErrorEventArgsClass =
             Class "Microsoft.Maps.Directionss.DirectionsErrorEventArgs"
             |=> DirectionsErrorEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "responseCode" =? RouteResponseCode
                     "message" =? T<string>
@@ -1598,7 +1600,7 @@ module Bing =
         let DirectionsStepEventArgsClass =
             Class "Microsoft.Maps.Directions.DirectionsStepEventArgs"
             |=> DirectionsStepEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "handled" =@ T<bool>
                     "location" =? Location
@@ -1613,7 +1615,7 @@ module Bing =
         let DirectionsStepRenderEventArgsClass =
             Class "Microsoft.Maps.Directions.DirectionsStepRenderEventArgs"
             |=> DirectionsStepRenderEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "containerElement" =@ T<Element>
                     "handled" =@ T<bool>
@@ -1628,7 +1630,7 @@ module Bing =
         let RouteSelectorEventArgsClass =
             Class "Microsoft.Maps.Directions.RouteSelectorEventArgs"
             |=> RouteSelectorEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "handled" =@ T<bool>
                     "routeIndex" =? T<int>
@@ -1638,7 +1640,7 @@ module Bing =
         let RouteSelectorRenderEventArgsClass =
             Class "Microsoft.Maps.Directions.RouteSelectorRenderEventArgs"
             |=> RouteSelectorRenderEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "containerElement" =@ T<Element>
                     "handled" =? T<bool>
@@ -1650,7 +1652,7 @@ module Bing =
         let RouteSummaryRenderEventArgsClass =
             Class "Microsoft.Maps.Directions.RouteSummaryRenderEventArgs"
             |=> RouteSummaryRenderEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "containerElements" =@ T<Element>
                     "handled" =@ T<bool>
@@ -1662,7 +1664,7 @@ module Bing =
         let WaypointEventArgsClass =
             Class "Microsoft.Maps.Directions.WaypointEventArgs"
             |=> WaypointEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "waypoint" =? Waypoint
                 ]
@@ -1671,7 +1673,7 @@ module Bing =
         let WaypointRenderEventArgsClass =
             Class "Microsoft.Maps.Directions.WaypointRenderEventArgs"
             |=> WaypointRenderEventArgs
-            |+> Protocol
+            |+> Instance
                 [
                     "containerElement" =@ T<Element>
                     "handled" =@ T<bool>
@@ -1747,10 +1749,10 @@ module Bing =
         let TrafficLayerClass =
             Class "Microsoft.Maps.Traffic.TrafficLayer"
             |=> TrafficLayer
-            |+> [
+            |+> Static [
                     Constructor Map
                 ]
-            |+> Protocol
+            |+> Instance
                 [
                     "getTileLayer" => T<unit> ^-> TileLayer
                     "hide" => T<unit> ^-> T<unit>
@@ -1766,7 +1768,7 @@ module Bing =
         let FloorClass =
             Class "Microsoft.Maps.VenueMaps.Floor"
             |=> Floor
-            |+> Protocol
+            |+> Instance
                 [
                     "name" =? T<string>
                     "primitives" =? Type.ArrayOf Primitive
@@ -1776,7 +1778,7 @@ module Bing =
         let PrimitiveClass =
             Class "Microsoft.Maps.VenueMaps.Primitive"
             |=> Primitive
-            |+> Protocol
+            |+> Instance
                 [
                     "bounds" =? LocationRect
                     "businessId" =? T<string>
@@ -1795,7 +1797,7 @@ module Bing =
         let PolygonClass =
             Class "Microsoft.Maps.VenueMaps.Polygon"
             |=> Polygon
-            |+> Protocol
+            |+> Instance
                 [
                     "bounds" =? LocationRect
                     "center" =? Location
@@ -1806,7 +1808,7 @@ module Bing =
         let FootprintClass =
             Class "Microsoft.Maps.VenueMaps.Footprint"
             |=> Footprint
-            |+> Protocol
+            |+> Instance
                 [
                     "polygons" =? Type.ArrayOf Polygon
                     "zoomRange" =? Type.ArrayOf T<float>
@@ -1816,7 +1818,7 @@ module Bing =
         let MetadataClass =
             Class "Microsoft.Maps.VenueMaps.Metadata"
             |=> Metadata
-            |+> Protocol
+            |+> Instance
                 [
                     "CenterLat" =? T<float>
                     "CenterLong" =? T<float>
@@ -1834,7 +1836,7 @@ module Bing =
         let NearbyVenueClass =
             Class "Microsoft.Maps.VenueMaps.NearbyVenue"
             |=> NearbyVenue
-            |+> Protocol
+            |+> Instance
                 [
                     "distance" =? T<float>
                     "metadata" =? Metadata
@@ -1844,7 +1846,7 @@ module Bing =
         let VenueMapClass =
             Class "Microsoft.Maps.VenueMaps.VenueMap"
             |=> VenueMap
-            |+> Protocol
+            |+> Instance
                 [
                     "address" =? T<string>
                     "bestMapView" =? ViewOptions
@@ -1894,10 +1896,10 @@ module Bing =
         let VenueMapFactoryClass =
             Class "Microsoft.Maps.VenueMaps.VenueMapFactory"
             |=> VenueMapFactory
-            |+> [
+            |+> Static [
                     Constructor Map
                 ]
-            |+> Protocol
+            |+> Instance
                 [
                     "create" => VenueMapCreationOptions ^-> T<unit>
                     "getNearbyVenues" => NearbyVenueMapOptions ^-> T<unit>
@@ -1907,7 +1909,7 @@ module Bing =
     let EventsClass =
         Class "Microsoft.Maps.Events"
         |=> Events
-        |+> [
+        |+> Static [
                 "addHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) ^-> EventHandler
                 |> WithComment "Attaches the handler for the event that is thrown by the target."
 
@@ -1977,7 +1979,7 @@ module Bing =
     let RestResponseClass =
         Class "Microsoft.Maps.RestResponse"
         |=> RestResponse
-        |+> Protocol
+        |+> Instance
             [
                 "statusCode" =? T<int>
                 |> WithComment "The HTTP Status code for the request."
@@ -2013,7 +2015,7 @@ module Bing =
     let ResourceSetClass =
         Class "Microsoft.Maps.ResourceSet"
         |=> ResourceSet
-        |+> Protocol
+        |+> Instance
             [
                 "estimatedTotal" =? T<int>
                 |> WithComment "An estimate of the total number of resources in the ResourceSet."
@@ -2025,7 +2027,7 @@ module Bing =
     let LocationResourceClass =
         Class "Microsoft.Maps.LocationResource"
         |=> LocationResource
-        |+> Protocol
+        |+> Instance
             [
                 "name" =? T<string>
                 |> WithComment "The name of the resource."
@@ -2049,7 +2051,7 @@ module Bing =
     let PointResourceClass =
         Class "Microsoft.Maps.PointResource"
         |=> PointResource
-        |+> Protocol
+        |+> Instance
             [
                 "type" =? T<string>
                 "coordinates" =? Type.ArrayOf T<float>
@@ -2098,7 +2100,7 @@ module Bing =
     let WaypointClass =
         Class "Microsoft.Maps.Waypoint"
         |=> Waypoint
-        |+> [
+        |+> Static [
                 Constructor T<string>?s
                 |> WithInline "$s"
 
@@ -2109,7 +2111,7 @@ module Bing =
     let RouteResourceClass =
         Class "Microsoft.Maps.RouteResource"
         |=> RouteResource
-        |+> Protocol
+        |+> Instance
             [
                 "id" =? T<string>
                 |> WithComment "A unique ID for the resource."
@@ -2139,7 +2141,7 @@ module Bing =
     let RouteLegClass =
         Class "Microsoft.Maps.RouteLeg"
         |=> RouteLeg
-        |+> Protocol
+        |+> Instance
             [
                 "travelDistance" =? T<float>
                 |> WithComment "The physical distance covered by a route leg."
@@ -2166,7 +2168,7 @@ module Bing =
     let ItineraryItemClass =
         Class "Microsoft.Maps.ItineraryItem"
         |=> ItineraryItem
-        |+> Protocol
+        |+> Instance
             [
                 "childItineraryItems" =? Type.ArrayOf ItineraryItem
                 |> WithComment "A collection of ItineraryItems that divides an itinerary item into smaller steps. An itinerary item can have only one set of ChildItineraryItems."
@@ -2232,7 +2234,7 @@ module Bing =
     let ItineraryInstructionClass =
         Class "Microsoft.Maps.ItineraryInstruction"
         |=> ItineraryInstruction
-        |+> Protocol
+        |+> Instance
             [
                 "maneuverType" =? T<string>
                 "text" =? T<string>
@@ -2247,7 +2249,7 @@ module Bing =
     let ItineraryDetailClass =
         Class "Microsoft.Maps.ItineraryDetail"
         |=> ItineraryDetail
-        |+> Protocol
+        |+> Instance
             [
                 "compassDegrees" =? T<string>
                 |> WithComment "The direction in degrees. Note: This value is not supported for the Transit travel mode."
@@ -2271,7 +2273,7 @@ module Bing =
     let TransitLineClass =
         Class "Microsoft.Maps.TransitLine"
         |=> TransitLine
-        |+> Protocol
+        |+> Instance
             [
                 "verboseName" =? T<string>
                 |> WithComment "The full name of the transit line."
@@ -2304,7 +2306,7 @@ module Bing =
     let RoutePathClass =
         Class "Microsoft.Maps.RoutePath"
         |=> RoutePath
-        |+> Protocol
+        |+> Instance
             [
                 "line" =? LineResource
                 |> WithComment "When the points in the line are connected, they represent the path of the route."
@@ -2316,7 +2318,7 @@ module Bing =
     let LineResourceClass =
         Class "Microsoft.Maps.LineResource"
         |=> LineResource
-        |+> Protocol
+        |+> Instance
             [
                 "type" =? T<string>
                 "coordinates" =? Type.ArrayOf (Type.ArrayOf T<float>)
@@ -2482,7 +2484,7 @@ module Bing =
     let ImageryMetadataResourceClass =
         Class "Microsoft.Maps.ImageryMetadataResource"
         |=> ImageryMetadataResource
-        |+> Protocol
+        |+> Instance
             [
                 "imageHeight" =? T<int>
                 |> WithComment "The height of the image tile."
@@ -2534,7 +2536,7 @@ module Bing =
 
     let MapsStatics =
         Class "Microsoft.Maps"
-        |+> [
+        |+> Static [
                 "loadModule" => T<string> ^-> T<unit>
                 |> WithComment "Loads the specified registered module, making its functionality available."
 
