@@ -1,11 +1,11 @@
-﻿namespace IntelliFactory.WebSharper.Bing.Tests
+﻿namespace WebSharper.Bing.Tests
 
-open IntelliFactory.WebSharper
+open WebSharper
 
 module Main =
-    open IntelliFactory.WebSharper.JavaScript
-    open IntelliFactory.WebSharper.Html.Client
-    open IntelliFactory.WebSharper.Bing.Maps
+    open WebSharper.JavaScript
+    open WebSharper.Html.Client
+    open WebSharper.Bing.Maps
 
     [<JavaScript>]
     let credentials = "Ai6uQaKEyZbUvd33y5HU41hvoov_piUMn6t78Qzg7L1DWY4MFZqhjZdgEmCpQlbe"
@@ -22,7 +22,7 @@ module Main =
                                 zoom: 7});
     *)
 
-    open IntelliFactory.WebSharper.JavaScript
+    open WebSharper.JavaScript
 
     [<JavaScript>]
     let MapElement () =
@@ -215,7 +215,7 @@ module Main =
              highwayBox; Span[Text "Accept highways"]; button
              answer]
 
-    open IntelliFactory.WebSharper.Bing.Maps.Directions
+    open WebSharper.Bing.Maps.Directions
 
     [<JavaScript>]
     let RouteRequest () =
@@ -317,13 +317,13 @@ type Samples() =
 
 
 
-open IntelliFactory.WebSharper.Sitelets
+open WebSharper.Sitelets
 
 type Action = | Index
 
 module Site =
 
-    open IntelliFactory.WebSharper.Html.Server
+    open WebSharper.Html.Server
 
     let HomePage =
         Content.PageContent <| fun ctx ->

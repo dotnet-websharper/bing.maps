@@ -6,16 +6,16 @@ let bt =
     bt.WithFramework(bt.Framework.Net40)
 
 let main =
-    bt.WebSharper.Extension("IntelliFactory.WebSharper.Bing.Maps")
+    bt.WebSharper.Extension("WebSharper.Bing.Maps")
         .SourcesFromProject()
 
 let rest =
-    bt.WebSharper.Library("IntelliFactory.WebSharper.Bing.Maps.Rest")
+    bt.WebSharper.Library("WebSharper.Bing.Maps.Rest")
         .SourcesFromProject()
         .References(fun r -> [r.Project main])
 
 let test =
-    bt.WebSharper.HtmlWebsite("IntelliFactory.WebSharper.Bing.Maps.Tests")
+    bt.WebSharper.HtmlWebsite("WebSharper.Bing.Maps.Tests")
         .SourcesFromProject()
         .References(fun r -> [r.Project main; r.Project rest])
 

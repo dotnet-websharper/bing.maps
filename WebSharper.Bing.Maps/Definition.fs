@@ -1,8 +1,8 @@
-﻿namespace IntelliFactory.WebSharper.BingExtension
+﻿namespace WebSharper.BingExtension
 
-open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.JavaScript.Dom
-open IntelliFactory.WebSharper.InterfaceGenerator
+open WebSharper
+open WebSharper.JavaScript.Dom
+open WebSharper.InterfaceGenerator
 
 module Bing =
 
@@ -2555,11 +2555,11 @@ module Bing =
 
     let Assembly =
         Assembly [
-            Namespace "IntelliFactory.WebSharper.Bing.Maps.Resources" [
+            Namespace "WebSharper.Bing.Maps.Resources" [
                 (Resource "Js" "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0")
                     .AssemblyWide()
             ]
-            Namespace "IntelliFactory.WebSharper.Bing.Maps" [
+            Namespace "WebSharper.Bing.Maps" [
                 AltitudeReferenceClass
                 ColorClass
                 CoordinatesClass
@@ -2644,7 +2644,7 @@ module Bing =
                 StaticMapRequestClass
             ]
 
-            Namespace "IntelliFactory.WebSharper.Bing.Maps.Directions" [
+            Namespace "WebSharper.Bing.Maps.Directions" [
                 Directions.BusinessDetailsClass
                 Directions.BusinessDisambiguationSuggestionClass
                 Directions.RouteResponseCodeClass
@@ -2692,7 +2692,7 @@ module Bing =
                 Directions.WaypointRenderEventClass
             ]
 
-            Namespace "IntelliFactory.WebSharper.Bing.Maps.Traffic" [
+            Namespace "WebSharper.Bing.Maps.Traffic" [
                 Traffic.TrafficLayerClass
             ]
         ]
