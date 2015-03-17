@@ -17,35 +17,26 @@ module Bing =
     ///////////////////////////////////////////////////////////////////
     // Ajax API
 
-    let AltitudeReference = Type.New()
-
-    let AltitudeReferenceClass =
+    let AltitudeReference =
         Class "Microsoft.Maps.AltitudeReference"
-        |=> AltitudeReference
-        |+> ConstantStrings AltitudeReference ["ground"; "ellipsoid"]
+        |+> ConstantStrings TSelf ["ground"; "ellipsoid"]
         |+> Static [
-                "isValid" => AltitudeReference ^-> T<bool>
+                "isValid" => TSelf ^-> T<bool>
                 |> WithComment "Determines if the specified reference is a supported AltitudeReference."
             ]
 
-    let AnimationVisibility = Type.New()
-
-    let AnimationVisibilityClass =
+    let AnimationVisibility =
         Class "Microsoft.Maps.AnimationVisibility"
-        |=> AnimationVisibility
-        |+> ConstantStrings AnimationVisibility ["auto"; "hide"; "show"]
+        |+> ConstantStrings TSelf ["auto"; "hide"; "show"]
 
-    let Location = Type.New()
-
-    let LocationClass =
+    let Location =
         Class "Microsoft.Maps.Location"
-        |=> Location
         |+> Static [
                 Constructor (T<float> * T<float> * T<float> * AltitudeReference)
                 Constructor (T<float> * T<float> * T<float>)
                 Constructor (T<float> * T<float>)
 
-                "areEqual" => Location * Location ^-> T<bool>
+                "areEqual" => TSelf * TSelf ^-> T<bool>
                 |> WithComment "Determines if the specified Location objects are equal."
 
                 "normalizeLongitude" => T<float -> float>
@@ -65,31 +56,28 @@ module Bing =
                 "longitude" =? T<float>
                 |> WithComment "The longitude of the location."
 
-                "clone" => T<unit> ^-> Location
+                "clone" => T<unit> ^-> TSelf
                 |> WithComment "Returns a copy of the Location object."
 
                 "toString" => T<unit -> string>
                 |> WithComment "Converts the Location object to a string."
             ]
 
-    let LocationRect = Type.New()
-
-    let LocationRectClass =
+    let LocationRect =
         Class "Microsoft.Maps.LocationRect"
-        |=> LocationRect
         |+> Static [
                 Constructor (Location * T<float> * T<float>)
 
-                "fromCorners" => Location * Location ^-> LocationRect
+                "fromCorners" => Location * Location ^-> TSelf
                 |> WithComment "Returns a LocationRect using the specified locations for the northwest and southeast corners."
 
-                "fromEdges" => T<float> * T<float> * T<float> * T<float> * T<float> * AltitudeReference ^-> LocationRect
+                "fromEdges" => T<float> * T<float> * T<float> * T<float> * T<float> * AltitudeReference ^-> TSelf
                 |> WithComment "Returns a LocationRect using the specified northern and southern latitudes and western and eastern longitudes for the rectangle boundaries."
 
-                "fromLocations" => Type.ArrayOf Location ^-> LocationRect
+                "fromLocations" => Type.ArrayOf Location ^-> TSelf
                 |> WithComment "Returns a LocationRect using an array of locations."
 
-                "fromString" => T<string> ^-> LocationRect
+                "fromString" => T<string> ^-> TSelf
                 |> WithComment "Creates a LocationRect from a string with the following format: \"north,west,south,east\". North, west, south and east specify the coordinate number values."
             ]
         |+> Instance [
@@ -102,7 +90,7 @@ module Bing =
                 "width" =? T<float>
                 |> WithComment "The width, in degrees, of the rectangle."
 
-                "clone" => T<unit> ^-> LocationRect
+                "clone" => T<unit> ^-> TSelf
                 |> WithComment "Returns a copy of the LocationRect object."
 
                 "contains" => Location ^-> T<bool>
@@ -122,26 +110,22 @@ module Bing =
                 "getNorthwest" => T<unit> ^-> Location
                 |> WithComment "Returns the Location that defines the northwest corner of the LocationRect."
 
-                "intersects" => LocationRect ^-> T<bool>
+                "intersects" => TSelf ^-> T<bool>
                 |> WithComment "Returns whether the specified LocationRect intersects with this LocationRect."
 
                 "toString" => T<unit -> string>
                 |> WithComment "Converts the LocationRect object to a string."
             ]
 
-    let Waypoint = Type.New()
-    let Point = Type.New()
-
-    let PointClass =
+    let Point =
         Class "Microsoft.Maps.Point"
-        |=> Point
         |+> Static [
                 Constructor (T<float> * T<float>)
 
-                "areEqual" => Point * Point ^-> T<bool>
+                "areEqual" => TSelf * TSelf ^-> T<bool>
                 |> WithComment "Determines if the specified points are equal."
 
-                "clonePoint" => Point ^-> Point
+                "clonePoint" => TSelf ^-> TSelf
                 |> WithSourceName "clone"
                 |> WithComment "Returns a copy of the Point object."
             ]
@@ -153,7 +137,7 @@ module Bing =
                 "y" =? T<float>
                 |> WithComment "The y value of the coordinate."
 
-                "clone" => T<unit> ^-> Point
+                "clone" => T<unit> ^-> TSelf
                 |> WithComment "Returns a copy of the Point object."
 
                 "toString" => T<unit -> string>
@@ -163,41 +147,30 @@ module Bing =
                 |> WithInline "($this.x+','+$this.y)"
             ]
 
-    let LabelOverlay = Type.New()
-
-    let LabelOverlayClass =
+    let LabelOverlay =
         Class "Microsoft.Maps.LabelOverlay"
-        |=> LabelOverlay
         |+> Static [
-                "hidden" =? LabelOverlay
+                "hidden" =? TSelf
                 |> WithComment "Map labels are not shown on top of imagery."
 
-                "visible" =? LabelOverlay
+                "visible" =? TSelf
                 |> WithComment "Map labels are shown on top of imagery."
 
-                "isValid" => LabelOverlay ^-> T<bool>
+                "isValid" => TSelf ^-> T<bool>
                 |> WithComment "Determines whether the specified labelOverlay is a supported LabelOverlay."
             ]
 
-    let ViewOptions = Type.New()
-    let MapOptions = Type.New()
-    let MapViewOptions = Type.New()
-
-
-    let Color = Type.New()
-
-    let ColorClass =
+    let Color =
         Class "Microsoft.Maps.Color"
-        |=> Color
         |+> Static [
                 Constructor (T<int> * T<int> * T<int> * T<int>)
                 |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
 
-                "cloneColor" => Color ^-> Color
+                "cloneColor" => TSelf ^-> TSelf
                 |> WithInline "clone"
                 |> WithComment "Creates a copy of the Color object."
 
-                "fromHex" => T<string> ^-> Color
+                "fromHex" => T<string> ^-> TSelf
                 |> WithComment "Converts the specified hex string to a Color."
             ]
         |+> Instance
@@ -214,7 +187,7 @@ module Bing =
                 "b" =? T<int>
                 |> WithComment "The blue value of the color. The range of valid values is 0 to 255."
 
-                "clone" => T<unit> ^-> Color
+                "clone" => T<unit> ^-> TSelf
                 |> WithComment "Returns a copy of the Color object."
 
                 "getOpacity" => T<unit -> float>
@@ -227,50 +200,47 @@ module Bing =
                 |> WithComment "Converts the Color object to a string."
             ]
 
-    let MapTypeId = Type.New()
-
-    let MapTypeIdClass =
+    let MapTypeId =
         Class "Microsoft.Maps.MapTypeId"
-        |=> MapTypeId
         |+> Static [
-                "aerial" =? MapTypeId
+                "aerial" =? TSelf
                 |> WithComment "The aerial map style is being used."
 
-                "auto" =? MapTypeId
+                "auto" =? TSelf
                 |> WithComment "The map is set to choose the best imagery for the current view."
 
-                "birdseye" =? MapTypeId
+                "birdseye" =? TSelf
                 |> WithComment "The bird’s eye map type is being used."
 
-                "collinsBart" =? MapTypeId
+                "collinsBart" =? TSelf
                 |> WithComment "Collin’s Bart (mkt=en-gb) map type is being used."
 
-                "mercator" =? MapTypeId
+                "mercator" =? TSelf
                 |> WithComment "The Mercator style is being used."
 
-                "ordnanceSurvey" =? MapTypeId
+                "ordnanceSurvey" =? TSelf
                 |> WithComment "Ordinance Survey (mkt=en-gb) map type is being used."
 
-                "road" =? MapTypeId
+                "road" =? TSelf
                 |> WithComment "The road map style is being used."
             ]
 
     let private ViewOptionsFields =
         [
             "animate", T<bool>
-            "bounds", LocationRect
-            "center", Location
-            "centerOffset", Point
+            "bounds", LocationRect.Type
+            "center", Location.Type
+            "centerOffset", Point.Type
             "heading", T<float>
-            "labelOverlay", LabelOverlay
-            "mapTypeId", MapTypeId
+            "labelOverlay", LabelOverlay.Type
+            "mapTypeId", MapTypeId.Type
             "padding", T<int>
             "zoom", T<int>
         ]
 
     let private MapOptionsFields =
         [
-            "backgroundColor", Color
+            "backgroundColor", Color.Type
             "credentials", T<string>
             "disableBirdseye", T<bool>
             "disableKeyboardInput", T<bool>
@@ -294,30 +264,25 @@ module Bing =
             "width", T<int>
         ]
 
-    let ViewOptionsClass =
+    let ViewOptions =
         Pattern.Config "Microsoft.Maps.ViewOptions" {
             Required = []
             Optional = ViewOptionsFields
         }
-        |=> ViewOptions
 
-    let MapOptionsClass =
+    let MapOptions =
         Pattern.Config "Microsoft.Maps.MapOptions" {
             Required = []
             Optional = MapOptionsFields
         }
-        |=> MapOptions
 
-    let MapViewOptionsClass =
+    let MapViewOptions =
         Pattern.Config "Microsoft.Maps.MapViewOptions" {
             Required = []
             Optional = MapOptionsFields @ ViewOptionsFields
         }
-        |=> MapViewOptions
 
-    let Size = Type.New()
-
-    let SizeClass =
+    let Size =
         Pattern.Config "Microsoft.Maps.Size" {
             Required =
                 [
@@ -326,21 +291,11 @@ module Bing =
                 ]
             Optional = []
         }
-        |=> Size
 
-
-
-
-
-    let Entity = Type.New()
-
-    let EntityInterface =
+    let Entity =
         Interface "Microsoft.Maps.Entity"
-        |=> Entity
 
-    let EntityCollectionOptions = Type.New()
-
-    let EntityCollectionOptionsClass =
+    let EntityCollectionOptions =
         Pattern.Config "Microsoft.Maps.EntityCollectionOptions" {
             Required = []
             Optional =
@@ -350,12 +305,9 @@ module Bing =
                 ]
         }
 
-    let EntityCollection = Type.New()
-
-    let EntityCollectionClass =
+    let EntityCollection =
         Class "Microsoft.Maps.EntityCollection"
-        |=> EntityCollection
-        |=> Implements [EntityInterface]
+        |=> Implements [Entity]
         |+> Static [
                 Constructor T<unit>
                 Constructor EntityCollectionOptions
@@ -402,17 +354,16 @@ module Bing =
                 |> WithComment "Converts the EntityCollection object to a string."
             ]
 
-    let Event = Type.New()
-
-    let EventClass =
+    let Event =
         Interface "Microsoft.Maps.Event"
 
-    let KeyEvent = Type.New()
-    let KeyEventArgs = Type.New()
+    let KeyEvent =
+        Class "Microsoft.Maps.KeyEvent"
+        |=> Implements [Event]
+        |+> ConstantStrings TSelf ["keydown"; "keyup"; "keypress"]
 
-    let KeyEventArgsClass =
+    let KeyEventArgs =
         Class "Microsoft.Maps.KeyEventArgs"
-        |=> KeyEventArgs
         |+> Instance
             [
                 "altKey" =? T<bool>
@@ -437,18 +388,17 @@ module Bing =
                 |> WithComment "A boolean indicating if the SHIFT key was pressed."
             ]
 
-    let KeyEventClass =
-        Class "Microsoft.Maps.KeyEvent"
-        |=> KeyEvent
+    let MouseEvent =
+        Class "Microsoft.Maps.MouseEvent"
         |=> Implements [Event]
-        |+> ConstantStrings KeyEvent ["keydown"; "keyup"; "keypress"]
+        |+> ConstantStrings TSelf
+            [
+                "click"; "dblclick"; "rightclick"
+                "mousedown"; "mouseup"; "mousemove"; "mouseover"; "mouseleave"; "mouseout"; "mousewheel"
+            ]
 
-    let MouseEvent = Type.New()
-    let MouseEventArgs = Type.New()
-
-    let MouseEventArgsClass =
+    let MouseEventArgs =
         Class "Microsoft.Maps.MouseEventArgs"
-        |=> MouseEventArgs
         |+> Instance
             [
                 "eventName" =? MouseEvent
@@ -499,58 +449,33 @@ module Bing =
                 |> WithComment "Returns the y-value of the pixel coordinate, relative to the map, of the mouse."
             ]
 
-    let MouseEventClass =
-        Class "Microsoft.Maps.MouseEvent"
-        |=> MouseEvent
-        |=> Implements [Event]
-        |+> ConstantStrings MouseEvent
-            [
-                "click"; "dblclick"; "rightclick"
-                "mousedown"; "mouseup"; "mousemove"; "mouseover"; "mouseleave"; "mouseout"; "mousewheel"
-            ]
-
-    let EntityCollectionEvent = Type.New()
-    let EntityCollectionEventArgs = Type.New()
-
-    let EntityCollectionEventClass =
+    let EntityCollectionEvent =
         Class "Microsoft.Maps.EntityCollectionEvent"
-        |=> EntityCollectionEvent
         |=> Implements [Event]
-        |+> ConstantStrings EntityCollectionEvent
+        |+> ConstantStrings TSelf
             [ "entityadded"; "entitychanged"; "entityremoved" ]
 
-    let EntityCollectionEventArgsClass =
+    let EntityCollectionEventArgs =
         Class "Microsoft.Maps.EntityCollectionEventArgs"
-        |=> EntityCollectionEventArgs
         |+> Instance
             [
                 "collection" =? EntityCollection
                 "entity" =? Entity
             ]
 
-    let UnitEvent = Type.New()
-
-    let UnitEventClass =
+    let UnitEvent =
         Class "Microsoft.Maps.UnitEvent"
-        |=> UnitEvent
         |=> Implements [Event]
-        |+> ConstantStrings UnitEvent
+        |+> ConstantStrings TSelf
             [
                 "copyrightchanged"; "imagerychanged"; "maptypechanged"; "targetviewchanged"; "tiledownloadcomplete"
                 "viewchange"; "viewchangeend"; "viewchangestart"
             ]
 
-    let EventHandler = Type.New()
-
-    let EventHandlerClass =
+    let EventHandler =
         Class "Microsoft.Maps.EventHandler"
-        |=> EventHandler
 
-    let Events = Type.New()
-
-    let InfoboxAction = Type.New()
-
-    let InfoboxActionClass =
+    let InfoboxAction =
         Pattern.Config "Microsoft.Maps.InfoboxAction" {
             Required =
                 [
@@ -560,9 +485,7 @@ module Bing =
             Optional = []
         }
 
-    let InfoboxOptions = Type.New()
-
-    let InfoboxOptionsClass =
+    let InfoboxOptions =
         Pattern.Config "Microsoft.Maps.InfoboxOptions" {
             Required = []
             Optional =
@@ -572,8 +495,8 @@ module Bing =
                     "height", T<int>
                     "htmlContent", T<string>
                     "id", T<string>
-                    "location", Location
-                    "offset", Point
+                    "location", Location.Type
+                    "offset", Point.Type
                     "showCloseButton", T<bool>
                     "showPointer", T<bool>
                     "title", T<string>
@@ -584,12 +507,9 @@ module Bing =
                 ]
         }
 
-    let Infobox = Type.New()
-
-    let InfoboxClass =
+    let Infobox =
         Class "Microsoft.Maps.Infobox"
-        |=> Infobox
-        |=> Implements [EntityInterface]
+        |=> Implements [Entity]
         |+> Static [
                 Constructor Location
                 Constructor (Location * InfoboxOptions)
@@ -657,11 +577,8 @@ module Bing =
                 |> WithComment "Converts the Infobox object to a string."
             ]
 
-    let Range = Type.New()
-
-    let RangeClass =
+    let Range =
         Class "Range"
-        |=> Range
         |+> Instance
             [
                 "min" =? T<float>
@@ -671,23 +588,17 @@ module Bing =
                 |> WithComment "The maximum value in the range."
             ]
 
-    let PixelReference = Type.New()
-
-    let PixelReferenceClass =
+    let PixelReference =
         Class "Microsoft.Maps.PixelReference"
-        |=> PixelReference
-        |+> Constants PixelReference ["control"; "page"; "viewport"]
+        |+> Constants TSelf ["control"; "page"; "viewport"]
         |+> Static [
-                "isValid" => PixelReference ^-> T<bool>
+                "isValid" => TSelf ^-> T<bool>
                 |> WithComment "Determines whether the specified reference is a supported PixelReference."
             ]
 
-    let Map = Type.New()
-
-    let MapClass =
+    let Map =
         Class "Microsoft.Maps.Map"
-        |=> Map
-        |=> Implements [EntityInterface]
+        |=> Implements [Entity]
         |+> Static [
                 Constructor (T<Node> * MapViewOptions)
                 Constructor (T<Node> * MapOptions)
@@ -823,11 +734,8 @@ module Bing =
                 |> WithComment "Converts an array of Points relative to PixelReference.Viewport and returns an array of Locations if all points were converted. If any of the conversions fail, null is returned."
             ]
 
-    let Coordinates = Type.New()
-
-    let CoordinatesClass =
+    let Coordinates =
         Class "Microsoft.Maps.Coordinates"
-        |=> Coordinates
         |+> Instance
             [
                 "accuracy" =? T<float>
@@ -839,53 +747,39 @@ module Bing =
                 "speed" =? T<float>
             ]
 
-    let Position = Type.New()
-
-    let PositionClass =
+    let Position =
         Class "Microsoft.Maps.Position"
-        |=> Position
         |+> Instance
             [
                 "coords" =? Coordinates
                 "timestamp" =? T<string>
             ]
 
-    let PositionError = Type.New()
-
-    let PositionErrorClass =
+    let PositionError =
         Class "Microsoft.Maps.PositionError"
-        |=> PositionError
         |+> Instance
             [
                 "code" =? T<int>
                 "message" =? T<string>
             ]
 
-    let PositionErrorCallbackArgs = Type.New()
-
-    let PositionErrorCallbackArgsClass =
+    let PositionErrorCallbackArgs =
         Class "Microsoft.Maps.PositionErrorCallbackArgs"
-        |=> PositionErrorCallbackArgs
         |+> Instance
             [
                 "internalError" =? PositionError
                 "errorCode" =? T<int>
             ]
 
-    let PositionSuccessCallbackArgs = Type.New()
-
-    let PositionSuccessCallbackArgsClass =
+    let PositionSuccessCallbackArgs =
         Class "Microsoft.Maps.PositionSuccessCallbackArgs"
-        |=> PositionSuccessCallbackArgs
         |+> Instance
             [
                 "center" =? Location
                 "position" =? Position
             ]
 
-    let PositionOptions = Type.New()
-
-    let PositionOptionsClass =
+    let PositionOptions =
         Pattern.Config "Microsoft.Maps.PositionOptions" {
             Required = []
             Optional =
@@ -900,15 +794,13 @@ module Bing =
                 ]
         }
 
-    let PolygonOptions = Type.New()
-
-    let PolygonOptionsClass =
+    let PolygonOptions =
         Pattern.Config "Microsoft.Maps.PolygonOptions" {
             Required = []
             Optional =
                 [
-                    "fillColor", Color
-                    "strokeColor", Color
+                    "fillColor", Color.Type
+                    "strokeColor", Color.Type
                     "strokeThickness", T<float>
                     "visible", T<bool>
                 ]
@@ -920,23 +812,18 @@ module Bing =
                 |> WithGetterInline "$this.strokeDashArray.split(' ')"
             ]
 
-    let PositionCircleOptions = Type.New()
-
-    let PositionCircleOptionsClass =
+    let PositionCircleOptions =
         Pattern.Config "Microsoft.Maps.PositionCircleOptions" {
             Required = []
             Optional =
                 [
-                    "polygonOptions", PolygonOptions
+                    "polygonOptions", PolygonOptions.Type
                     "showOnMap", T<bool>
                 ]
         }
 
-    let GeoLocationProvider = Type.New()
-
-    let GeoLocationProviderClass =
+    let GeoLocationProvider =
         Class "Microsoft.Maps.GeoLocationProvider"
-        |=> GeoLocationProvider
         |+> Static [
                 Constructor Map
             ]
@@ -955,14 +842,12 @@ module Bing =
                 |> WithComment "Removes the current geo location accuracy circle."
             ]
 
-    let PolylineOptions = Type.New()
-
-    let PolylineOptionsClass =
+    let PolylineOptions =
         Pattern.Config "Microsoft.Maps.PolylineOptions" {
             Required = []
             Optional =
                 [
-                    "strokeColor", Color
+                    "strokeColor", Color.Type
                     "strokeThickness", T<float>
                     "visible", T<bool>
                 ]
@@ -974,12 +859,9 @@ module Bing =
                 |> WithGetterInline "$this.strokeDashArray.split(' ')"
             ]
 
-    let Polyline = Type.New()
-
-    let PolylineClass =
+    let Polyline =
         Class "Microsoft.Maps.Polyline"
-        |=> Polyline
-        |=> Implements [EntityInterface]
+        |=> Implements [Entity]
         |+> Static [
                 Constructor (Type.ArrayOf Location)
                 Constructor (Type.ArrayOf Location * PolylineOptions)
@@ -1012,26 +894,7 @@ module Bing =
                 |> WithComment "Converts the Polyline object to a string."
             ]
 
-    let TileLayer = Type.New()
-    let TileLayerOptions = Type.New()
-    let TileSource = Type.New()
-    let TileSourceOptions = Type.New ()
-
-    let TileLayerOptionsClass =
-        Pattern.Config "Microsoft.Maps.TileLayerOptions" {
-            Required = []
-            Optional =
-                [
-                    "animationDisplay", AnimationVisibility
-                    "mercator", TileSource
-                    "opacity", T<float>
-                    "visible", T<bool>
-                    "zIndex", T<float>
-                ]
-        }
-        |=> TileLayerOptions
-
-    let TileSourceOptionsClass =
+    let TileSourceOptions =
         Pattern.Config "Microsoft.Maps.TileSourceOptions" {
             Required = []
             Optional =
@@ -1041,11 +904,9 @@ module Bing =
                     "width", T<float>
                 ]
         }
-        |=> TileSourceOptions
 
-    let TileSourceClass =
+    let TileSource =
         Class "Microsoft.Maps.TileSource"
-        |=> TileSource
         |+> Static [
                 Constructor TileSourceOptions
                 |> WithComment "Initializes a new instance of the TileSource  class."
@@ -1065,9 +926,21 @@ module Bing =
                 |> WithComment "Converts the Color object to a string."
             ]
 
-    let TileLayerClass =
+    let TileLayerOptions =
+        Pattern.Config "Microsoft.Maps.TileLayerOptions" {
+            Required = []
+            Optional =
+                [
+                    "animationDisplay", AnimationVisibility.Type
+                    "mercator", TileSource.Type
+                    "opacity", T<float>
+                    "visible", T<bool>
+                    "zIndex", T<float>
+                ]
+        }
+
+    let TileLayer =
         Class "Microsoft.Maps.TileLayer"
-        |=> TileLayer
         |=> Implements [Entity]
         |+> Static [
                 Constructor TileLayerOptions
@@ -1094,12 +967,9 @@ module Bing =
                 |> WithComment "Converts the TileLayer object to a string."
             ]
 
-    let Polygon = Type.New()
-
-    let PolygonClass =
+    let Polygon =
         Class "Microsoft.Maps.Polygon"
-        |=> Polygon
-        |=> Implements [EntityInterface]
+        |=> Implements [Entity]
         |+> Static [
                 Constructor (Type.ArrayOf Location)
                 Constructor (Type.ArrayOf Location * PolygonOptions)
@@ -1135,19 +1005,17 @@ module Bing =
                 |> WithComment "Converts the Polygon object to a string."
             ]
 
-    let PushpinOptions = Type.New()
-
-    let PushpinOptionsClass =
+    let PushpinOptions =
         Pattern.Config "Microsoft.Maps.PushpinOptions" {
             Required = []
             Optional =
                 [
-                    "anchor", Point
+                    "anchor", Point.Type
                     "draggable", T<bool>
                     "icon", T<string>
                     "height", T<int>
                     "text", T<string>
-                    "textOffset", Point
+                    "textOffset", Point.Type
                     "typeName", T<string>
                     "visible", T<bool>
                     "width", T<int>
@@ -1155,12 +1023,9 @@ module Bing =
                 ]
         }
 
-    let Pushpin = Type.New()
-
-    let PushpinClass =
+    let Pushpin =
         Class "Microsoft.Maps.Pushpin"
-        |=> Pushpin
-        |=> Implements [EntityInterface]
+        |=> Implements [Entity]
         |+> Static [
                 Constructor Location
                 Constructor (Location * PushpinOptions)
@@ -1209,10 +1074,8 @@ module Bing =
 
     module Directions =
 
-        let BusinessDetails = Type.New()
-        let BusinessDetailsClass =
+        let BusinessDetails =
             Class "Microsoft.Maps.Directions.BusinessDetails"
-            |=> BusinessDetails
             |+> Instance
                 [
                     "businessName" =? T<string>
@@ -1221,10 +1084,8 @@ module Bing =
                     "website" =? T<string>
                 ]
 
-        let BusinessDisambiguationSuggestion = Type.New()
-        let BusinessDisambiguationSuggestionClass =
+        let BusinessDisambiguationSuggestion =
             Class "Microsoft.Maps.Directions.BusinessDisambiguationSuggestion"
-            |=> BusinessDisambiguationSuggestion
             |+> Instance
                 [
                     "address" =? T<string>
@@ -1240,21 +1101,17 @@ module Bing =
                     "website" =? T<string>
                 ]
 
-        let RouteResponseCode = Type.New()
-        let RouteResponseCodeClass =
+        let RouteResponseCode =
             Class "Microsoft.Maps.Directions.RouteResponseCode"
-            |=> RouteResponseCode
-            |+> Constants RouteResponseCode ["success"; "unknownError"; "cannotFindNearbyRoad"; "tooFar"
-                                             "noSolution"; "dataSourceNotFound"; "noAvailableTransitTrip"
-                                             "transitStopsTooClose"; "walkingBestAlternative"; "outOfTransitBounds"
-                                             "timeout"; "waypointDisambiguation"; "hasEmptyWaypoint"
-                                             "exceedMaxWaypointLimit"; "atleastTwoWaypointRequired"
-                                             "firstOrLastStoppointIsVia"; "searchServiceFailed"]
+            |+> Constants TSelf ["success"; "unknownError"; "cannotFindNearbyRoad"; "tooFar"
+                                 "noSolution"; "dataSourceNotFound"; "noAvailableTransitTrip"
+                                 "transitStopsTooClose"; "walkingBestAlternative"; "outOfTransitBounds"
+                                 "timeout"; "waypointDisambiguation"; "hasEmptyWaypoint"
+                                 "exceedMaxWaypointLimit"; "atleastTwoWaypointRequired"
+                                 "firstOrLastStoppointIsVia"; "searchServiceFailed"]
 
-        let RouteSummary = Type.New()
-        let RouteSummaryClass =
+        let RouteSummary =
             Class "Microsoft.Maps.Directions.RouteSummary"
-            |=> RouteSummary
             |+> Instance
                 [
                     "distance" =? T<float>
@@ -1265,25 +1122,19 @@ module Bing =
                     "timeWithTraffic" =? T<int>
                 ]
 
-        let RouteIconType = Type.New()
-        let RouteIconTypeClass =
+        let RouteIconType =
             Class "Microsoft.Maps.Directions.RouteIconType"
-            |=> RouteIconType
-            |+> Constants RouteIconType ["none"; "other"; "auto"; "ferry"
-                                         "walk"; "bus"; "train"; "airline"]
+            |+> Constants TSelf ["none"; "other"; "auto"; "ferry"
+                                 "walk"; "bus"; "train"; "airline"]
 
-        let ManeuverType = Type.New()
-        let ManeuverTypeClass =
+        let ManeuverType =
             Class "Microsoft.Maps.Directions.ManeuverType"
-            |=> ManeuverType
-            |+> Constants ManeuverType ["none"; "unknown"; "transfer"; "wait"
-                                        "takeTransit"; "walk"; "transitDepart"
-                                        "transitArrive"]
+            |+> Constants TSelf ["none"; "unknown"; "transfer"; "wait"
+                                 "takeTransit"; "walk"; "transitDepart"
+                                 "transitArrive"]
 
-        let TransitLine = Type.New()
-        let TransitLineClass =
+        let TransitLine =
             Class "Microsoft.Maps.Directions.TransitLine"
-            |=> TransitLine
             |+> Instance
                 [
                     "abbreviatedName" =? T<string>
@@ -1296,27 +1147,21 @@ module Bing =
                     "verboseName" =? T<string>
                 ]
 
-        let DirectionsStepWarningType = Type.New()
-        let DirectionsStepWarningTypeClass =
+        let DirectionsStepWarningType =
             Class "Microsoft.Maps.Directions.DirectionsStepWarningType"
-            |=> DirectionsStepWarningType
-            |+> Constants DirectionsStepWarningType
+            |+> Constants TSelf
                     ["info"; "minor"; "moderate"; "major"; "ccZoneEnter"; "ccZoneExit"]
 
-        let DirectionsStepWarning = Type.New()
-        let DirectionsStepWarningClass =
+        let DirectionsStepWarning =
             Class "Microsoft.Maps.Directions.DirectionsStepWarning"
-            |=> DirectionsStepWarning
             |+> Instance
                 [
                     "style" =? DirectionsStepWarningType
                     "text" =? T<string>
                 ]
 
-        let RoutePath = Type.New()
-        let RoutePathClass =
+        let RoutePath =
             Class "Microsoft.Maps.Directions.RoutePath"
-            |=> RoutePath
             |+> Instance
                 [
                     "decodedLatitudes" =? Type.ArrayOf T<float>
@@ -1324,10 +1169,8 @@ module Bing =
                     "decodedRegions" =? Type.ArrayOf T<obj>
                 ]
 
-        let RouteSubLeg = Type.New()
-        let RouteSubLegClass =
+        let RouteSubLeg =
             Class "Microsoft.Maps.Directions.RouteSubLeg"
-            |=> RouteSubLeg
             |+> Instance
                 [
                     "actualEnd" =? Location
@@ -1338,13 +1181,11 @@ module Bing =
                     "summary" =? RouteSummary
                 ]
 
-        let DirectionsStep = Type.New()
-        let DirectionsStepClass =
+        let DirectionsStep =
             Class "Microsoft.Maps.Directions.DirectionsStep"
-            |=> DirectionsStep
             |+> Instance
                 [
-                    "childItineraryItems" =? Type.ArrayOf DirectionsStep
+                    "childItineraryItems" =? Type.ArrayOf TSelf
                     "coordinate" =? Location
                     "distance" =? T<string>
                     "durationInSeconds" =? T<int>
@@ -1363,10 +1204,8 @@ module Bing =
                     "warnings" =? DirectionsStepWarning
                 ]
 
-        let RouteLeg = Type.New()
-        let RouteLegClass =
+        let RouteLeg =
             Class "Microsoft.Maps.Directions.RouteLeg"
-            |=> RouteLeg
             |+> Instance
                 [
                     "endTime" =? T<int> //TODO: DateTime
@@ -1379,56 +1218,47 @@ module Bing =
                     "summary" =? RouteSummary
                 ]
 
-        let Route = Type.New()
-        let RouteClass =
+        let Route =
             Class "Microsoft.Maps.Directions.Route"
-            |=> Route
             |+> Instance
                 [
                     "routeLegs" =? Type.ArrayOf RouteLeg
                 ]
 
-        let DirectionsEventArgs = Type.New()
-        let DirectionsEventArgsClass =
+        let DirectionsEventArgs =
             Class "Microsoft.Maps.Directions.DirectionsEventArgs"
-            |=> DirectionsEventArgs
             |+> Instance
                 [
                     "routeSummary" =? Type.ArrayOf RouteSummary
                     "route" =? Type.ArrayOf Route
                 ]
 
-        let WaypointOptions = Type.New()
-        let WaypointOptionsClass =
+        let WaypointOptions =
             Pattern.Config "Microsoft.Maps.Directions.WaypointOptions" {
                 Required = []
                 Optional =
                     [
                         "address", T<string>
-                        "businessDetails", BusinessDetails
+                        "businessDetails", BusinessDetails.Type
                         "exactLocation", T<bool>
                         "isViapoint", T<bool>
-                        "location", Location
+                        "location", Location.Type
                         "shortAddress", T<string>
                     ]
             }
 
-        let LocationDisambiguationSuggestion = Type.New()
-        let LocationDisambiguationSuggestionClass =
+        let LocationDisambiguationSuggestion =
             Class "Microsoft.Maps.Directions.LocationDisambiguationSuggestion"
-            |=> LocationDisambiguationSuggestion
             |+> Instance
                 [
                     "formattedSuggestion" =? T<string>
-                    "location" =? Location
-                    "rooftopLocation" =? Location
+                    "location" =? Location.Type
+                    "rooftopLocation" =? Location.Type
                     "suggestion" =? T<string>
                 ]
 
-        let Disambiguation = Type.New()
-        let DisambiguationClass =
+        let Disambiguation =
             Class "Microsoft.Maps.Directions.Disambiguation"
-            |=> Disambiguation
             |+> Instance
                 [
                     "businessSuggestions" =? Type.ArrayOf BusinessDisambiguationSuggestion
@@ -1437,10 +1267,8 @@ module Bing =
                     "locationSuggestions" =? Type.ArrayOf LocationDisambiguationSuggestion
                 ]
 
-        let Waypoint = Type.New()
-        let WaypointClass =
+        let Waypoint =
             Class "Microsoft.Maps.Directions.Waypoint"
-            |=> Waypoint
             |+> Static [
                     Constructor WaypointOptions
                 ]
@@ -1458,8 +1286,7 @@ module Bing =
                     "setOptions" => WaypointOptions ^-> T<unit>
                 ]
 
-        let DirectionsRenderOptions = Type.New()
-        let DirectionsRenderOptionsClass =
+        let DirectionsRenderOptions =
             Pattern.Config "Microsoft.Maps.Directions.DirectionsRenderOptions" {
                 Required = []
                 Optional =
@@ -1472,81 +1299,68 @@ module Bing =
                         "displayStepWarnings", T<bool>
                         "displayTrafficAvoidanceOption", T<bool>
                         "displayWalkingWarning", T<bool>
-                        "drivingPolylineOptions", PolylineOptions
+                        "drivingPolylineOptions", PolylineOptions.Type
                         "itineraryContainer", T<Element>
                         "lastWaypointIcon", T<string>
-                        "stepPushpinOptions", PushpinOptions
-                        "transitPolylineOptions", PolylineOptions
-                        "viapointPushpinsOptions", PushpinOptions
-                        "walkingPolylineOptions", PolylineOptions
-                        "waypointPushpinOptions", PushpinOptions
+                        "stepPushpinOptions", PushpinOptions.Type
+                        "transitPolylineOptions", PolylineOptions.Type
+                        "viapointPushpinsOptions", PushpinOptions.Type
+                        "walkingPolylineOptions", PolylineOptions.Type
+                        "waypointPushpinOptions", PushpinOptions.Type
                     ]
             }
 
-        let DistanceUnit = Type.New()
-        let DistanceUnitClass =
+        let DistanceUnit =
             Class "Microsoft.Maps.Directions.DistanceUnit"
-            |=> DistanceUnit
-            |+> Constants DistanceUnit ["kilometers"; "miles"]
+            |+> Constants TSelf ["kilometers"; "miles"]
 
-        let RouteAvoidance = Type.New()
-        let RouteAvoidanceClass =
+        let RouteAvoidance =
             Class "Microsoft.Maps.Directions.RouteAvoidance"
-            |=> RouteAvoidance
-            |+> Constants RouteAvoidance ["none"; "minimizeLimitedAccessHighway"; "minimizeToll"
-                                          "avoidLimitedAccesHighway"; "avoidToll"; "avoidExpressTrain"
-                                          "avoidAirline"; "avoidBulletTrain"]
+            |+> Constants TSelf ["none"; "minimizeLimitedAccessHighway"; "minimizeToll"
+                                 "avoidLimitedAccesHighway"; "avoidToll"; "avoidExpressTrain"
+                                 "avoidAirline"; "avoidBulletTrain"]
 
-        let RouteMode = Type.New()
-        let RouteModeClass =
+        let RouteMode =
             Class "Microsoft.Maps.Directions.RouteMode"
-            |=> RouteMode
-            |+> Constants RouteMode ["driving"; "transit"; "walking"]
+            |+> Constants TSelf ["driving"; "transit"; "walking"]
 
-        let RouteOptimization = Type.New()
-        let RouteOptimizationClass =
+        let RouteOptimization =
             Class "Microsoft.Maps.Directions.RouteOptimization"
-            |=> RouteOptimization
-            |+> Constants RouteOptimization ["shortestTime"; "shortestDistance"
-                                             "minimizeMoney"; "minimizeTransfers"; "minimizeWalking"]
+            |+> Constants TSelf ["shortestTime"; "shortestDistance"
+                                 "minimizeMoney"; "minimizeTransfers"; "minimizeWalking"]
 
-        let TimeType = Type.New()
-        let TimeTypeClass =
+        let TimeType =
             Class "Microsoft.Maps.Directions.TimeType"
-            |=> TimeType
-            |+> Constants TimeType ["arrival"; "departure"; "lastAvailable"]
+            |+> Constants TSelf ["arrival"; "departure"; "lastAvailable"]
 
-        let TransitOptions = Type.New()
-        let TransitOptionsClass =
+        let TransitOptions =
             Pattern.Config "Microsoft.Maps.Directions.TransitOptions" {
                 Required = []
                 Optional =
                     [
-                        "timeType", TimeType
+                        "timeType", TimeType.Type
                         "transitTime", T<JavaScript.Date>
                     ]
             }
 
-        let DirectionsRequestOptions = Type.New()
-        let DirectionsRequestOptionsClass =
+        let DirectionsRequestOptions =
             Pattern.Config "Microsoft.Maps.Directions.DirectionsRequestOptions" {
                 Required = []
                 Optional =
                     [
                         "avoidTraffic", T<bool>
-                        "distanceUnit", DistanceUnit
+                        "distanceUnit", DistanceUnit.Type
                         "maxRoutes", T<int>
                         "routeAvoidance", Type.ArrayOf RouteAvoidance
                         "routeDraggable", T<bool>
                         "routeIndex", T<int>
-                        "routeMode", RouteMode
-                        "routeOptimization", RouteOptimization
-                        "transitOptions", TransitOptions
+                        "routeMode", RouteMode.Type
+                        "routeOptimization", RouteOptimization.Type
+                        "transitOptions", TransitOptions.Type
                     ]
             }
 
-        let ResetDirectionsOptions = Type.New()
-        let ResetDirectionsOptionsClass =
+        let ResetDirectionsOptions =
             Pattern.Config "Microsoft.Maps.Directions.ResetDirectionsOptions" {
                 Required = []
                 Optional =
@@ -1557,10 +1371,8 @@ module Bing =
                     ]
             }
 
-        let DirectionsManager = Type.New()
-        let DirectionsManagerClass =
+        let DirectionsManager =
             Class "Microsoft.Maps.Directions.DirectionsManager"
-            |=> DirectionsManager
             |+> Static [
                     Constructor Map
                 ]
@@ -1586,20 +1398,16 @@ module Bing =
                     "setRequestOptions" => DirectionsRequestOptions ^-> T<unit>
                 ]
 
-        let DirectionsErrorEventArgs = Type.New()
-        let DirectionsErrorEventArgsClass =
+        let DirectionsErrorEventArgs =
             Class "Microsoft.Maps.Directionss.DirectionsErrorEventArgs"
-            |=> DirectionsErrorEventArgs
             |+> Instance
                 [
                     "responseCode" =? RouteResponseCode
                     "message" =? T<string>
                 ]
 
-        let DirectionsStepEventArgs = Type.New()
-        let DirectionsStepEventArgsClass =
+        let DirectionsStepEventArgs =
             Class "Microsoft.Maps.Directions.DirectionsStepEventArgs"
-            |=> DirectionsStepEventArgs
             |+> Instance
                 [
                     "handled" =@ T<bool>
@@ -1611,10 +1419,8 @@ module Bing =
                     "stepNumber" =? T<int>
                 ]
 
-        let DirectionsStepRenderEventArgs = Type.New()
-        let DirectionsStepRenderEventArgsClass =
+        let DirectionsStepRenderEventArgs =
             Class "Microsoft.Maps.Directions.DirectionsStepRenderEventArgs"
-            |=> DirectionsStepRenderEventArgs
             |+> Instance
                 [
                     "containerElement" =@ T<Element>
@@ -1626,20 +1432,16 @@ module Bing =
                     "stepIndex" =? T<int>
                 ]
 
-        let RouteSelectorEventArgs = Type.New()
-        let RouteSelectorEventArgsClass =
+        let RouteSelectorEventArgs =
             Class "Microsoft.Maps.Directions.RouteSelectorEventArgs"
-            |=> RouteSelectorEventArgs
             |+> Instance
                 [
                     "handled" =@ T<bool>
                     "routeIndex" =? T<int>
                 ]
 
-        let RouteSelectorRenderEventArgs = Type.New()
-        let RouteSelectorRenderEventArgsClass =
+        let RouteSelectorRenderEventArgs =
             Class "Microsoft.Maps.Directions.RouteSelectorRenderEventArgs"
-            |=> RouteSelectorRenderEventArgs
             |+> Instance
                 [
                     "containerElement" =@ T<Element>
@@ -1648,10 +1450,8 @@ module Bing =
                     "routeLeg" =? RouteLeg
                 ]
 
-        let RouteSummaryRenderEventArgs = Type.New()
-        let RouteSummaryRenderEventArgsClass =
+        let RouteSummaryRenderEventArgs =
             Class "Microsoft.Maps.Directions.RouteSummaryRenderEventArgs"
-            |=> RouteSummaryRenderEventArgs
             |+> Instance
                 [
                     "containerElements" =@ T<Element>
@@ -1660,19 +1460,15 @@ module Bing =
                     "summary" =? RouteSummary
                 ]
 
-        let WaypointEventArgs = Type.New()
-        let WaypointEventArgsClass =
+        let WaypointEventArgs =
             Class "Microsoft.Maps.Directions.WaypointEventArgs"
-            |=> WaypointEventArgs
             |+> Instance
                 [
                     "waypoint" =? Waypoint
                 ]
 
-        let WaypointRenderEventArgs = Type.New()
-        let WaypointRenderEventArgsClass =
+        let WaypointRenderEventArgs =
             Class "Microsoft.Maps.Directions.WaypointRenderEventArgs"
-            |=> WaypointRenderEventArgs
             |+> Instance
                 [
                     "containerElement" =@ T<Element>
@@ -1680,75 +1476,55 @@ module Bing =
                     "waypoint" =? Waypoint
                 ]
 
-        let RouteSelectorRenderEvent = Type.New()
-        let RouteSelectorRenderEventClass =
+        let RouteSelectorRenderEvent =
             Class "Microsoft.Maps.Directions.RouteSelectorRenderEvent"
-            |=> RouteSelectorRenderEvent
-            |+> ConstantStrings RouteSelectorRenderEvent
+            |+> ConstantStrings TSelf
                     ["afterRouteSelectorRender"; "beforeRouteSelectorRender"]
 
-        let DirectionsStepRenderEvent = Type.New()
-        let DirectionsStepRenderEventClass =
+        let DirectionsStepRenderEvent =
             Class "Microsoft.Maps.Directions.DirectionsStepRenderEvent"
-            |=> DirectionsStepRenderEvent
-            |+> ConstantStrings DirectionsStepRenderEvent
+            |+> ConstantStrings TSelf
                     ["afterStepRender"; "beforeStepRender"]
 
-        let RouteSummaryRenderEvent = Type.New()
-        let RouteSummaryRenderEventClass =
+        let RouteSummaryRenderEvent =
             Class "Microsoft.Maps.Directions.RouteSummaryRenderEvent"
-            |=> RouteSummaryRenderEvent
-            |+> ConstantStrings RouteSummaryRenderEvent
+            |+> ConstantStrings TSelf
                     ["afterSummaryRender"; "beforeSummaryRender"]
 
-        let WaypointRenderEvent = Type.New()
-        let WaypointRenderEventClass =
+        let WaypointRenderEvent =
             Class "Microsoft.Maps.Directions.WaypointRenderEvent"
-            |=> WaypointRenderEvent
-            |+> ConstantStrings WaypointRenderEvent
+            |+> ConstantStrings TSelf
                     ["afterWaypointRender"; "beforeWaypointRender"]
 
-        let DirectionsErrorEvent = Type.New()
-        let DirectionsErrorEventClass =
+        let DirectionsErrorEvent =
             Class "Microsoft.Maps.Directions.DirectionsErrorEvent"
-            |=> DirectionsErrorEvent
-            |+> ConstantStrings DirectionsErrorEvent
+            |+> ConstantStrings TSelf
                     ["directionsError"]
 
-        let DirectionsEvent = Type.New()
-        let DirectionsEventClass =
+        let DirectionsEvent =
             Class "Microsoft.Maps.Directions.DirectionsEvent"
-            |=> DirectionsEvent
-            |+> ConstantStrings DirectionsEvent
+            |+> ConstantStrings TSelf
                     ["directionsUpdated"]
 
-        let RouteSelectorEvent = Type.New()
-        let RouteSelectorEventClass =
+        let RouteSelectorEvent =
             Class "Microsoft.Maps.Directions.RouteSelectorEvent"
-            |=> RouteSelectorEvent
-            |+> ConstantStrings RouteSelectorEvent
+            |+> ConstantStrings TSelf
                     ["mouseEnterRouteSelector"; "mouseLeaveRouteSelector"; "routeSelectorClicked"]
 
-        let DirectionsStepEvent = Type.New()
-        let DirectionsStepEventClass =
+        let DirectionsStepEvent =
             Class "Microsoft.Maps.Directions.DirectionsStepEvent"
-            |=> DirectionsStepEvent
-            |+> ConstantStrings DirectionsStepEvent
+            |+> ConstantStrings TSelf
                     ["itineraryStepClicked"; "mouseEnterStep"; "mouseLeaveStep"]
 
-        let WaypointEvent = Type.New()
-        let WaypointEventClass =
+        let WaypointEvent =
             Class "Microsoft.Maps.Directions.WaypointEvent"
-            |=> WaypointEvent
-            |+> ConstantStrings WaypointEvent
+            |+> ConstantStrings TSelf
                     ["waypointAdded"; "waypointRemoved"; "changed"; "geocoded"; "reverseGeocoded"]
 
     module Traffic =
 
-        let TrafficLayer = Type.New()
-        let TrafficLayerClass =
+        let TrafficLayer =
             Class "Microsoft.Maps.Traffic.TrafficLayer"
-            |=> TrafficLayer
             |+> Static [
                     Constructor Map
                 ]
@@ -1762,22 +1538,19 @@ module Bing =
 
     module VenueMaps =
 
-        let Primitive = Type.New()
+        let Primitive' = Class "Microsoft.Maps.VenueMaps.Primitive"
 
-        let Floor = Type.New()
-        let FloorClass =
+        let Floor =
             Class "Microsoft.Maps.VenueMaps.Floor"
-            |=> Floor
             |+> Instance
                 [
                     "name" =? T<string>
-                    "primitives" =? Type.ArrayOf Primitive
+                    "primitives" =? Type.ArrayOf Primitive'
                     "zoomRange" =? Type.ArrayOf T<float>
                 ]
 
-        let PrimitiveClass =
-            Class "Microsoft.Maps.VenueMaps.Primitive"
-            |=> Primitive
+        let Primitive =
+            Primitive'
             |+> Instance
                 [
                     "bounds" =? LocationRect
@@ -1793,10 +1566,8 @@ module Bing =
                     "unhighlight" => T<unit> ^-> T<unit>
                 ]
 
-        let Polygon = Type.New()
-        let PolygonClass =
+        let Polygon =
             Class "Microsoft.Maps.VenueMaps.Polygon"
-            |=> Polygon
             |+> Instance
                 [
                     "bounds" =? LocationRect
@@ -1804,20 +1575,16 @@ module Bing =
                     "locations" =? Type.ArrayOf Location
                 ]
 
-        let Footprint = Type.New()
-        let FootprintClass =
+        let Footprint =
             Class "Microsoft.Maps.VenueMaps.Footprint"
-            |=> Footprint
             |+> Instance
                 [
                     "polygons" =? Type.ArrayOf Polygon
                     "zoomRange" =? Type.ArrayOf T<float>
                 ]
 
-        let Metadata = Type.New()
-        let MetadataClass =
+        let Metadata =
             Class "Microsoft.Maps.VenueMaps.Metadata"
-            |=> Metadata
             |+> Instance
                 [
                     "CenterLat" =? T<float>
@@ -1832,20 +1599,16 @@ module Bing =
                     "YpId" =? T<string>
                 ]
 
-        let NearbyVenue = Type.New()
-        let NearbyVenueClass =
+        let NearbyVenue =
             Class "Microsoft.Maps.VenueMaps.NearbyVenue"
-            |=> NearbyVenue
             |+> Instance
                 [
                     "distance" =? T<float>
                     "metadata" =? Metadata
                 ]
 
-        let VenueMap = Type.New()
-        let VenueMapClass =
+        let VenueMap =
             Class "Microsoft.Maps.VenueMaps.VenueMap"
-            |=> VenueMap
             |+> Instance
                 [
                     "address" =? T<string>
@@ -1867,35 +1630,31 @@ module Bing =
                     "show" => T<unit> ^-> T<unit>
                 ]
 
-        let NearbyVenueMapOptions = Type.New()
-        let NearbyVenueMapOptionsClass =
+        let NearbyVenueMapOptions =
             Pattern.Config "Microsoft.Maps.VenueMaps.NearbyVenueMapOptions" {
                 Required = []
                 Optional =
                     [
                         "callback", Type.ArrayOf NearbyVenue ^-> T<unit>
-                        "location", Location
-                        "map", Map
+                        "location", Location.Type
+                        "map", Map.Type
                         "radius", T<float>
                     ]
             }
 
-        let VenueMapCreationOptions = Type.New()
-        let VenueMapCreationOptionsClass =
+        let VenueMapCreationOptions =
             Pattern.Config "Microsoft.Maps.VenueMaps.VenueMapCreationOptions" {
                 Required = []
                 Optional =
                     [
-                        "error", T<int> * VenueMapCreationOptions ^-> T<unit>
-                        "success", VenueMap * VenueMapCreationOptions ^-> T<unit>
+                        "error", T<int> * TSelf ^-> T<unit>
+                        "success", VenueMap * TSelf ^-> T<unit>
                         "venueMapId", T<string>
                     ]
             }
 
-        let VenueMapFactory = Type.New()
-        let VenueMapFactoryClass =
+        let VenueMapFactory =
             Class "Microsoft.Maps.VenueMaps.VenueMapFactory"
-            |=> VenueMapFactory
             |+> Static [
                     Constructor Map
                 ]
@@ -1906,9 +1665,8 @@ module Bing =
                 ]
 
 
-    let EventsClass =
+    let Events =
         Class "Microsoft.Maps.Events"
-        |=> Events
         |+> Static [
                 "addHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) ^-> EventHandler
                 |> WithComment "Attaches the handler for the event that is thrown by the target."
@@ -1968,17 +1726,24 @@ module Bing =
     ///////////////////////////////////////////////////////////////////
     // REST Locations API
 
-    let AuthenticationResultCode = Type.New()
-    let RestResponse = Type.New()
-    let ResourceSet = Type.New()
-    let Address = Type.New()
-    let LocationResource = Type.New()
-    let Confidence = Type.New()
-    let PointResource = Type.New()
+    let AuthenticationResultCode =
+        Class "Microsoft.Maps.AuthenticationResultCode"
+        |+> ConstantStrings TSelf
+            ["ValidCredentials"; "InvalidCredentials"; "CredentialsExpired"; "NotAuthorized"; "NoCredentials"]
 
-    let RestResponseClass =
+    let ResourceSet =
+        Class "Microsoft.Maps.ResourceSet"
+        |+> Instance
+            [
+                "estimatedTotal" =? T<int>
+                |> WithComment "An estimate of the total number of resources in the ResourceSet."
+
+                "resources" =? Type.ArrayOf T<obj>
+                |> WithComment "A collection of one or more resources. The resources that are returned depend on the request. Information about resources is provided in the API reference for each Bing Maps REST Services API."
+            ]
+
+    let RestResponse =
         Class "Microsoft.Maps.RestResponse"
-        |=> RestResponse
         |+> Instance
             [
                 "statusCode" =? T<int>
@@ -2006,27 +1771,33 @@ module Bing =
                 |> WithComment "A collection of error descriptions. For example, ErrorDetails can identify parameter values that are not valid or missing."
             ]
 
-    let AuthenticationResultCodeClass =
-        Class "Microsoft.Maps.AuthenticationResultCode"
-        |=> AuthenticationResultCode
-        |+> ConstantStrings AuthenticationResultCode
-            ["ValidCredentials"; "InvalidCredentials"; "CredentialsExpired"; "NotAuthorized"; "NoCredentials"]
-
-    let ResourceSetClass =
-        Class "Microsoft.Maps.ResourceSet"
-        |=> ResourceSet
+    let PointResource =
+        Class "Microsoft.Maps.PointResource"
         |+> Instance
             [
-                "estimatedTotal" =? T<int>
-                |> WithComment "An estimate of the total number of resources in the ResourceSet."
-
-                "resources" =? Type.ArrayOf T<obj>
-                |> WithComment "A collection of one or more resources. The resources that are returned depend on the request. Information about resources is provided in the API reference for each Bing Maps REST Services API."
+                "type" =? T<string>
+                "coordinates" =? Type.ArrayOf T<float>
             ]
 
-    let LocationResourceClass =
+    let Address =
+        Pattern.Config "Microsoft.Maps.Address" {
+            Required = []
+            Optional =
+                [
+                    "adminDistrict", T<string>
+                    "locality", T<string>
+                    "postalCode", T<string>
+                    "addressLine", T<string>
+                    "countryRegion", T<string>
+                ]
+        }
+
+    let Confidence =
+        Class "Microsoft.Maps.Confidence"
+        |+> ConstantStrings TSelf ["High"; "Medium"; "Low"; "Unknown"]
+
+    let LocationResource =
         Class "Microsoft.Maps.LocationResource"
-        |=> LocationResource
         |+> Instance
             [
                 "name" =? T<string>
@@ -2048,58 +1819,11 @@ module Bing =
                 |> WithComment "The confidence in the match."
             ]
 
-    let PointResourceClass =
-        Class "Microsoft.Maps.PointResource"
-        |=> PointResource
-        |+> Instance
-            [
-                "type" =? T<string>
-                "coordinates" =? Type.ArrayOf T<float>
-            ]
-
-    let ConfidenceClass =
-        Class "Microsoft.Maps.Confidence"
-        |=> Confidence
-        |+> ConstantStrings Confidence ["High"; "Medium"; "Low"; "Unknown"]
-
-    let AddressClass =
-        Pattern.Config "Microsoft.Maps.Address" {
-            Required = []
-            Optional =
-                [
-                    "adminDistrict", T<string>
-                    "locality", T<string>
-                    "postalCode", T<string>
-                    "addressLine", T<string>
-                    "countryRegion", T<string>
-                ]
-        }
-        |=> Address
-
     ///////////////////////////////////////////////////////////////////
     // REST Routes API
 
-    let RouteResource = Type.New()
-    let RouteLeg = Type.New()
-    let ItineraryItem = Type.New()
-    let ItineraryDetail = Type.New()
-    let ItineraryIcon = Type.New()
-    let ItineraryInstruction = Type.New()
-    let TransitLine = Type.New()
-    let RoutePath = Type.New()
-    let LineResource = Type.New()
-    let RouteRequest = Type.New()
-    let RouteFromMajorRoadsRequest = Type.New()
-    let RouteOptimize = Type.New()
-    let RouteAvoid = Type.New()
-    let RoutePathOutput = Type.New()
-    let DistanceUnit = Type.New()
-    let TimeType = Type.New()
-    let TravelMode = Type.New()
-
-    let WaypointClass =
+    let Waypoint =
         Class "Microsoft.Maps.Waypoint"
-        |=> Waypoint
         |+> Static [
                 Constructor T<string>?s
                 |> WithInline "$s"
@@ -2108,69 +1832,79 @@ module Bing =
                 |> WithInline "($p.x+','+$p.y)"
             ]
 
-    let RouteResourceClass =
-        Class "Microsoft.Maps.RouteResource"
-        |=> RouteResource
+    let ItineraryInstruction =
+        Class "Microsoft.Maps.ItineraryInstruction"
         |+> Instance
             [
-                "id" =? T<string>
-                |> WithComment "A unique ID for the resource."
-
-                "bbox" =? Type.ArrayOf T<float>
-                |> WithComment "Defines a rectangular area by using latitude and longitude boundaries that contain the corresponding route or location. A bounding box contains SouthLatitude, WestLongitude, NorthLatitude, and EastLongitude elements."
-
-                "distanceUnit" =? DistanceUnit
-                |> WithComment "The unit used for distance."
-
-                "durationUnit" =? T<string>
-                |> WithComment "The unit used for time of travel."
-
-                "travelDistance" =? T<float>
-                |> WithComment "The physical distance covered by the entire route. Note: This value is not supported for the Transit travel mode."
-
-                "travelDuration" =? T<float>
-                |> WithComment "The time in seconds that it takes to travel a corresponding TravelDistance."
-
-                "routeLegs" =? Type.ArrayOf RouteLeg
-                |> WithComment "Information about a section of a route between two waypoints. For more information about the fields contained ina routeLeg, see the Route Leg Fields section below."
-
-                "routePath" =? RoutePath
-                |> WithComment "A representation of the path of a route. A RoutePath is returned only if the routePathOutput parameter is set to Points. A RoutePath is defined by a Line element that contains of a collection of points. The path of the route is the line that connects these Points. For more information about the fields contained in a route Path, see the Route Path Fields section below."
+                "maneuverType" =? T<string>
+                "text" =? T<string>
             ]
 
-    let RouteLegClass =
-        Class "Microsoft.Maps.RouteLeg"
-        |=> RouteLeg
+    let ItineraryIcon =
+        Class "Microsoft.Maps.ItineraryIcon"
+        |+> ConstantStrings TSelf ["None"; "Airline"; "Auto"; "Bus"
+                                   "Ferry"; "Train"; "Walk"; "Other"]
+
+    let ItineraryDetail =
+        Class "Microsoft.Maps.ItineraryDetail"
         |+> Instance
             [
-                "travelDistance" =? T<float>
-                |> WithComment "The physical distance covered by a route leg."
+                "compassDegrees" =? T<string>
+                |> WithComment "The direction in degrees. Note: This value is not supported for the Transit travel mode."
 
-                "travelDuration" =? T<float>
-                |> WithComment "The time, in seconds, that it takes to travel a corresponding TravelDistance."
+                "maneuverType" =? T<string>
+                |> WithComment "The type of maneuver described by this detail collection. The ManeuverType in A detail collection can provide information for a portion of the maneuver described by the maneuverType attribute of the corresponding Instruction. For example the maneuverType attribute of an Instruction may specify TurnLeftThenTurnRight as the maneuver while the associated detail items may specify specifics about the TurnLeft and TurnRight maneuvers."
 
-                "actualStart" =? PointResource
-                |> WithComment "The Point (latitude and longitude) that was used as the actual starting location for the route leg. In most cases, the ActualStart is the same as the requested waypoint. However, if a waypoint is not close to a road, the Routes API chooses a location on the nearest road as the starting point of the route. This ActualStart element contains the latitude and longitude of this new location."
+                "names" =? T<string>
+                |> WithComment "A street, highway or intersection where the maneuver occurs. If the maneuver is complex, there may be more than one name field in the details collection. The name field may also have no value. This can occur if the name is not known or if a street, highway or intersection does not have a name. Note: This value is only supported for the transit travel mode."
 
-                "actualEnd" =? PointResource
-                |> WithComment "The Point (latitude and longitude) that was used as the actual ending location for the route leg. In most cases, the ActualEnd is the same as the requested waypoint. However, if a waypoint is not close to a road, the Routes API chooses a location on the nearest road as the ending point of the route. This ActualEnd element contains the latitude and longitude of this new location."
+                "startPathIndices" =? Type.ArrayOf T<int>
+                |> WithComment "StartPathIndices and EndPathIndices specify index values for specific route path points that are returned in the response when the routePathOutput parameter is set to Points. Together, these two index values define a range of route path points that correspond to a maneuver. Route path index values are integers where the first route path point has an index value of 0."
 
-                "startLocation" =? Type.ArrayOf LocationResource
-                |> WithComment "Information about the location of the starting waypoint for a route. A StartLocation is provided only when the waypoint is specified as a landmark or an address. For more information about the fields contained in a Location collection, see the Location Fields table below."
+                "endPathIndices" =? Type.ArrayOf T<int>
+                |> WithComment "StartPathIndices and EndPathIndices specify index values for specific route path points that are returned in the response when the routePathOutput parameter is set to Points. Together, these two index values define a range of route path points that correspond to a maneuver. Route path index values are integers where the first route path point has an index value of 0."
 
-                "endLocation" =? Type.ArrayOf LocationResource
-                |> WithComment "Information about the location of the ending waypoint for a route. An EndLocation is provided only when the waypoint is specified as a landmark or an address. For more information about the fields contained in a Location collection, see the Locations Fields table below."
-
-                "itineraryItems" =? Type.ArrayOf ItineraryItem
-                |> WithComment "Information that defines a step in the route. For information about the fields that make up the ItineraryItem collection, see the Itinerary Item Fields table below."
+                "roadType" =? T<string>
+                |> WithComment "The type of road."
             ]
 
-    let ItineraryItemClass =
+    let TransitLine =
+        Class "Microsoft.Maps.TransitLine"
+        |+> Instance
+            [
+                "verboseName" =? T<string>
+                |> WithComment "The full name of the transit line."
+
+                "abbreviatedName" =? T<string>
+                |> WithComment "The abbreviated name of the transit line, such as the bus number."
+
+                "agencyId" =? T<string>
+                |> WithComment "The ID associated with the transit agency."
+
+                "agencyName" =? T<string>
+                |> WithComment "The name of the transit agency."
+
+                "lineColor" =? T<string>
+                |> WithComment "The color associated with the transit line. The color is provided as an RGB value."
+
+                "lineTextColor" =? T<string>
+                |> WithComment "The color to use for text associated with the transit line. The color is provided as an RGB value."
+
+                "uri" =? T<string>
+                |> WithComment "The URI for the transit agency."
+
+                "phoneNumber" =? T<string>
+                |> WithComment "The phone number of the transit agency."
+
+                "providerInfo" =? T<string>
+                |> WithComment "The contact information for the provider of the transit information."
+            ]
+
+    let ItineraryItem =
         Class "Microsoft.Maps.ItineraryItem"
-        |=> ItineraryItem
         |+> Instance
             [
-                "childItineraryItems" =? Type.ArrayOf ItineraryItem
+                "childItineraryItems" =? Type.ArrayOf TSelf
                 |> WithComment "A collection of ItineraryItems that divides an itinerary item into smaller steps. An itinerary item can have only one set of ChildItineraryItems."
 
                 "compassDirection" =? T<string>
@@ -2231,81 +1965,46 @@ module Bing =
                 |> WithComment "Information about a condition that may affect a specific step in the route. Warning is an optional element and a route step can contain more than one warning."
             ]
 
-    let ItineraryInstructionClass =
-        Class "Microsoft.Maps.ItineraryInstruction"
-        |=> ItineraryInstruction
+    let RouteLeg =
+        Class "Microsoft.Maps.RouteLeg"
         |+> Instance
             [
-                "maneuverType" =? T<string>
-                "text" =? T<string>
+                "travelDistance" =? T<float>
+                |> WithComment "The physical distance covered by a route leg."
+
+                "travelDuration" =? T<float>
+                |> WithComment "The time, in seconds, that it takes to travel a corresponding TravelDistance."
+
+                "actualStart" =? PointResource
+                |> WithComment "The Point (latitude and longitude) that was used as the actual starting location for the route leg. In most cases, the ActualStart is the same as the requested waypoint. However, if a waypoint is not close to a road, the Routes API chooses a location on the nearest road as the starting point of the route. This ActualStart element contains the latitude and longitude of this new location."
+
+                "actualEnd" =? PointResource
+                |> WithComment "The Point (latitude and longitude) that was used as the actual ending location for the route leg. In most cases, the ActualEnd is the same as the requested waypoint. However, if a waypoint is not close to a road, the Routes API chooses a location on the nearest road as the ending point of the route. This ActualEnd element contains the latitude and longitude of this new location."
+
+                "startLocation" =? Type.ArrayOf LocationResource
+                |> WithComment "Information about the location of the starting waypoint for a route. A StartLocation is provided only when the waypoint is specified as a landmark or an address. For more information about the fields contained in a Location collection, see the Location Fields table below."
+
+                "endLocation" =? Type.ArrayOf LocationResource
+                |> WithComment "Information about the location of the ending waypoint for a route. An EndLocation is provided only when the waypoint is specified as a landmark or an address. For more information about the fields contained in a Location collection, see the Locations Fields table below."
+
+                "itineraryItems" =? Type.ArrayOf ItineraryItem
+                |> WithComment "Information that defines a step in the route. For information about the fields that make up the ItineraryItem collection, see the Itinerary Item Fields table below."
             ]
 
-    let ItineraryIconClass =
-        Class "Microsoft.Maps.ItineraryIcon"
-        |=> ItineraryIcon
-        |+> ConstantStrings ItineraryIcon ["None"; "Airline"; "Auto"; "Bus"
-                                           "Ferry"; "Train"; "Walk"; "Other"]
+    let DistanceUnit =
+        Class "Microsoft.Maps.DistanceUnit"
+        |+> ConstantStrings TSelf ["Mile"; "Kilometer"]
 
-    let ItineraryDetailClass =
-        Class "Microsoft.Maps.ItineraryDetail"
-        |=> ItineraryDetail
+    let LineResource =
+        Class "Microsoft.Maps.LineResource"
         |+> Instance
             [
-                "compassDegrees" =? T<string>
-                |> WithComment "The direction in degrees. Note: This value is not supported for the Transit travel mode."
-
-                "maneuverType" =? T<string>
-                |> WithComment "The type of maneuver described by this detail collection. The ManeuverType in A detail collection can provide information for a portion of the maneuver described by the maneuverType attribute of the corresponding Instruction. For example the maneuverType attribute of an Instruction may specify TurnLeftThenTurnRight as the maneuver while the associated detail items may specify specifics about the TurnLeft and TurnRight maneuvers."
-
-                "names" =? T<string>
-                |> WithComment "A street, highway or intersection where the maneuver occurs. If the maneuver is complex, there may be more than one name field in the details collection. The name field may also have no value. This can occur if the name is not known or if a street, highway or intersection does not have a name. Note: This value is only supported for the transit travel mode."
-
-                "startPathIndices" =? Type.ArrayOf T<int>
-                |> WithComment "StartPathIndices and EndPathIndices specify index values for specific route path points that are returned in the response when the routePathOutput parameter is set to Points. Together, these two index values define a range of route path points that correspond to a maneuver. Route path index values are integers where the first route path point has an index value of 0."
-
-                "endPathIndices" =? Type.ArrayOf T<int>
-                |> WithComment "StartPathIndices and EndPathIndices specify index values for specific route path points that are returned in the response when the routePathOutput parameter is set to Points. Together, these two index values define a range of route path points that correspond to a maneuver. Route path index values are integers where the first route path point has an index value of 0."
-
-                "roadType" =? T<string>
-                |> WithComment "The type of road."
+                "type" =? T<string>
+                "coordinates" =? Type.ArrayOf (Type.ArrayOf T<float>)
             ]
 
-    let TransitLineClass =
-        Class "Microsoft.Maps.TransitLine"
-        |=> TransitLine
-        |+> Instance
-            [
-                "verboseName" =? T<string>
-                |> WithComment "The full name of the transit line."
-
-                "abbreviatedName" =? T<string>
-                |> WithComment "The abbreviated name of the transit line, such as the bus number."
-
-                "agencyId" =? T<string>
-                |> WithComment "The ID associated with the transit agency."
-
-                "agencyName" =? T<string>
-                |> WithComment "The name of the transit agency."
-
-                "lineColor" =? T<string>
-                |> WithComment "The color associated with the transit line. The color is provided as an RGB value."
-
-                "lineTextColor" =? T<string>
-                |> WithComment "The color to use for text associated with the transit line. The color is provided as an RGB value."
-
-                "uri" =? T<string>
-                |> WithComment "The URI for the transit agency."
-
-                "phoneNumber" =? T<string>
-                |> WithComment "The phone number of the transit agency."
-
-                "providerInfo" =? T<string>
-                |> WithComment "The contact information for the provider of the transit information."
-            ]
-
-    let RoutePathClass =
+    let RoutePath =
         Class "Microsoft.Maps.RoutePath"
-        |=> RoutePath
         |+> Instance
             [
                 "line" =? LineResource
@@ -2315,16 +2014,56 @@ module Bing =
                 |> WithComment "The coordinates of a point on the Earth."
             ]
 
-    let LineResourceClass =
-        Class "Microsoft.Maps.LineResource"
-        |=> LineResource
+    let RouteResource =
+        Class "Microsoft.Maps.RouteResource"
         |+> Instance
             [
-                "type" =? T<string>
-                "coordinates" =? Type.ArrayOf (Type.ArrayOf T<float>)
+                "id" =? T<string>
+                |> WithComment "A unique ID for the resource."
+
+                "bbox" =? Type.ArrayOf T<float>
+                |> WithComment "Defines a rectangular area by using latitude and longitude boundaries that contain the corresponding route or location. A bounding box contains SouthLatitude, WestLongitude, NorthLatitude, and EastLongitude elements."
+
+                "distanceUnit" =? DistanceUnit
+                |> WithComment "The unit used for distance."
+
+                "durationUnit" =? T<string>
+                |> WithComment "The unit used for time of travel."
+
+                "travelDistance" =? T<float>
+                |> WithComment "The physical distance covered by the entire route. Note: This value is not supported for the Transit travel mode."
+
+                "travelDuration" =? T<float>
+                |> WithComment "The time in seconds that it takes to travel a corresponding TravelDistance."
+
+                "routeLegs" =? Type.ArrayOf RouteLeg
+                |> WithComment "Information about a section of a route between two waypoints. For more information about the fields contained ina routeLeg, see the Route Leg Fields section below."
+
+                "routePath" =? RoutePath
+                |> WithComment "A representation of the path of a route. A RoutePath is returned only if the routePathOutput parameter is set to Points. A RoutePath is defined by a Line element that contains of a collection of points. The path of the route is the line that connects these Points. For more information about the fields contained in a route Path, see the Route Path Fields section below."
             ]
 
-    let RouteRequestClass =
+    let RouteAvoid =
+        Class "Microsoft.Maps.RouteAvoid"
+        |+> ConstantStrings TSelf ["highways"; "tolls"; "minimizeHighways"; "minimizeTolls"]
+
+    let RouteOptimize =
+        Class "Microsoft.Maps.RouteOptimize"
+        |+> ConstantStrings TSelf ["distance"; "time"; "timeWithTraffic"]
+
+    let RoutePathOutput =
+        Class "Microsoft.Maps.RoutePathOutput"
+        |+> ConstantStrings TSelf ["Points"; "None"]
+
+    let TimeType =
+        Class "Microsoft.Maps.TimeType"
+        |+> ConstantStrings TSelf ["Arrival"; "Departure"; "LastAvailable"]
+
+    let TravelMode =
+        Class "Microsoft.Maps.TravelMode"
+        |+> ConstantStrings TSelf ["Driving"; "Walking"; "Transit"]
+
+    let RouteRequest =
         Pattern.Config "Microsoft.Maps.RouteRequest" {
             Required = []
             Optional =
@@ -2332,115 +2071,46 @@ module Bing =
                     "waypoints", Type.ArrayOf Waypoint
                     "avoid", Type.ArrayOf RouteAvoid
                     "heading", T<int>
-                    "optimize", RouteOptimize
-                    "routePathOutput", RoutePathOutput
-                    "distanceUnit", DistanceUnit
+                    "optimize", RouteOptimize.Type
+                    "routePathOutput", RoutePathOutput.Type
+                    "distanceUnit", DistanceUnit.Type
                     "dateTime", T<string>
-                    "timeType", TimeType
+                    "timeType", TimeType.Type
                     "maxSolutions", T<int>
-                    "travelMode", TravelMode
+                    "travelMode", TravelMode.Type
                 ]
         }
 
-    let RouteOptimizeClass =
-        Class "Microsoft.Maps.RouteOptimize"
-        |=> RouteOptimize
-        |+> ConstantStrings RouteOptimize ["distance"; "time"; "timeWithTraffic"]
-
-    let RouteAvoidClass =
-        Class "Microsoft.Maps.RouteAvoid"
-        |=> RouteAvoid
-        |+> ConstantStrings RouteAvoid ["highways"; "tolls"; "minimizeHighways"; "minimizeTolls"]
-
-    let RoutePathOutputClass =
-        Class "Microsoft.Maps.RoutePathOutput"
-        |=> RoutePathOutput
-        |+> ConstantStrings RoutePathOutput ["Points"; "None"]
-
-    let DistanceUnitClass =
-        Class "Microsoft.Maps.DistanceUnit"
-        |=> DistanceUnit
-        |+> ConstantStrings DistanceUnit ["Mile"; "Kilometer"]
-
-    let TimeTypeClass =
-        Class "Microsoft.Maps.TimeType"
-        |=> TimeType
-        |+> ConstantStrings TimeType ["Arrival"; "Departure"; "LastAvailable"]
-
-    let TravelModeClass =
-        Class "Microsoft.Maps.TravelMode"
-        |=> TravelMode
-        |+> ConstantStrings TravelMode ["Driving"; "Walking"; "Transit"]
-
-    let RouteFromMajorRoadsRequestClass =
+    let RouteFromMajorRoadsRequest =
         Pattern.Config "Microsoft.Maps.RouteFromMajorRoadsRequest" {
             Required =
                 [
-                    "destination", Waypoint
+                    "destination", Waypoint.Type
                 ]
             Optional =
                 [
                     "exclude", T<string>
-                    "routePathOutput", RoutePathOutput
-                    "distanceUnit", DistanceUnit
+                    "routePathOutput", RoutePathOutput.Type
+                    "distanceUnit", DistanceUnit.Type
                 ]
         }
-        |=> RouteFromMajorRoadsRequest
 
     ///////////////////////////////////////////////////////////////////
     // REST Imagery API
 
-    let StaticMapRequest = Type.New()
-    let ImagerySet = Type.New()
-    let MapLayer = Type.New()
-    let MapVersion = Type.New()
-    let PushpinRequest = Type.New()
-
-    let StaticMapRequestClass =
-        Pattern.Config "Microsoft.Maps.StaticMapRequest" {
-            Required =
-                [
-                    "imagerySet", ImagerySet
-                ]
-            Optional =
-                [
-                    "avoid", Type.ArrayOf RouteAvoid
-                    "centerPoint", Point
-                    "dateTime", T<string>
-                    "declutterPins", T<bool>
-                    "distanceBeforeFirstTurn", T<int>
-                    "mapArea", Point * Point
-                    "mapLayer", MapLayer
-                    "mapSize", T<int> * T<int>
-                    "mapVersion", MapVersion
-                    "maxSolutions", T<int>
-                    "optimize", RouteOptimize
-                    "pushpin", Type.ArrayOf PushpinRequest
-                    "query", T<string>
-                    "timeType", TimeType
-                    "travelMode", TravelMode
-                    "waypoints", Type.ArrayOf Waypoint
-                    "zoomLevel", T<int>
-                ]
-        }
-        |=> StaticMapRequest
-
-    let ImagerySetClass =
+    let ImagerySet =
         Class "Microsoft.Maps.ImagerySet"
-        |=> ImagerySet
-        |+> ConstantStrings ImagerySet ["Aerial"; "AerialWithLabels"; "Road"]
+        |+> ConstantStrings TSelf ["Aerial"; "AerialWithLabels"; "Road"]
 
-    let MapLayerClass =
+    let MapLayer =
         Class "Microsoft.Maps.MapLayer"
-        |=> MapLayer
-        |+> ConstantStrings MapLayer ["TrafficFlow"]
+        |+> ConstantStrings TSelf ["TrafficFlow"]
 
-    let MapVersionClass =
+    let MapVersion =
         Class "Microsoft.Maps.MapVersion"
-        |=> MapVersion
-        |+> ConstantStrings MapVersion ["v0"; "v1"]
+        |+> ConstantStrings TSelf ["v0"; "v1"]
 
-    let PushpinRequestClass =
+    let PushpinRequest =
         Pattern.Config "Microsoft.Maps.PushpinRequest" {
             Required =
                 [
@@ -2453,37 +2123,57 @@ module Bing =
                     "label", T<string>
                 ]
         }
-        |=> PushpinRequest
 
-    let ImageryMetadataRequest = Type.New()
-    let ImageryMetadataInclude = Type.New()
-    let ImageryMetadataResource = Type.New()
-
-    let ImageryMetadataRequestClass =
-        Pattern.Config "Microsoft.Maps.ImageryMetadataRequest" {
+    let StaticMapRequest =
+        Pattern.Config "Microsoft.Maps.StaticMapRequest" {
             Required =
                 [
-                    "imagerySet", ImagerySet
+                    "imagerySet", ImagerySet.Type
                 ]
             Optional =
                 [
-                    "centerPoint", Point
-                    "include", ImageryMetadataInclude
-                    "mapVersion", MapVersion
+                    "avoid", Type.ArrayOf RouteAvoid
+                    "centerPoint", Point.Type
+                    "dateTime", T<string>
+                    "declutterPins", T<bool>
+                    "distanceBeforeFirstTurn", T<int>
+                    "mapArea", Point * Point
+                    "mapLayer", MapLayer.Type
+                    "mapSize", T<int> * T<int>
+                    "mapVersion", MapVersion.Type
+                    "maxSolutions", T<int>
+                    "optimize", RouteOptimize.Type
+                    "pushpin", Type.ArrayOf PushpinRequest
+                    "query", T<string>
+                    "timeType", TimeType.Type
+                    "travelMode", TravelMode.Type
+                    "waypoints", Type.ArrayOf Waypoint
+                    "zoomLevel", T<int>
+                ]
+        }
+
+    let ImageryMetadataInclude =
+        Class "Microsoft.Maps.ImageryMetadataInclude"
+        |+> ConstantStrings TSelf ["ImageryProviders"]
+
+    let ImageryMetadataRequest =
+        Pattern.Config "Microsoft.Maps.ImageryMetadataRequest" {
+            Required =
+                [
+                    "imagerySet", ImagerySet.Type
+                ]
+            Optional =
+                [
+                    "centerPoint", Point.Type
+                    "include", ImageryMetadataInclude.Type
+                    "mapVersion", MapVersion.Type
                     "orientation", T<float>
                     "zoomLevel", T<int>
                 ]
         }
-        |=> ImageryMetadataRequest
 
-    let ImageryMetadataIncludeClass =
-        Class "Microsoft.Maps.ImageryMetadataInclude"
-        |=> ImageryMetadataInclude
-        |+> ConstantStrings ImageryMetadataInclude ["ImageryProviders"]
-
-    let ImageryMetadataResourceClass =
+    let ImageryMetadataResource =
         Class "Microsoft.Maps.ImageryMetadataResource"
-        |=> ImageryMetadataResource
         |+> Instance
             [
                 "imageHeight" =? T<int>
@@ -2522,9 +2212,7 @@ module Bing =
                 |> WithComment "The vertical dimension of the imagery in number of tiles."
             ]
 
-    let LoadModuleArgs = Type.New()
-
-    let LoadModuleArgsClass =
+    let LoadModuleArgs =
         Pattern.Config "Microsoft.Maps.LoadModuleArgs" {
                 Required =
                     [
@@ -2532,7 +2220,6 @@ module Bing =
                     ]
                 Optional = []
             }
-        |=> LoadModuleArgs
 
     let MapsStatics =
         Class "Microsoft.Maps"
@@ -2560,140 +2247,149 @@ module Bing =
                     .AssemblyWide()
             ]
             Namespace "WebSharper.Bing.Maps" [
-                AltitudeReferenceClass
-                ColorClass
-                CoordinatesClass
-                EntityCollectionClass
-                EntityCollectionEventArgsClass
-                EntityCollectionEventClass
-                EntityCollectionOptionsClass
-                EntityInterface
-                EventClass
-                EventHandlerClass
-                EventsClass
-                GeoLocationProviderClass
-                InfoboxActionClass
-                InfoboxClass
-                InfoboxOptionsClass
-                KeyEventArgsClass
-                KeyEventClass
-                LabelOverlayClass
-                LocationClass
-                LocationRectClass
-                MapClass
-                MapOptionsClass
-                MapTypeIdClass
-                MapViewOptionsClass
-                MouseEventArgsClass
-                MouseEventClass
-                PointClass
-                PolygonClass
-                PolygonOptionsClass
-                PolylineClass
-                PolylineOptionsClass
-                PushpinClass
-                PushpinOptionsClass
-                RangeClass
-                SizeClass
-                TileLayerClass
-                TileLayerOptionsClass
-                TileSourceClass
-                TileSourceOptionsClass
-                UnitEventClass
-                ViewOptionsClass
-                LoadModuleArgsClass
+                AltitudeReference
+                AnimationVisibility
+                Color
+                Coordinates
+                EntityCollection
+                EntityCollectionEventArgs
+                EntityCollectionEvent
+                EntityCollectionOptions
+                Entity
+                Event
+                EventHandler
+                Events
+                GeoLocationProvider
+                InfoboxAction
+                Infobox
+                InfoboxOptions
+                KeyEventArgs
+                KeyEvent
+                LabelOverlay
+                Location
+                LocationRect
+                Map
+                MapOptions
+                MapTypeId
+                MapViewOptions
+                MouseEventArgs
+                MouseEvent
+                PixelReference
+                Point
+                Polygon
+                PolygonOptions
+                Polyline
+                PolylineOptions
+                Position
+                PositionCircleOptions
+                PositionError
+                PositionOptions
+                PositionErrorCallbackArgs
+                PositionSuccessCallbackArgs
+                Pushpin
+                PushpinOptions
+                Range
+                Size
+                TileLayer
+                TileLayerOptions
+                TileSource
+                TileSourceOptions
+                UnitEvent
+                ViewOptions
+                LoadModuleArgs
                 MapsStatics
 
                 // REST locations
-                AddressClass
-                AuthenticationResultCodeClass
-                ConfidenceClass
-                LocationResourceClass
-                PointResourceClass
-                ResourceSetClass
-                RestResponseClass
-                WaypointClass
+                Address
+                AuthenticationResultCode
+                Confidence
+                LocationResource
+                PointResource
+                ResourceSet
+                RestResponse
+                Waypoint
 
                 // REST Routes
-                DistanceUnitClass
-                ItineraryDetailClass
-                ItineraryIconClass
-                ItineraryInstructionClass
-                ItineraryItemClass
-                LineResourceClass
-                RouteAvoidClass
-                RouteLegClass
-                RouteOptimizeClass
-                RoutePathClass
-                RoutePathOutputClass
-                RouteRequestClass
-                RouteResourceClass
-                TimeTypeClass
-                TransitLineClass
-                TravelModeClass
+                DistanceUnit
+                ItineraryDetail
+                ItineraryIcon
+                ItineraryInstruction
+                ItineraryItem
+                LineResource
+                RouteAvoid
+                RouteLeg
+                RouteOptimize
+                RoutePath
+                RoutePathOutput
+                RouteRequest
+                RouteResource
+                TimeType
+                TransitLine
+                TravelMode
 
                 // REST Imagery
-                ImageryMetadataIncludeClass
-                ImageryMetadataRequestClass
-                ImageryMetadataResourceClass
-                ImagerySetClass
-                MapLayerClass
-                MapVersionClass
-                PushpinRequestClass
-                RouteFromMajorRoadsRequestClass
-                StaticMapRequestClass
+                ImageryMetadataInclude
+                ImageryMetadataRequest
+                ImageryMetadataResource
+                ImagerySet
+                MapLayer
+                MapVersion
+                PushpinRequest
+                RouteFromMajorRoadsRequest
+                StaticMapRequest
             ]
 
             Namespace "WebSharper.Bing.Maps.Directions" [
-                Directions.BusinessDetailsClass
-                Directions.BusinessDisambiguationSuggestionClass
-                Directions.RouteResponseCodeClass
-                Directions.RouteSummaryClass
-                Directions.RouteIconTypeClass
-                Directions.ManeuverTypeClass
-                Directions.TransitLineClass
-                Directions.DirectionsStepWarningTypeClass
-                Directions.DirectionsStepWarningClass
-                Directions.RoutePathClass
-                Directions.RouteSubLegClass
-                Directions.DirectionsStepClass
-                Directions.RouteLegClass
-                Directions.RouteClass
-                Directions.DirectionsEventArgsClass
-                Directions.WaypointOptionsClass
-                Directions.LocationDisambiguationSuggestionClass
-                Directions.DisambiguationClass
-                Directions.WaypointClass
-                Directions.DirectionsRenderOptionsClass
-                Directions.DistanceUnitClass
-                Directions.RouteAvoidanceClass
-                Directions.RouteModeClass
-                Directions.RouteOptimizationClass
-                Directions.TimeTypeClass
-                Directions.TransitOptionsClass
-                Directions.DirectionsRequestOptionsClass
-                Directions.ResetDirectionsOptionsClass
-                Directions.DirectionsManagerClass
-                Directions.DirectionsErrorEventArgsClass
-                Directions.DirectionsStepEventArgsClass
-                Directions.DirectionsStepRenderEventArgsClass
-                Directions.RouteSelectorEventArgsClass
-                Directions.RouteSelectorRenderEventArgsClass
-                Directions.RouteSummaryRenderEventArgsClass
-                Directions.WaypointEventArgsClass
-                Directions.WaypointRenderEventArgsClass
-                Directions.DirectionsErrorEventClass
-                Directions.DirectionsStepEventClass
-                Directions.DirectionsStepRenderEventClass
-                Directions.RouteSelectorEventClass
-                Directions.RouteSelectorRenderEventClass
-                Directions.RouteSummaryRenderEventClass
-                Directions.WaypointEventClass
-                Directions.WaypointRenderEventClass
+                Directions.BusinessDetails
+                Directions.BusinessDisambiguationSuggestion
+                Directions.RouteResponseCode
+                Directions.RouteSummary
+                Directions.RouteIconType
+                Directions.ManeuverType
+                Directions.TransitLine
+                Directions.DirectionsStepWarningType
+                Directions.DirectionsStepWarning
+                Directions.RoutePath
+                Directions.RouteSubLeg
+                Directions.DirectionsStep
+                Directions.RouteLeg
+                Directions.Route
+                Directions.DirectionsEventArgs
+                Directions.DirectionsEvent
+                Directions.WaypointOptions
+                Directions.LocationDisambiguationSuggestion
+                Directions.Disambiguation
+                Directions.Waypoint
+                Directions.DirectionsRenderOptions
+                Directions.DistanceUnit
+                Directions.RouteAvoidance
+                Directions.RouteMode
+                Directions.RouteOptimization
+                Directions.TimeType
+                Directions.TransitOptions
+                Directions.DirectionsRequestOptions
+                Directions.ResetDirectionsOptions
+                Directions.DirectionsManager
+                Directions.DirectionsErrorEventArgs
+                Directions.DirectionsStepEventArgs
+                Directions.DirectionsStepRenderEventArgs
+                Directions.RouteSelectorEventArgs
+                Directions.RouteSelectorRenderEventArgs
+                Directions.RouteSummaryRenderEventArgs
+                Directions.WaypointEventArgs
+                Directions.WaypointRenderEventArgs
+                Directions.DirectionsErrorEvent
+                Directions.DirectionsStepEvent
+                Directions.DirectionsStepRenderEvent
+                Directions.RouteSelectorEvent
+                Directions.RouteSelectorRenderEvent
+                Directions.RouteSummaryRenderEvent
+                Directions.WaypointEvent
+                Directions.WaypointRenderEvent
             ]
 
             Namespace "WebSharper.Bing.Maps.Traffic" [
-                Traffic.TrafficLayerClass
+                Traffic.TrafficLayer
             ]
         ]
 
