@@ -325,11 +325,11 @@ module Site =
 
     open WebSharper.Html.Server
 
-    let HomePage =
-        Content.PageContent <| fun ctx ->
-            { Page.Default with
-                Title = Some "WebSharper Bing Maps Tests"
-                Body = [Div [new Samples()]] }
+    let HomePage ctx =
+        Content.Page(
+            Title = "WebSharper Bing Maps Tests",
+            Body = [Div [new Samples()]]
+        )
 
     let Main = Sitelet.Content "/" Index HomePage
 
