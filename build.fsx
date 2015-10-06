@@ -5,6 +5,7 @@ let bt =
     BuildTool().PackageId("WebSharper.Bing.Maps")
         .VersionFrom("WebSharper")
         .References(fun r -> [r.Assembly "System.Web"])
+        .WithFSharpVersion(FSharpVersion.FSharp30)
         .WithFramework(fun f -> f.Net40)
 
 let main =
@@ -19,7 +20,12 @@ let rest =
 let test =
     bt.WebSharper.HtmlWebsite("WebSharper.Bing.Maps.Tests")
         .SourcesFromProject()
-        .References(fun r -> [r.Project main; r.Project rest])
+        .References(fun r ->
+            [
+                r.Project main
+                r.Project rest
+                r.NuGet("WebSharper.Html").Reference()
+            ])
 
 bt.Solution [
     main

@@ -259,10 +259,11 @@ module Main =
                                               PushpinRequest(x=47.13, y=19.17, IconStyle=10)|])
         let req2 = StaticMapRequest(Query="Washington DC",
                                     imagerySet=ImagerySet.Aerial)
-        Div [
-            Rest.StaticMap(credentials, req1)
-            Rest.StaticMap(credentials, req2)
-        ]
+        Div []
+        |>! OnAfterRender (fun div ->
+            Rest.StaticMap(credentials, req1) |> div.Append
+            Rest.StaticMap(credentials, req2) |> div.Append
+        )
 
     [<JavaScript>]
     let ImageMetadata () =

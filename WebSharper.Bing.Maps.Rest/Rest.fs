@@ -2,7 +2,6 @@
 
 open WebSharper
 open WebSharper.JavaScript
-open WebSharper.Html.Client
 
 module Rest =
 
@@ -18,8 +17,10 @@ module Rest =
 
     [<JavaScript>]
     let private SendRequest req =
-        let script = Script [Attr.Type "text/javascript"; Attr.Src req]
-        JS.Document.DocumentElement.AppendChild script.Dom |> ignore
+        let script = JS.Document.CreateElement("script")
+        script.SetAttribute("type", "text/javascript")
+        script.SetAttribute("src", req)
+        JS.Document.DocumentElement.AppendChild script |> ignore
 
     [<JavaScript>]
     let private RequestCallbackName = "BingOnReceive"
@@ -147,4 +148,6 @@ module Rest =
 
     [<JavaScript>]
     let StaticMap(credentials, request) =
-        Img [Attr.Src (StaticMapUrl(credentials, request))]
+        let img = JS.Document.CreateElement("img")
+        img.SetAttribute("src", StaticMapUrl(credentials, request))
+        img
