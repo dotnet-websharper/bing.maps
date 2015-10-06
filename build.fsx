@@ -24,7 +24,7 @@ let test =
             [
                 r.Project main
                 r.Project rest
-                r.NuGet("WebSharper.Html").Reference()
+                r.NuGet("WebSharper.Html").ForceFoundVersion().Reference()
             ])
 
 bt.Solution [
