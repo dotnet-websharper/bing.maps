@@ -24,7 +24,7 @@ let test =
             [
                 r.Project main
                 r.Project rest
-                r.NuGet("Zafir.Html").ForceFoundVersion().Reference()
+                r.NuGet("Zafir.Html").Latest(true).ForceFoundVersion().Reference()
             ])
 
 bt.Solution [
