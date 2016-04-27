@@ -242,7 +242,7 @@ module Main =
                         dirman.SetRequestOptions <| DirectionsRequestOptions(DistanceUnit = DistanceUnit.Kilometers)
                         dirman.CalculateDirections()
                     button |>! OnClick request |> ignore
-                Maps.LoadModule("Microsoft.Maps.Directions", LoadModuleArgs(onDirsLoaded))
+                Maps.LoadModule("Microsoft.Maps.Directions", LoadModuleArgs(As onDirsLoaded))
             )
         Div [mapContainer
              Span[Text "From:"]; origin
