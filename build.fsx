@@ -3,7 +3,7 @@ open IntelliFactory.Build
 
 let bt =
     BuildTool().PackageId("WebSharper.Bing.Maps")
-        .VersionFrom("WebSharper")
+        .VersionFrom("WebSharper", versionSpec = "(,4.0)")
         .References(fun r -> [r.Assembly "System.Web"])
         .WithFSharpVersion(FSharpVersion.FSharp30)
         .WithFramework(fun f -> f.Net40)
@@ -24,7 +24,7 @@ let test =
             [
                 r.Project main
                 r.Project rest
-                r.NuGet("WebSharper.Html").ForceFoundVersion().Reference()
+                r.NuGet("WebSharper.Html").Version("(,4.0)").ForceFoundVersion().Reference()
             ])
 
 bt.Solution [
