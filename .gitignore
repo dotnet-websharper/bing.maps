@@ -5,3 +5,8 @@
 /build/
 /packages/
 /tools/packages/
+bin/
+obj/
+/.fake/
+/paket-files/
+/.vscode/

@@ -1,47 +1,17 @@
-#load "tools/includes.fsx"
-open IntelliFactory.Build
+#load "paket-files/build/intellifactory/websharper/tools/WebSharper.Fake.fsx"
+open Fake
+open WebSharper.Fake
 
-let bt =
-    BuildTool().PackageId("WebSharper.Bing.Maps")
-        .VersionFrom("WebSharper", versionSpec = "(,4.0)")
-        .References(fun r -> [r.Assembly "System.Web"])
-        .WithFSharpVersion(FSharpVersion.FSharp30)
-        .WithFramework(fun f -> f.Net40)
+let targets =
+    GetSemVerOf "WebSharper"
+    |> ComputeVersion
+    |> WSTargets.Default
+    |> MakeTargets
 
-let main =
-    bt.WebSharper.Extension("WebSharper.Bing.Maps")
-        .SourcesFromProject()
+Target "Build" DoNothing
+targets.BuildDebug ==> "Build"
 
-let rest =
-    bt.WebSharper.Library("WebSharper.Bing.Maps.Rest")
-        .SourcesFromProject()
-        .References(fun r -> [r.Project main])
+Target "CI-Release" DoNothing
+targets.CommitPublish ==> "CI-Release"
 
-let test =
-    bt.WebSharper.HtmlWebsite("WebSharper.Bing.Maps.Tests")
-        .SourcesFromProject()
-        .References(fun r ->
-            [
-                r.Project main
-                r.Project rest
-                r.NuGet("WebSharper.Html").Version("(,4.0)").ForceFoundVersion().Reference()
-            ])
-
-bt.Solution [
-    main
-    rest
-    test
-
-    bt.NuGet.CreatePackage()
-        .Configure(fun c ->
-            { c with
-                Title = Some "WebSharper.Bing.Maps-v7"
-                LicenseUrl = Some "http://websharper.com/licensing"
-                ProjectUrl = Some "https://github.com/intellifactory/websharper.bing.maps"
-                Description = "WebSharper Extensions for Bing Maps AJAX v7 and REST services"
-                RequiresLicenseAcceptance = true })
-        .Add(main)
-        .Add(rest)
-
-]
-|> bt.Dispatch
+RunTargetOrDefault "Build"

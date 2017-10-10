@@ -1,0 +1,21 @@
+type file
+id WebSharper.Bing.Maps
+authors
+    IntelliFactory
+owners
+    IntelliFactory
+licenseUrl http://websharper.com/licensing
+projectUrl https://github.com/intellifactory/websharper.bing.maps
+description
+    WebSharper Extensions for Bing Maps AJAX v7 and REST services
+tags
+    Web JavaScript F# C#
+files
+    ../WebSharper.Bing.Maps/bin/Release/netstandard2.0/WebSharper.Bing.Maps.dll ==> lib/netstandard2.0
+    ../WebSharper.Bing.Maps/bin/Release/netstandard2.0/WebSharper.Bing.Maps.xml ==> lib/netstandard2.0
+    ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.dll ==> lib/netstandard2.0
+    ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.xml ==> lib/netstandard2.0
+dependencies
+        WebSharper LOCKEDVERSION
+frameworkAssemblies
+        System.Web
