@@ -9,7 +9,6 @@
     <Compile Include="Tests.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Web"/>
     <ProjectReference Include="../WebSharper.Bing.Maps\WebSharper.Bing.Maps.fsproj" />
     <ProjectReference Include="../WebSharper.Bing.Maps.Rest\WebSharper.Bing.Maps.Rest.fsproj" />
   </ItemGroup>

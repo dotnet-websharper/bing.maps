@@ -130,26 +130,27 @@ module Main =
 
     [<JavaScript>]
     let MouseEvent () =
-        let container = Div []
-        let opt = MapViewOptions(Credentials = credentials,
-                                 Width = 600,
-                                 Height = 500)
-        let map = Map(container.Body, opt)
-        let pin = Pushpin(map.GetCenter(), PushpinOptions(Draggable=true))
-        map.Entities.Push(pin)
-        let displayLatLong (e:MouseEventArgs) =
-            let center = (e.Target :?> Map).GetCenter()
-            let pinLocation = pin.GetLocation()
-            let pinPoint = map.TryLocationToPixel(pinLocation)
-            let mousePoint = Point(float(e.GetX()), float(e.GetY()))
-            let mouseLocation = map.TryPixelToLocation(mousePoint)
-            let message = "pushpin (lat/lon): " + string pinLocation.Latitude + ", " + string pinLocation.Longitude +
-                          "\npushpin (screen x/y): " + string pinPoint.X + "," + string pinPoint.Y +
-                          "\nmouse (lat/lon): " + string mouseLocation.Latitude + ", " + string mouseLocation.Longitude +
-                          "\nmouse (screen x/y): " + string mousePoint.X + "," + string mousePoint.Y
-            JS.Alert message
-        Events.AddHandler(map, MouseEvent.Click, displayLatLong) |> ignore
-        container
+        Div []
+        |>! OnAfterRender (fun el ->
+            let opt = MapViewOptions(Credentials = credentials,
+                                     Width = 600,
+                                     Height = 500)
+            let map = Map(el.Body, opt)
+            let pin = Pushpin(map.GetCenter(), PushpinOptions(Draggable=true))
+            map.Entities.Push(pin)
+            let displayLatLong (e:MouseEventArgs) =
+                let center = (e.Target :?> Map).GetCenter()
+                let pinLocation = pin.GetLocation()
+                let pinPoint = map.TryLocationToPixel(pinLocation)
+                let mousePoint = Point(float(e.GetX()), float(e.GetY()))
+                let mouseLocation = map.TryPixelToLocation(mousePoint)
+                let message = "pushpin (lat/lon): " + string pinLocation.Latitude + ", " + string pinLocation.Longitude +
+                              "\npushpin (screen x/y): " + string pinPoint.X + "," + string pinPoint.Y +
+                              "\nmouse (lat/lon): " + string mouseLocation.Latitude + ", " + string mouseLocation.Longitude +
+                              "\nmouse (screen x/y): " + string mousePoint.X + "," + string mousePoint.Y
+                JS.Alert message
+            Events.AddHandler(map, MouseEvent.Click, displayLatLong) |> ignore
+        )
 
     [<JavaScript>]
     let OldRouteRequest () =
@@ -252,24 +253,21 @@ module Main =
 
     [<JavaScript>]
     let StaticMap () =
-        let req1 = StaticMapRequest(CenterPoint=Point(47.2, 19.1),
-                                    imagerySet=ImagerySet.Road,
-                                    ZoomLevel=10,
-                                    Pushpin=[|PushpinRequest(x=47.1, y=19.0, IconStyle=2, Label="P1")
-                                              PushpinRequest(x=47.13, y=19.17, IconStyle=10)|])
-        let req2 = StaticMapRequest(Query="Washington DC",
-                                    imagerySet=ImagerySet.Aerial)
         Div []
         |>! OnAfterRender (fun div ->
+            let req1 = StaticMapRequest(CenterPoint=Point(47.2, 19.1),
+                                        imagerySet=ImagerySet.Road,
+                                        ZoomLevel=10,
+                                        Pushpin=[|PushpinRequest(x=47.1, y=19.0, IconStyle=2, Label="P1")
+                                                  PushpinRequest(x=47.13, y=19.17, IconStyle=10)|])
             Rest.StaticMap(credentials, req1) |> div.Append
+            let req2 = StaticMapRequest(Query="Washington DC",
+                                        imagerySet=ImagerySet.Aerial)
             Rest.StaticMap(credentials, req2) |> div.Append
         )
 
     [<JavaScript>]
     let ImageMetadata () =
-        let req = ImageryMetadataRequest(imagerySet=ImagerySet.Road,
-                                         MapVersion=MapVersion.V1,
-                                         CenterPoint=Point(47.2, 19.1))
         let callback (answer : Element) (result : RestResponse) =
             match CheckJsonResponse result with
             | Some error ->
@@ -284,6 +282,9 @@ module Main =
                 List.iter (answer.Append:Pagelet->unit) txt
         Div []
         |>! OnAfterRender (fun el ->
+            let req = ImageryMetadataRequest(imagerySet=ImagerySet.Road,
+                                             MapVersion=MapVersion.V1,
+                                             CenterPoint=Point(47.2, 19.1))
             Rest.RequestImageryMetadata(credentials, req, callback el)
         )
 

@@ -9,7 +9,6 @@
     <Compile Include="Rest.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Web"/>
     <ProjectReference Include="../WebSharper.Bing.Maps\WebSharper.Bing.Maps.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
