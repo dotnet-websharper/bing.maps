@@ -11,6 +11,10 @@ description
 tags
     Web JavaScript F# C#
 files
+    ../WebSharper.Bing.Maps/bin/Release/netstandard2.0/WebSharper.Bing.Maps.dll ==> lib/net461
+    ../WebSharper.Bing.Maps/bin/Release/netstandard2.0/WebSharper.Bing.Maps.xml ==> lib/net461
+    ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.dll ==> lib/net461
+    ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.xml ==> lib/net461
     ../WebSharper.Bing.Maps/bin/Release/netstandard2.0/WebSharper.Bing.Maps.dll ==> lib/netstandard2.0
     ../WebSharper.Bing.Maps/bin/Release/netstandard2.0/WebSharper.Bing.Maps.xml ==> lib/netstandard2.0
     ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.dll ==> lib/netstandard2.0
