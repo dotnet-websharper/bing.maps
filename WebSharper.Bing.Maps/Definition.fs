@@ -2243,7 +2243,7 @@ module Bing =
     let Assembly =
         Assembly [
             Namespace "WebSharper.Bing.Maps.Resources" [
-                (Resource "Js" "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0")
+                (Resource "Js" "https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0")
                     .AssemblyWide()
             ]
             Namespace "WebSharper.Bing.Maps" [
