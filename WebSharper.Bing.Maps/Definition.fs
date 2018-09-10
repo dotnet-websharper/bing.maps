@@ -10,18 +10,29 @@ module Bing =
         List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
         |> Static
 
+    let private IConstantStrings ty l =
+        List.map (fun s -> (s =? ty |> WithGetterInline ("'" + s + "'")) :> CodeModel.IClassMember) l
+        |> Instance
+
     let private Constants ty l =
         List.map (fun s -> s =? ty :> CodeModel.IClassMember) l
         |> Static
+
+    let private IConstants ty l =
+        List.map (fun s -> s =? ty :> CodeModel.IClassMember) l
+        |> Instance
 
     ///////////////////////////////////////////////////////////////////
     // Ajax API
 
     let AltitudeReference =
         Class "Microsoft.Maps.AltitudeReference"
-        |+> ConstantStrings TSelf ["ground"; "ellipsoid"]
-        |+> Static [
-                "isValid" => TSelf ^-> T<bool>
+
+    let CAltitudeReference =
+        Class "AltitudeReference"
+        |+> IConstantStrings AltitudeReference ["ground"; "ellipsoid"]
+        |+> Instance [
+                "isValid" => AltitudeReference ^-> T<bool>
                 |> WithComment "Determines if the specified reference is a supported AltitudeReference."
             ]
 
@@ -31,17 +42,6 @@ module Bing =
 
     let Location =
         Class "Microsoft.Maps.Location"
-        |+> Static [
-                Constructor (T<float> * T<float> * T<float> * AltitudeReference)
-                Constructor (T<float> * T<float> * T<float>)
-                Constructor (T<float> * T<float>)
-
-                "areEqual" => TSelf * TSelf ^-> T<bool>
-                |> WithComment "Determines if the specified Location objects are equal."
-
-                "normalizeLongitude" => T<float -> float>
-                |> WithComment "Normalizes the specified longitude so that it is between -180 and 180."
-            ]
         |+> Instance
             [
                 "altitude" =? T<float>
@@ -63,21 +63,32 @@ module Bing =
                 |> WithComment "Converts the Location object to a string."
             ]
 
+    let CLocation =
+        Class "Location"
+        |+> Instance [
+                "areEqual" => Location * Location ^-> T<bool>
+                |> WithComment "Determines if the specified Location objects are equal."
+
+                "normalizeLongitude" => T<float -> float>
+                |> WithComment "Normalizes the specified longitude so that it is between -180 and 180."
+        ]
+
     let LocationRect =
         Class "Microsoft.Maps.LocationRect"
-        |+> Static [
-                Constructor (Location * T<float> * T<float>)
 
-                "fromCorners" => Location * Location ^-> TSelf
+    let CLocationRect =
+        Class "LocationRect"
+        |+> Instance [
+                "fromCorners" => Location * Location ^-> LocationRect
                 |> WithComment "Returns a LocationRect using the specified locations for the northwest and southeast corners."
 
-                "fromEdges" => T<float> * T<float> * T<float> * T<float> * T<float> * AltitudeReference ^-> TSelf
+                "fromEdges" => T<float> * T<float> * T<float> * T<float> * T<float> * AltitudeReference ^-> LocationRect
                 |> WithComment "Returns a LocationRect using the specified northern and southern latitudes and western and eastern longitudes for the rectangle boundaries."
 
-                "fromLocations" => Type.ArrayOf Location ^-> TSelf
+                "fromLocations" => Type.ArrayOf Location ^-> LocationRect
                 |> WithComment "Returns a LocationRect using an array of locations."
 
-                "fromString" => T<string> ^-> TSelf
+                "fromString" => T<string> ^-> LocationRect
                 |> WithComment "Creates a LocationRect from a string with the following format: \"north,west,south,east\". North, west, south and east specify the coordinate number values."
             ]
         |+> Instance [
@@ -90,7 +101,7 @@ module Bing =
                 "width" =? T<float>
                 |> WithComment "The width, in degrees, of the rectangle."
 
-                "clone" => T<unit> ^-> TSelf
+                "clone" => T<unit> ^-> LocationRect
                 |> WithComment "Returns a copy of the LocationRect object."
 
                 "contains" => Location ^-> T<bool>
@@ -110,7 +121,7 @@ module Bing =
                 "getNorthwest" => T<unit> ^-> Location
                 |> WithComment "Returns the Location that defines the northwest corner of the LocationRect."
 
-                "intersects" => TSelf ^-> T<bool>
+                "intersects" => LocationRect ^-> T<bool>
                 |> WithComment "Returns whether the specified LocationRect intersects with this LocationRect."
 
                 "toString" => T<unit -> string>
@@ -119,16 +130,6 @@ module Bing =
 
     let Point =
         Class "Microsoft.Maps.Point"
-        |+> Static [
-                Constructor (T<float> * T<float>)
-
-                "areEqual" => TSelf * TSelf ^-> T<bool>
-                |> WithComment "Determines if the specified points are equal."
-
-                "clonePoint" => TSelf ^-> TSelf
-                |> WithSourceName "clone"
-                |> WithComment "Returns a copy of the Point object."
-            ]
         |+> Instance
             [
                 "x" =? T<float>
@@ -147,32 +148,35 @@ module Bing =
                 |> WithInline "($this.x+','+$this.y)"
             ]
 
+    let CPoint =
+        Class "Point"
+        |+> Instance [
+                "areEqual" => Point * Point ^-> T<bool>
+                |> WithComment "Determines if the specified points are equal."
+
+                "clonePoint" => Point ^-> Point
+                |> WithSourceName "clone"
+                |> WithComment "Returns a copy of the Point object."
+        ]
+
     let LabelOverlay =
         Class "Microsoft.Maps.LabelOverlay"
-        |+> Static [
-                "hidden" =? TSelf
+
+    let CLabelOverlay =
+        Class "LabelOverlay"
+        |+> Instance [
+                "hidden" =? LabelOverlay
                 |> WithComment "Map labels are not shown on top of imagery."
 
-                "visible" =? TSelf
+                "visible" =? LabelOverlay
                 |> WithComment "Map labels are shown on top of imagery."
 
-                "isValid" => TSelf ^-> T<bool>
+                "isValid" => LabelOverlay ^-> T<bool>
                 |> WithComment "Determines whether the specified labelOverlay is a supported LabelOverlay."
             ]
 
     let Color =
         Class "Microsoft.Maps.Color"
-        |+> Static [
-                Constructor (T<int> * T<int> * T<int> * T<int>)
-                |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
-
-                "cloneColor" => TSelf ^-> TSelf
-                |> WithInline "clone"
-                |> WithComment "Creates a copy of the Color object."
-
-                "fromHex" => T<string> ^-> TSelf
-                |> WithComment "Converts the specified hex string to a Color."
-            ]
         |+> Instance
             [
                 "a" =? T<int>
@@ -200,28 +204,42 @@ module Bing =
                 |> WithComment "Converts the Color object to a string."
             ]
 
+    let CColor =
+        Class "Color"
+        |+> Instance [
+                "cloneColor" => TSelf ^-> TSelf
+                |> WithInline "clone"
+                |> WithComment "Creates a copy of the Color object."
+
+                "fromHex" => T<string> ^-> TSelf
+                |> WithComment "Converts the specified hex string to a Color."
+            ]
+
     let MapTypeId =
         Class "Microsoft.Maps.MapTypeId"
-        |+> Static [
-                "aerial" =? TSelf
+
+    let CMapTypeId =
+        Class "MapTypeId"
+        |+> Instance [
+                "aerial" =? MapTypeId
                 |> WithComment "The aerial map style is being used."
 
-                "auto" =? TSelf
+                "auto" =? MapTypeId
                 |> WithComment "The map is set to choose the best imagery for the current view."
 
-                "birdseye" =? TSelf
+                "birdseye" =? MapTypeId
                 |> WithComment "The bird’s eye map type is being used."
 
-                "collinsBart" =? TSelf
+                "collinsBart" =? MapTypeId
                 |> WithComment "Collin’s Bart (mkt=en-gb) map type is being used."
 
-                "mercator" =? TSelf
+                "mercator" =? MapTypeId
                 |> WithComment "The Mercator style is being used."
 
-                "ordnanceSurvey" =? TSelf
+                "ordnanceSurvey" =? MapTypeId
                 |> WithComment "Ordinance Survey (mkt=en-gb) map type is being used."
 
-                "road" =? TSelf
+                "road" =? MapTypeId
                 |> WithComment "The road map style is being used."
             ]
 
@@ -252,7 +270,6 @@ module Bing =
             "enableClickableLogo", T<bool>
             "enableSearchLogo", T<bool>
             "fixedMapPosition", T<bool>
-            "height", T<int>
             "inertialIntensity", T<float>
             "showBreadcrumb", T<bool>
             "showCopyright", T<bool>
@@ -261,7 +278,6 @@ module Bing =
             "showScalebar", T<bool>
             "tileBuffer", T<int>
             "useInertia", T<bool>
-            "width", T<int>
         ]
 
     let ViewOptions =
@@ -308,10 +324,6 @@ module Bing =
     let EntityCollection =
         Class "Microsoft.Maps.EntityCollection"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor T<unit>
-                Constructor EntityCollectionOptions
-            ]
         |+> Instance
             [
                 "clear" => T<unit -> unit>
@@ -510,10 +522,6 @@ module Bing =
     let Infobox =
         Class "Microsoft.Maps.Infobox"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor Location
-                Constructor (Location * InfoboxOptions)
-            ]
         |+> Instance
             [
                 "getActions" => T<unit> ^-> Type.ArrayOf InfoboxAction
@@ -591,20 +599,17 @@ module Bing =
     let PixelReference =
         Class "Microsoft.Maps.PixelReference"
         |+> Constants TSelf ["control"; "page"; "viewport"]
-        |+> Static [
-                "isValid" => TSelf ^-> T<bool>
+
+    let CPixelReference =
+        Class "PixelReference"
+        |+> Instance [
+                "isValid" => PixelReference ^-> T<bool>
                 |> WithComment "Determines whether the specified reference is a supported PixelReference."
             ]
 
     let Map =
         Class "Microsoft.Maps.Map"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor (T<Node> * MapViewOptions)
-                Constructor (T<Node> * MapOptions)
-                Constructor (T<Node> * ViewOptions)
-                Constructor (T<Node>)
-            ]
         |+> Instance
             [
                 "entities" =? EntityCollection
@@ -824,9 +829,6 @@ module Bing =
 
     let GeoLocationProvider =
         Class "Microsoft.Maps.GeoLocationProvider"
-        |+> Static [
-                Constructor Map
-            ]
         |+> Instance
             [
                 "addAccuracyCircle" => Location * T<float> * T<int> * PositionCircleOptions ^-> T<unit>
@@ -862,10 +864,6 @@ module Bing =
     let Polyline =
         Class "Microsoft.Maps.Polyline"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor (Type.ArrayOf Location)
-                Constructor (Type.ArrayOf Location * PolylineOptions)
-            ]
         |+> Instance
             [
                 "getLocations" => T<unit> ^-> Type.ArrayOf Location
@@ -907,10 +905,6 @@ module Bing =
 
     let TileSource =
         Class "Microsoft.Maps.TileSource"
-        |+> Static [
-                Constructor TileSourceOptions
-                |> WithComment "Initializes a new instance of the TileSource  class."
-            ]
         |+> Instance
             [
                 "getHeight" => T<unit -> float>
@@ -942,10 +936,6 @@ module Bing =
     let TileLayer =
         Class "Microsoft.Maps.TileLayer"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor TileLayerOptions
-                |> WithComment "Initializes a new instance of the TileLayer class."
-            ]
         |+> Instance
             [
                 "a" =? T<int>
@@ -970,10 +960,6 @@ module Bing =
     let Polygon =
         Class "Microsoft.Maps.Polygon"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor (Type.ArrayOf Location)
-                Constructor (Type.ArrayOf Location * PolygonOptions)
-            ]
         |+> Instance
             [
                 "getFillColor" => T<unit> ^-> Color
@@ -1026,10 +1012,6 @@ module Bing =
     let Pushpin =
         Class "Microsoft.Maps.Pushpin"
         |=> Implements [Entity]
-        |+> Static [
-                Constructor Location
-                Constructor (Location * PushpinOptions)
-            ]
         |+> Instance
             [
                 "getAnchor" => T<unit> ^-> Point
@@ -1525,9 +1507,6 @@ module Bing =
 
         let TrafficLayer =
             Class "Microsoft.Maps.Traffic.TrafficLayer"
-            |+> Static [
-                    Constructor Map
-                ]
             |+> Instance
                 [
                     "getTileLayer" => T<unit> ^-> TileLayer
@@ -1667,7 +1646,7 @@ module Bing =
 
     let Events =
         Class "Microsoft.Maps.Events"
-        |+> Static [
+        |+> Instance [
                 "addHandler" => Entity * KeyEvent * (KeyEventArgs ^-> T<unit>) ^-> EventHandler
                 |> WithComment "Attaches the handler for the event that is thrown by the target."
 
@@ -2240,13 +2219,87 @@ module Bing =
                 |> WithComment "Registers a module with the map control. The name of the module is specified in moduleKey, the module script is defined in scriptUrl, and the options provides the location of a *.css file to load with the module."
             ]
 
+    let MapApi =
+        Class "MapApi"
+        |=> Nested [
+            CAltitudeReference
+            CMapTypeId
+            CLocation
+            CLocationRect
+            CPoint
+            CLabelOverlay
+            CColor
+            CPixelReference
+            Events
+        ]
+        |+> Instance [
+            "AltitudeReference" =? CAltitudeReference
+            "MapTypeId" =? CMapTypeId
+            "Location" =? CLocation
+            "LocationRect" =? CLocationRect
+            "Point" =? CPoint
+            "LabelOverlay" =? CLabelOverlay
+            "Events" =? Events
+            "Color" =? CColor
+            "PixelReference" =? CPixelReference
+            "Map" => T<Node> * MapViewOptions ^-> Map
+            |> WithInline "new $global.Microsoft.Maps.Map($1, $2)"
+            "Map" => T<Node> * MapOptions ^-> Map
+            |> WithInline "new $global.Microsoft.Maps.Map($1, $2)"
+            "Map" => T<Node> * ViewOptions ^-> Map
+            |> WithInline "new $global.Microsoft.Maps.Map($1, $2)"
+            "Map" => T<Node> ^-> Map
+            |> WithInline "new $global.Microsoft.Maps.Map($1)"
+            "TileSource" => TileSourceOptions ^-> TileSource
+            |> WithInline "new $global.Microsoft.Maps.TileSource($1)"
+            |> WithComment "Initializes a new instance of the TileSource  class."
+            "TileLayer" => TileLayerOptions ^-> TileLayer
+            |> WithInline "new $global.Microsoft.Maps.TileLayer($1)"
+            |> WithComment "Initializes a new instance of the TileLayer class."
+            "Location" => T<float> * T<float> * T<float> * AltitudeReference ^-> Location
+            |> WithInline "new $global.Microsoft.Maps.Location($1, $2, $3, $4)"
+            "Location" => T<float> * T<float> * T<float> ^-> Location
+            |> WithInline "new $global.Microsoft.Maps.Location($1, $2, $3)"
+            "Location" => T<float> * T<float> ^-> Location
+            |> WithInline "new $global.Microsoft.Maps.Location($1, $2)"
+            "Pushpin" => Location ^-> Pushpin
+            |> WithInline "new $global.Microsoft.Maps.Pushpin($1)"
+            "Pushpin" => Location * PushpinOptions ^-> Pushpin
+            |> WithInline "new $global.Microsoft.Maps.Pushpin($1, $2)"
+            "Point" => T<float> * T<float> ^-> Point
+            |> WithInline "new $global.Microsoft.Maps.Point($1, $2)"
+            "LocationRect" => Location * T<float> * T<float> ^-> LocationRect
+            |> WithInline "new $global.Microsoft.Maps.LocationRect($1, $2, $3)"
+            "Color" => T<int> * T<int> * T<int> * T<int> ^-> Color
+            |> WithInline "new $global.Microsoft.Maps.Color($1, $2, $3, $4)"
+            |> WithComment "Initializes a new instance of the Color class. The a parameter represents opacity. The range of valid values for all parameters is 0 to 255."
+            "EntityCollection" => T<unit> ^-> EntityCollection
+            |> WithInline "new $global.Microsoft.Maps.EntityCollection()"
+            "EntityCollection" => EntityCollectionOptions ^-> EntityCollection
+            |> WithInline "new $global.Microsoft.Maps.EntityCollection($1)"
+            "Infobox" => Location ^-> Infobox
+            |> WithInline "new $global.Microsoft.Maps.Infobox($1)"
+            "Infobox" => Location * InfoboxOptions ^-> Infobox
+            |> WithInline "new $global.Microsoft.Maps.Infobox($1, $2)"
+            "GeoLocationProvider" => Map ^-> GeoLocationProvider
+            |> WithInline "new $global.Microsoft.Maps.GeoLocationProvider($1)"
+            "Polyline" => (Type.ArrayOf Location) ^-> Polyline
+            |> WithInline "new $global.Microsoft.Maps.Polyline($1)"
+            "Polyline" => (Type.ArrayOf Location * PolylineOptions) ^-> Polyline
+            |> WithInline "new $global.Microsoft.Maps.Polyline($1, $2)"
+            "Polygon" => (Type.ArrayOf Location) ^-> Polygon
+            |> WithInline "new $global.Microsoft.Maps.Polygon($1)"
+            "Polygon" => (Type.ArrayOf Location * PolygonOptions) ^-> Polygon
+            |> WithInline "new $global.Microsoft.Maps.Polygon($1, $2)"
+            "TrafficLayer" => Map ^-> Traffic.TrafficLayer
+            |> WithInline "new $global.Microsoft.Maps.Traffic.TrafficLayer($1)"
+        ]
+
     let Assembly =
         Assembly [
-            Namespace "WebSharper.Bing.Maps.Resources" [
-                (Resource "Js" "https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0")
-                    .AssemblyWide()
-            ]
             Namespace "WebSharper.Bing.Maps" [
+                MapApi
+
                 AltitudeReference
                 AnimationVisibility
                 Color
@@ -2258,7 +2311,6 @@ module Bing =
                 Entity
                 Event
                 EventHandler
-                Events
                 GeoLocationProvider
                 InfoboxAction
                 Infobox

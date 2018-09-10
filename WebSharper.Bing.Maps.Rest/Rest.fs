@@ -3,32 +3,44 @@
 open WebSharper
 open WebSharper.JavaScript
 
+[<JavaScript>]
+module MapsLoading =
+    let private cbs = ResizeArray<MapApi -> unit>()
+
+    type Resource() =
+        inherit Resources.BaseResource("https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&callback=WebSharperBingMapsLoaded")
+
+    [<Require(typeof<Resource>)>]
+    let Loaded() =
+        for cb in cbs do
+            cb JS.Global?Microsoft?Maps
+        cbs.Clear()
+
+    let OnLoad (f: MapApi -> unit) =
+        cbs.Add(f)
+        if JS.Global?Microsoft?Maps?MapTypeId then
+            Loaded()
+        else
+            JS.Global?WebSharperBingMapsLoaded <- Loaded
+
+[<JavaScript>]
 module Rest =
 
-    [<JavaScript>]
-    let private credentials = "Ai6uQaKEyZbUvd33y5HU41hvoov_piUMn6t78Qzg7L1DWY4MFZqhjZdgEmCpQlbe"
+    let private restApiUri = "https://dev.virtualearth.net/REST/v1/"
 
-    [<JavaScript>]
-    let private restApiUri = "http://dev.virtualearth.net/REST/v1/"
-
-    [<JavaScript>]
     let private IsUndefined x =
         JS.TypeOf x = JS.Kind.Undefined
 
-    [<JavaScript>]
     let private SendRequest req =
         let script = JS.Document.CreateElement("script")
         script.SetAttribute("type", "text/javascript")
         script.SetAttribute("src", req)
         JS.Document.DocumentElement.AppendChild script |> ignore
 
-    [<JavaScript>]
     let private RequestCallbackName = "BingOnReceive"
 
-    [<JavaScript>]
     let private RequestStringBoilerplate credentials = "output=json&jsonp=" + RequestCallbackName + "&key=" + credentials
 
-    [<JavaScript>]
     let private OptionalFields request arr =
         arr
         |> Array.choose (fun name ->
@@ -36,7 +48,6 @@ module Rest =
             if IsUndefined value then None else
                 Some (name + "=" + string value))
 
-    [<JavaScript>]
     let RequestLocationByAddress(credentials, address : Address, callback : RestResponse -> unit) =
         (?<-) JS.Global RequestCallbackName callback
         let fields =
@@ -46,13 +57,11 @@ module Rest =
         let fullReq = restApiUri + "Locations?" + req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
 
-    [<JavaScript>]
     let RequestLocationByQuery(credentials, query : string, callback : RestResponse -> unit) =
         (?<-) JS.Global RequestCallbackName callback
         let req = restApiUri + "Locations?query=" + query + "&" + RequestStringBoilerplate credentials
         SendRequest req
 
-    [<JavaScript>]
     let RequestLocationByPoint(credentials, x:float, y:float, entities, callback : RestResponse -> unit) =
         (?<-) JS.Global RequestCallbackName callback
         let retrieveEntities = function
@@ -64,11 +73,9 @@ module Rest =
                 retrieveEntities entities
         SendRequest req
 
-    [<JavaScript>]
     let private StringifyWaypoints waypoints =
         Array.mapi (fun i (w:Waypoint) -> "wp." + string i + "=" + string w) waypoints
 
-    [<JavaScript>]
     let RequestRoute(credentials, request : RouteRequest, callback : RestResponse -> unit) =
         (?<-) JS.Global RequestCallbackName callback
         let fields =
@@ -80,7 +87,6 @@ module Rest =
         let fullReq = restApiUri + "/Routes?" + req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
 
-    [<JavaScript>]
     let RequestRouteFromMajorRoads(credentials, request : RouteFromMajorRoadsRequest, callback : RestResponse -> unit) =
         (?<-) JS.Global RequestCallbackName callback
         let fields =
@@ -90,8 +96,6 @@ module Rest =
         let fullReq = restApiUri + "/Routes/FromMajorRoads?" + req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
 
-
-    [<JavaScript>]
     let RequestImageryMetadata(credentials, request : ImageryMetadataRequest,
                                callback : RestResponse -> unit) =
         (?<-) JS.Global RequestCallbackName callback
@@ -105,7 +109,6 @@ module Rest =
             req + "&" + RequestStringBoilerplate credentials
         SendRequest fullReq
 
-    [<JavaScript>]
     let StaticMapUrl(credentials, request : StaticMapRequest) =
         let fields =
             [
@@ -146,7 +149,6 @@ module Rest =
             req + "&key=" + credentials
         fullReq
 
-    [<JavaScript>]
     let StaticMap(credentials, request) =
         let img = JS.Document.CreateElement("img")
         img.SetAttribute("src", StaticMapUrl(credentials, request))
