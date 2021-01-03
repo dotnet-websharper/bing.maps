@@ -20,6 +20,6 @@ files
     ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.dll ==> lib/netstandard2.0
     ../WebSharper.Bing.Maps.Rest/bin/Release/netstandard2.0/WebSharper.Bing.Maps.Rest.xml ==> lib/netstandard2.0
 dependencies
-        WebSharper ~> LOCKEDVERSION/3
+        WebSharper ~> LOCKEDVERSION:[3]
 frameworkAssemblies
         System.Web
