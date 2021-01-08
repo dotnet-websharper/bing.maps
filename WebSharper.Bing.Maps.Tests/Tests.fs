@@ -24,7 +24,9 @@ open WebSharper
 [<JavaScript>]
 module Main =
     open WebSharper.JavaScript
-    open WebSharper.Html.Client
+    open WebSharper.UI
+    open WebSharper.UI.Html
+    open WebSharper.UI.Client
     open WebSharper.Bing.Maps
 
     let credentials = "Ai6uQaKEyZbUvd33y5HU41hvoov_piUMn6t78Qzg7L1DWY4MFZqhjZdgEmCpQlbe"
@@ -33,8 +35,10 @@ module Main =
         JS.TypeOf x = JS.Kind.Undefined
 
     let MakeMapWrapper (f: Dom.Node -> MapApi -> unit) =
-        Div [Attr.Style "height: 600px;"]
-        |>! OnAfterRender (fun el -> MapsLoading.OnLoad (f el.Body))
+        div [
+            Attr.Style "height" "600px"
+            on.afterRender (fun el -> MapsLoading.OnLoad (f el))
+        ] []
 
     let MapElement () =
         MakeMapWrapper <| fun el api ->
@@ -62,7 +66,7 @@ module Main =
         else
             None
 
-    let GeocodeCallback (api: MapApi) (map : Map) (resultElt : Element) (result : RestResponse) =
+    let GeocodeCallback (api: MapApi) (map : Map) (resultElt : Elt) (result : RestResponse) =
         match CheckJsonResponse result with
         | Some error ->
             resultElt.Text <- "Bad location request: " + error
@@ -78,28 +82,28 @@ module Main =
                 resultElt.Text <- resource.Name
 
     let LocationRequest () =
-        let input = Input [Attr.Type "text"]
-        let button = Input [Attr.Type "button"; Attr.Value "Search"]
-        let responseDiv = Div []
+        let inp = input [attr.``type`` "text"] []
+        let button = input [attr.``type`` "button"; attr.value "Search"] []
+        let responseDiv = div []
         let mapContainer =
             MakeMapWrapper <| fun el api ->
                 let opts = MapOptions(Credentials = credentials)
                 let map = api.Map(el, opts)
                 map.SetMapType(api.MapTypeId.Road)
-                let request (_:Element) (_:Events.MouseEvent) =
-                    Rest.RequestLocationByQuery(credentials, input.Value, GeocodeCallback api map responseDiv)
+                let request (_:Elt) (_:Events.MouseEvent) =
+                    Rest.RequestLocationByQuery(credentials, inp.Value, GeocodeCallback api map responseDiv)
                 button |>! OnClick request |> ignore
-        Div [
+        div [
             mapContainer
-            Div [input; button]
+            div [inp; button]
             responseDiv
         ]
 
     let LatLonLocationRequest () =
-        let inputLat = Input [Attr.Type "text"]
-        let inputLon = Input [Attr.Type "text"]
-        let button = Input [Attr.Type "button"; Attr.Value "Search"]
-        let responseDiv = Div []
+        let inputLat = input [attr.``type`` "text"]
+        let inputLon = input [attr.``type`` "text"]
+        let button = input [attr.``type`` "button"; attr.value "Search"]
+        let responseDiv = div []
         let mapContainer =
             MakeMapWrapper <| fun el api ->
                 let opts = MapOptions(Credentials = credentials)
@@ -108,9 +112,9 @@ module Main =
                 let request (_:Element) (_:Events.MouseEvent) =
                     Rest.RequestLocationByPoint(credentials, float inputLat.Value, float inputLon.Value, [], GeocodeCallback api map responseDiv)
                 button |>! OnClick request |> ignore
-        Div [
+        div [
             mapContainer
-            Div [Span[Text "Latitude:"]; inputLat; Span[Text "Longitude"]; inputLon; button]
+            div [Span[text "Latitude:"]; inputLat; Span[text "Longitude"]; inputLon; button]
             responseDiv
         ]
 
@@ -136,11 +140,11 @@ module Main =
     open WebSharper.Bing.Maps.Directions
 
     let RouteRequest () =
-        let origin = Input []
-        let destination = Input []
-        let button = Input [Attr.Type "button"; Attr.Value "Request route"]
-        let highwayBox = Input [Attr.Type "checkbox"]
-        let answer = Div [Id "answer"]
+        let origin = input []
+        let destination = input []
+        let button = input [attr.``type`` "button"; attr.value "Request route"]
+        let highwayBox = input [attr.``type`` "checkbox"]
+        let answer = div [attr.id "answer"]
         let mapContainer =
             MakeMapWrapper <| fun el api ->
                 let opts = MapOptions(Credentials = credentials)
@@ -157,10 +161,10 @@ module Main =
                         dirman.CalculateDirections()
                     )
                 ))
-        Div [mapContainer
-             Span[Text "From:"]; origin
-             Span[Text "To:"]; destination
-             highwayBox; Span[Text "Accept highways"]; button
+        div [mapContainer
+             Span[text "From:"]; origin
+             Span[text "To:"]; destination
+             highwayBox; Span[text "Accept highways"]; button
              answer]
 
     let StaticMap () =
@@ -184,8 +188,8 @@ module Main =
                 let resource = result.ResourceSets.[0].Resources.[0] :?> ImageryMetadataResource
                 let txt =
                     [
-                        (P [Text("Road map tile size: " + string resource.ImageHeight + "x" + string resource.ImageWidth)]).Body
-                        (P [Text("Road map tile URL: " + resource.ImageUrl)]).Body
+                        (P [text("Road map tile size: " + string resource.ImageHeight + "x" + string resource.ImageWidth)]).Body
+                        (P [text("Road map tile URL: " + resource.ImageUrl)]).Body
                     ]
                 List.iter (answer.AppendChild>>ignore) txt
         MakeMapWrapper <| fun el api ->
@@ -197,22 +201,22 @@ module Main =
 
 
     let Samples () =
-        Div [
-            H2 [Text "Basic map"]
+        div [] [
+            h2 [] [text "Basic map"]
             MapElement ()
-            H2 [Text "Tile layer"]
+            h2 [] [text "Tile layer"]
             MapWithTileLayer ()
-            H2 [Text "Map with event management (click me!)"]
+            h2 [] [text "Map with event management (click me!)"]
             MouseEvent ()
-            H2 [Text "Search for a location"]
+            h2 [] [text "Search for a location"]
             LocationRequest ()
-            H2 [Text "Pin a latitude/longitude point"]
+            h2 [] [text "Pin a latitude/longitude point"]
             LatLonLocationRequest ()
-            H2 [Text "Search for a route between two locations"]
+            h2 [] [text "Search for a route between two locations"]
             RouteRequest ()
-            H2 [Text "Static maps"]
+            h2 [] [text "Static maps"]
             StaticMap ()
-            H2 [Text "Retrieve metadata about the images"]
+            h2 [] [text "Retrieve metadata about the images"]
             ImageMetadata ()
         ]
 
@@ -230,12 +234,12 @@ type Action = | Index
 
 module Site =
 
-    open WebSharper.Html.Server
+    open WebSharper.UI.Html
 
     let HomePage ctx =
         Content.Page(
             Title = "WebSharper Bing Maps Tests",
-            Body = [Div [new Samples()]]
+            Body = [div [] [new Samples()]]
         )
 
     let Main = Sitelet.Content "/" Index HomePage
