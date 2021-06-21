@@ -5,9 +5,9 @@ framework: net461, netstandard2.0
 strategy: min
 storage: none
 
-nuget WebSharper >= 4.2 ~> 4.7
-nuget WebSharper.FSharp >= 4.2 ~> 4.7
-nuget WebSharper.Html >= 4.2 ~> 4.7
+nuget WebSharper >= 4.2 prerelease
+nuget WebSharper.FSharp >= 4.2 prerelease
+nuget WebSharper.Html >= 4.2 prerelease
 nuget FSharp.Core ~> 4.2.0
 
 group wsbuild
